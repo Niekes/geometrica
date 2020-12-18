@@ -24,14 +24,13 @@
                 <rect-control
                     v-if="selectedShape === 'rectangle'"
                     :rect="rect"
-                    @input.native="draw"
-                    @change.native="draw"
+                    @rect-update="draw"
                 />
 
                 <circle-control
                     v-if="selectedShape === 'circle'"
                     :circle="circle"
-                    @input.native="draw"
+                    @circle-update="draw"
                 />
 
                 <polygon-control
@@ -55,7 +54,6 @@
 <script>
 import {
     select,
-    randomInt,
 } from 'd3';
 
 import RectControl from '@/components/RectControl';
@@ -64,8 +62,6 @@ import PolygonControl from '@/components/PolygonControl';
 import rectMixin from '@/mixins/rect-mixin';
 import circleMixin from '@/mixins/circle-mixin';
 import polygonMixin from '@/mixins/polygon-mixin';
-
-import config from '@/config';
 
 export default {
     name: 'Home',
@@ -122,6 +118,8 @@ export default {
                 radiusY: 256,
                 rotation: 0,
                 stroke: true,
+                startAngle: 0,
+                endAngle: 6.283185307179586,
             },
             polygon: {
                 amount: 16,
@@ -142,7 +140,7 @@ export default {
                 size: 256,
                 stroke: true,
             },
-            selectedShape: 'polygon',
+            selectedShape: 'circle',
             shapes: [
                 { name: 'rectangle' },
                 { name: 'circle' },
@@ -178,8 +176,10 @@ export default {
     },
 
     methods: {
-        draw() {
+        async draw() {
             this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+
+            await this.$nextTick();
 
             switch (this.selectedShape) {
             case 'rectangle':
@@ -197,10 +197,6 @@ export default {
                 this.drawRect();
                 break;
             }
-        },
-        setColorInterPolator(inter) {
-            this.colorInterPolator = inter;
-            this.draw();
         },
     },
 };

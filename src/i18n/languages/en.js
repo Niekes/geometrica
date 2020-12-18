@@ -21,6 +21,8 @@ export default {
         centerX: 'Center X: {n}px',
         centerY: 'Center Y: {n}px',
         sides: 'Sides: {n}',
+        startAngle: 'Start angle: {n}°',
+        endAngle: 'End angle: {n}°',
     },
     cookiesBanner: {
         text: 'Our website uses cookies to improve your experience. We\'ll assume you\'re ok with this, but you can opt-out if you wish.',
