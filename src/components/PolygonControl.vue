@@ -159,7 +159,7 @@
                     v-model="polygon.flipColorInterpolator"
                     type="checkbox"
                     name="polygon-flip-color-interpolator"
-                    @input="$emit('polygon-update', $event.target.value)"
+                    @change="$emit('polygon-update', $event.target.value)"
                 >
                 <label for="polygon-flip-color-interpolator">flipColorInterpolator</label>
             </div>

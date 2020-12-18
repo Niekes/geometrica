@@ -169,7 +169,7 @@
                     v-model="circle.flipColorInterpolator"
                     type="checkbox"
                     name="circle-flip-color-interpolator"
-                    @input="$emit('circle-update', $event.target.value)"
+                    @change="$emit('circle-update', $event.target.value)"
                 >
                 <label for="circle-flip-color-interpolator">flipColorInterpolator</label>
             </div>

@@ -45,7 +45,7 @@
             class="sliders__input"
             :min="0"
             :max="100"
-            :step="1"
+            :step="0.01"
             :label="$tc('home.borderRadius', rect.borderRadius.tl / 2)"
             @input.native="$emit('rect-update', $event.target.value)"
         />
@@ -55,7 +55,7 @@
             class="sliders__input"
             :min="0"
             :max="100"
-            :step="1"
+            :step="0.01"
             :label="$tc('home.borderRadius', rect.borderRadius.tr / 2)"
             @input.native="$emit('rect-update', $event.target.value)"
         />
@@ -65,7 +65,7 @@
             class="sliders__input"
             :min="0"
             :max="100"
-            :step="1"
+            :step="0.01"
             :label="$tc('home.borderRadius', rect.borderRadius.bl / 2)"
             @input.native="$emit('rect-update', $event.target.value)"
         />
@@ -75,7 +75,7 @@
             class="sliders__input"
             :min="0"
             :max="100"
-            :step="1"
+            :step="0.01"
             :label="$tc('home.borderRadius', rect.borderRadius.br / 2)"
             @input.native="$emit('rect-update', $event.target.value)"
         />
@@ -188,7 +188,7 @@
                     v-model="rect.flipColorInterpolator"
                     type="checkbox"
                     name="rect-flip-color-interpolator"
-                    @input="$emit('rect-update', $event.target.value)"
+                    @change="$emit('rect-update', $event.target.value)"
                 >
                 <label for="rect-flip-color-interpolator">flipColorInterpolator</label>
             </div>
