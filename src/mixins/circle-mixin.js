@@ -27,7 +27,7 @@ export default {
                     ? this.colorInterPolator(flippedK)
                     : this.colorInterPolator(k));
 
-                if (this.interpolateOpacity) {
+                if (this.circle.interpolateOpacity) {
                     c.opacity = k;
                 }
 
