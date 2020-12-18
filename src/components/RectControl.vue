@@ -7,8 +7,7 @@
             :max="1000"
             :step="1"
             :label="$tc('home.amountOfRectangles', rect.amount)"
-            @change.native="$emit('change', $event.target.value)"
-            @input.native="$emit('input', $event.target.value)"
+            @input.native="$emit('rect-update', $event.target.value)"
         />
 
         <input-range
@@ -18,19 +17,17 @@
             :max="30"
             :step="0.1"
             :label="$tc('home.distance', rect.distance)"
-            @change.native="$emit('change', $event.target.value)"
-            @input.native="$emit('input', $event.target.value)"
+            @input.native="$emit('rect-update', $event.target.value)"
         />
 
         <input-range
-            v-model.number="rect.lineWidth"
+            v-model.number="rect.strokeWidth"
             class="sliders__input"
             :min="1"
             :max="30"
             :step="0.1"
-            :label="$tc('home.lineWidth', rect.lineWidth)"
-            @change.native="$emit('change', $event.target.value)"
-            @input.native="$emit('input', $event.target.value)"
+            :label="$tc('home.strokeWidth', rect.strokeWidth)"
+            @input.native="$emit('rect-update', $event.target.value)"
         />
 
         <input-range
@@ -40,8 +37,7 @@
             :max="1440"
             :step="1"
             :label="$tc('home.rotation', rect.rotation)"
-            @change.native="$emit('change', $event.target.value)"
-            @input.native="$emit('input', $event.target.value)"
+            @input.native="$emit('rect-update', $event.target.value)"
         />
 
         <input-range
@@ -51,8 +47,7 @@
             :max="100"
             :step="1"
             :label="$tc('home.borderRadius', rect.borderRadius.tl / 2)"
-            @change.native="$emit('change', $event.target.value)"
-            @input.native="$emit('input', $event.target.value)"
+            @input.native="$emit('rect-update', $event.target.value)"
         />
 
         <input-range
@@ -62,8 +57,7 @@
             :max="100"
             :step="1"
             :label="$tc('home.borderRadius', rect.borderRadius.tr / 2)"
-            @change.native="$emit('change', $event.target.value)"
-            @input.native="$emit('input', $event.target.value)"
+            @input.native="$emit('rect-update', $event.target.value)"
         />
 
         <input-range
@@ -73,8 +67,7 @@
             :max="100"
             :step="1"
             :label="$tc('home.borderRadius', rect.borderRadius.bl / 2)"
-            @change.native="$emit('change', $event.target.value)"
-            @input.native="$emit('input', $event.target.value)"
+            @input.native="$emit('rect-update', $event.target.value)"
         />
 
         <input-range
@@ -84,8 +77,7 @@
             :max="100"
             :step="1"
             :label="$tc('home.borderRadius', rect.borderRadius.br / 2)"
-            @change.native="$emit('change', $event.target.value)"
-            @input.native="$emit('input', $event.target.value)"
+            @input.native="$emit('rect-update', $event.target.value)"
         />
 
         <input-range
@@ -95,8 +87,7 @@
             :max="512"
             :step="1"
             :label="$tc('home.width', rect.width)"
-            @change.native="$emit('change', $event.target.value)"
-            @input.native="$emit('input', $event.target.value)"
+            @input.native="$emit('rect-update', $event.target.value)"
         />
 
         <input-range
@@ -106,14 +97,129 @@
             :max="512"
             :step="1"
             :label="$tc('home.height', rect.height)"
-            @change.native="$emit('change', $event.target.value)"
-            @input.native="$emit('input', $event.target.value)"
+            @input.native="$emit('rect-update', $event.target.value)"
         />
+        <div>
+            <label>
+                Bg
+            </label>
+            <input
+                id="bg-color"
+                v-model="rect.bgColor"
+                type="color"
+                name="bg-color"
+                @input="$emit('rect-update', $event.target.value)"
+            >
+        </div>
+
+        <div>
+            <input
+                id="stroke"
+                v-model="rect.stroke"
+                type="checkbox"
+                name="stroke"
+                @change="$emit('rect-update', $event.target.value)"
+            >
+            <label for="stroke">stroke</label>
+        </div>
+
+        <div>
+            <input
+                id="interpolateOpacity"
+                v-model="rect.interpolateOpacity"
+                type="checkbox"
+                name="interpolateOpacity"
+                @change="$emit('rect-update', $event.target.value)"
+            >
+            <label for="interpolateOpacity">interpolateOpacity</label>
+            <input
+                id="flipOpacity"
+                v-model="rect.flipOpacity"
+                type="checkbox"
+                name="flipOpacity"
+                @change="$emit('rect-update', $event.target.value)"
+            >
+            <label for="flipOpacity">flipOpacity</label>
+        </div>
+
+        <div>
+            <input
+                id="interpolateStrokeWidth"
+                v-model="rect.interpolateStrokeWidth"
+                type="checkbox"
+                name="interpolateStrokeWidth"
+                @change="$emit('rect-update', $event.target.value)"
+            >
+            <label for="interpolateStrokeWidth">interpolateStrokeWidth</label>
+            <input
+                id="flipStrokeWidth"
+                v-model="rect.flipStrokeWidth"
+                type="checkbox"
+                name="flipStrokeWidth"
+                @change="$emit('rect-update', $event.target.value)"
+            >
+            <label for="flipStrokeWidth">flipStrokeWidth</label>
+        </div>
+
+        <input-range
+            v-model.number="rect.cx"
+            class="sliders__input"
+            :min="-256"
+            :max="256"
+            :step="0.1"
+            :label="$tc('home.centerX', rect.cx)"
+            @input.native="$emit('rect-update', $event.target.value)"
+        />
+
+        <input-range
+            v-model.number="rect.cy"
+            class="sliders__input"
+            :min="-256"
+            :max="256"
+            :step="0.1"
+            :label="$tc('home.centerY', rect.cy)"
+            @input.native="$emit('rect-update', $event.target.value)"
+        />
+
+        <div class="control__color">
+            <div>
+                <input
+                    id="rect-flip-color-interpolator"
+                    v-model="rect.flipColorInterpolator"
+                    type="checkbox"
+                    name="rect-flip-color-interpolator"
+                    @input="$emit('rect-update', $event.target.value)"
+                >
+                <label for="rect-flip-color-interpolator">flipColorInterpolator</label>
+            </div>
+
+            <div
+                v-if="colorInterPolators"
+                class="color-interpolators"
+            >
+                <div
+                    v-for="cip in colorInterPolators"
+                    :key="cip.name"
+                    class="color-interpolators__values"
+                >
+                    <button
+                        class="interpolator"
+                        :class="{
+                            'interpolator--active': cip.fn === rect.colorInterPolator,
+                        }"
+                        @click="setColorInterPolator(cip.fn)"
+                        v-text="cip.name"
+                    />
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import InputRange from '@/components/InputRange';
+
+import config from '@/config';
 
 export default {
     name: 'RectControl',
@@ -128,6 +234,21 @@ export default {
             required: true,
         },
     },
+
+
+    created() {
+        this.colorInterPolators = config.colorInterPolators;
+        this.rect.colorInterPolator = this.rect.colorInterPolator
+            || this.colorInterPolators[0].fn;
+    },
+
+    methods: {
+        setColorInterPolator(inter) {
+            this.rect.colorInterPolator = inter;
+
+            this.$emit('rect-update', inter);
+        },
+    },
 };
 </script>
 
@@ -135,5 +256,18 @@ export default {
 .rect-control {
     display: flex;
     flex-direction: column;
+}
+
+.color-interpolators {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.interpolator {
+    font-size: $font-size;
+
+    &--active {
+        font-weight: 900;
+    }
 }
 </style>

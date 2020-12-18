@@ -58,7 +58,7 @@ export default {
                     this.ctx.lineWidth = this.polygon.strokeWidth * k + 0.00000001;
                 }
 
-                if (this.polygon.interpolateStrokeWidth && this.flipStrokeWidth) {
+                if (this.polygon.interpolateStrokeWidth && this.polygon.flipStrokeWidth) {
                     this.ctx.lineWidth = this.polygon.strokeWidth * flippedK + 0.00000001;
                 }
 

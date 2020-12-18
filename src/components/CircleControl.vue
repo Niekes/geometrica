@@ -129,8 +129,8 @@
                 v-model="circle.interpolateStrokeWidth"
                 type="checkbox"
                 name="interpolateStrokeWidth"
-                @change="$emit('circle-update-update', $event.target.value)"
-            >
+                @change="$emit('circle-update', $event.target.value)"
+            >l
             <label for="interpolateStrokeWidth">interpolateStrokeWidth</label>
             <input
                 id="flipStrokeWidth"
@@ -218,7 +218,8 @@ export default {
 
     created() {
         this.colorInterPolators = config.colorInterPolators;
-        this.circle.colorInterPolator = this.colorInterPolators[0].fn;
+        this.circle.colorInterPolator = this.circle.colorInterPolator
+            || this.colorInterPolators[0].fn;
     },
 
     methods: {

@@ -119,7 +119,7 @@
                 v-model="polygon.interpolateStrokeWidth"
                 type="checkbox"
                 name="interpolateStrokeWidth"
-                @change="$emit('polygon-update-update', $event.target.value)"
+                @change="$emit('polygon-update', $event.target.value)"
             >
             <label for="interpolateStrokeWidth">interpolateStrokeWidth</label>
             <input
@@ -208,7 +208,8 @@ export default {
 
     created() {
         this.colorInterPolators = config.colorInterPolators;
-        this.polygon.colorInterPolator = this.colorInterPolators[0].fn;
+        this.polygon.colorInterPolator = this.polygon.colorInterPolator
+            || this.colorInterPolators[0].fn;
     },
 
     methods: {

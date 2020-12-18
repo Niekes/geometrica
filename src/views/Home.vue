@@ -140,7 +140,7 @@ export default {
                 size: 256,
                 stroke: true,
             },
-            selectedShape: 'circle',
+            selectedShape: 'rectangle',
             shapes: [
                 { name: 'rectangle' },
                 { name: 'circle' },

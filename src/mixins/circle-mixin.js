@@ -61,7 +61,7 @@ export default {
                     this.ctx.lineWidth = this.circle.strokeWidth * k + 0.00000001;
                 }
 
-                if (this.circle.interpolateStrokeWidth && this.flipLineWidth) {
+                if (this.circle.interpolateStrokeWidth && this.circle.flipStrokeWidth) {
                     this.ctx.lineWidth = this.circle.strokeWidth * flippedK + 0.00000001;
                 }
 
