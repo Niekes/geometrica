@@ -1,0 +1,53 @@
+{
+  "name": "geometrica",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "npm run serve",
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build",
+    "lint": "vue-cli-service lint",
+    "reset": "rm package-lock.json || true && rm -rf node_modules/ || true && npm install && npm dedupe && npm start",
+    "deploy": "npm run build && mkdir dist/api && cp api/* dist/api && node deploy",
+    "test": "vue-cli-service test:unit"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "d3": "^6.2.0",
+    "d3-delaunay": "^5.1.6",
+    "normalize.css": "^8.0.1",
+    "register-service-worker": "^1.6.2",
+    "save-svg-as-png": "^1.4.17",
+    "vue": "^2.6.6",
+    "vue-analytics": "^5.22.1",
+    "vue-gtag": "^1.10.0",
+    "vue-i18n": "^8.9.0",
+    "vue-range-component": "^1.0.3",
+    "vue-router": "^3.0.1",
+    "vuex": "^3.0.1"
+  },
+  "devDependencies": {
+    "ftp-deploy": "^2.3.8",
+    "@vue/cli-plugin-babel": "^3.5.0",
+    "@vue/cli-plugin-eslint": "^3.5.0",
+    "@vue/cli-plugin-pwa": "^3.5.0",
+    "@vue/cli-plugin-unit-jest": "^3.5.0",
+    "@vue/cli-service": "^3.5.0",
+    "@vue/eslint-config-airbnb": "^4.0.0",
+    "@vue/test-utils": "1.0.0-beta.29",
+    "babel-core": "7.0.0-bridge.0",
+    "babel-eslint": "^10.0.1",
+    "babel-jest": "^23.6.0",
+    "eslint": "^5.8.0",
+    "eslint-plugin-vue": "^5.0.0",
+    "node-sass": "^4.9.0",
+    "sass-loader": "^7.1.0",
+    "stylelint": "^9.10.0",
+    "stylelint-config-standard": "^18.2.0",
+    "stylelint-order": "^2.0.0",
+    "stylelint-processor-html": "^1.0.0",
+    "stylelint-webpack-plugin": "^0.10.5",
+    "vue-cli-plugin-svg": "^0.1.2",
+    "vue-template-compiler": "^2.5.21"
+  }
+}

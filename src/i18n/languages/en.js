@@ -1,0 +1,30 @@
+export default {
+    navigation: {
+        buymeacoffee: 'Buy me a coffee',
+        cookies: 'Cookies',
+        imprint: 'Imprint',
+    },
+    home: {
+        amountOfRectangles: 'Amount of rectangles: {n}',
+        amountOfCircles: 'Amount of circles: {n}',
+        amountOfTriangles: 'Amount of triangles: {n}',
+        amountOfPolygons: 'Amount of polygons: {n}',
+        distance: 'Distance: {n}',
+        strokeWidth: 'Stroke width: {n}',
+        rotation: 'Rotation: {n}°',
+        borderRadius: 'Border radius: {n}%',
+        width: 'Width: {n}px',
+        height: 'Height: {n}px',
+        radiusX: 'Radius X: {n}px',
+        radiusY: 'Radius Y: {n}px',
+        size: 'Size: {n}px',
+        centerX: 'Center X: {n}px',
+        centerY: 'Center Y: {n}px',
+        sides: 'Sides: {n}',
+    },
+    cookiesBanner: {
+        text: 'Our website uses cookies to improve your experience. We\'ll assume you\'re ok with this, but you can opt-out if you wish.',
+        accept: 'Accept',
+        learnMore: 'Learn more',
+    },
+};
