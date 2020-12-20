@@ -58,11 +58,11 @@ export default {
                 this.ctx.rotate(angle);
 
                 if (this.circle.interpolateStrokeWidth) {
-                    this.ctx.lineWidth = this.circle.strokeWidth * k + 0.00000001;
+                    this.ctx.lineWidth = Math.max(this.circle.strokeWidth * k, 1e-10);
                 }
 
                 if (this.circle.interpolateStrokeWidth && this.circle.flipStrokeWidth) {
-                    this.ctx.lineWidth = this.circle.strokeWidth * flippedK + 0.00000001;
+                    this.ctx.lineWidth = Math.max(this.circle.strokeWidth * flippedK, 1e-10);
                 }
 
                 if (!this.circle.interpolateStrokeWidth) {
@@ -79,6 +79,10 @@ export default {
                     this.circle.endAngle,
                 );
 
+                if (Math.abs(this.circle.startAngle - this.circle.endAngle) === 6.28) {
+                    this.ctx.closePath();
+                }
+
                 if (this.circle.stroke) {
                     this.ctx.stroke();
                 }
@@ -86,6 +90,7 @@ export default {
                 if (!this.circle.stroke) {
                     this.ctx.fill();
                 }
+
                 this.ctx.restore();
             }
         },

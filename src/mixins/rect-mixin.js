@@ -63,11 +63,11 @@ export default {
                 this.ctx.rotate(angle);
 
                 if (this.rect.interpolateStrokeWidth) {
-                    this.ctx.lineWidth = this.rect.strokeWidth * k + 0.00000001;
+                    this.ctx.lineWidth = Math.max(this.rect.strokeWidth * k, 1e-10);
                 }
 
                 if (this.rect.interpolateStrokeWidth && this.rect.flipStrokeWidth) {
-                    this.ctx.lineWidth = this.rect.strokeWidth * flippedK + 0.00000001;
+                    this.ctx.lineWidth = Math.max(this.rect.strokeWidth * flippedK, 1e-10);
                 }
 
                 if (!this.rect.interpolateStrokeWidth) {

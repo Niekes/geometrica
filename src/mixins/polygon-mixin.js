@@ -4,28 +4,64 @@ import {
 
 export default {
     methods: {
+        setPath(numberOfVertices, borderRadius, size) {
+            let p = '';
+
+            const br = Math.min(borderRadius, size - (size / 2));
+            const alpha = (numberOfVertices - 2) * this.PI / numberOfVertices;
+            const epsilon = size - br / Math.sin(alpha / 2);
+            const beta = 2 * this.PI / numberOfVertices;
+            const gamma = (this.PI - alpha) / 2;
+
+            const o = {};
+            const posS = {};
+            const posE = {};
+
+            let delta = 0;
+            let startAngle = 0;
+            let endAngle = 0;
+
+            for (let i = 0; i < numberOfVertices; i += 1) {
+                delta = i * beta;
+                o.x = epsilon * Math.cos(delta);
+                o.y = epsilon * Math.sin(delta);
+
+                startAngle = delta - gamma;
+                posS.x = o.x + br * Math.cos(startAngle);
+                posS.y = o.y + br * Math.sin(startAngle);
+
+                endAngle = delta + gamma;
+                posE.x = o.x + br * Math.cos(endAngle);
+                posE.y = o.y + br * Math.sin(endAngle);
+
+                p += `${((i === 0) ? 'M' : 'L') + posS.x} ${posS.y}A${br} ${br} 0 0 1 ${posE.x} ${posE.y}`;
+            }
+
+            return `${p}z`;
+        },
         drawPolygon() {
             this.ctx.fillStyle = this.polygon.bgColor;
 
             const {
                 amount,
+                borderRadius,
+                distance,
+                size,
             } = this.polygon;
 
             const radians = (this.polygon.rotation * this.PI / 180);
             const adjustedAmount = amount - 1;
 
             for (let i = 0; i < amount; i += 1) {
-                if (this.polygon.size - (i * this.polygon.distance) < 0) return;
+                if (size - (i * distance) < 0) return;
 
-                const size = this.polygon.size - (-i * this.polygon.distance);
+                const s = (size - (i * distance)) / 2;
                 const k = i / adjustedAmount;
                 const flippedK = Math.abs(k - 1);
                 const angle = radians / (adjustedAmount) * i;
 
                 const cx = this.canvasHalfWidth + this.polygon.cx;
-                const cy = this.canvasHalfHeight + this.polygon.cy * -1;
-                const x = -size / 2;
-                const y = -size / 2;
+                const cy = this.canvasHalfHeight + this.polygon.cy;
 
                 const c = color(this.polygon.flipColorInterpolator
                     ? this.polygon.colorInterPolator(flippedK)
@@ -55,37 +91,31 @@ export default {
                 this.ctx.rotate(angle - this.PI / 2);
 
                 if (this.polygon.interpolateStrokeWidth) {
-                    this.ctx.lineWidth = this.polygon.strokeWidth * k + 0.00000001;
+                    this.ctx.lineWidth = Math.max(this.polygon.strokeWidth * k, 1e-10);
                 }
 
                 if (this.polygon.interpolateStrokeWidth && this.polygon.flipStrokeWidth) {
-                    this.ctx.lineWidth = this.polygon.strokeWidth * flippedK + 0.00000001;
+                    this.ctx.lineWidth = Math.max(this.polygon.strokeWidth * flippedK, 1e-10);
                 }
 
                 if (!this.polygon.interpolateStrokeWidth) {
                     this.ctx.lineWidth = this.polygon.strokeWidth;
                 }
 
-                this.ctx.moveTo(
-                    ((x + this.polygon.size) * Math.cos(0)),
-                    (y + this.polygon.size) * Math.sin(0),
-                );
-
-                for (let side = 0; side < this.polygon.sides + 1; side += 1) {
-                    this.ctx.lineTo(
-                        (x + this.polygon.size) * Math.cos(side * 2 * this.PI / this.polygon.sides),
-                        (y + this.polygon.size) * Math.sin(side * 2 * this.PI / this.polygon.sides),
-                    );
-                }
+                const path = new Path2D(this.setPath(this.polygon.sides, borderRadius, s, i));
 
                 this.ctx.closePath();
 
+                if (i === this.polygon.amount - 1) {
+                    // console.log(this.setPath(this.polygon.sides, borderRadius, s, i));
+                }
+
                 if (this.polygon.stroke) {
-                    this.ctx.stroke();
+                    this.ctx.stroke(path);
                 }
 
                 if (!this.polygon.stroke) {
-                    this.ctx.fill();
+                    this.ctx.fill(path);
                 }
 
                 this.ctx.restore();

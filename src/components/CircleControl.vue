@@ -7,7 +7,7 @@
             :max="1000"
             :step="1"
             :label="$tc('home.amountOfCircles', circle.amount)"
-            @input.native="$emit('circle-update', $event.target.value)"
+            @input.native="$emit('circle-update')"
         />
 
         <input-range
@@ -17,7 +17,7 @@
             :max="30"
             :step="0.1"
             :label="$tc('home.distance', circle.distance)"
-            @input.native="$emit('circle-update', $event.target.value)"
+            @input.native="$emit('circle-update')"
         />
 
         <input-range
@@ -27,7 +27,7 @@
             :max="30"
             :step="0.1"
             :label="$tc('home.strokeWidth', circle.strokeWidth)"
-            @input.native="$emit('circle-update', $event.target.value)"
+            @input.native="$emit('circle-update')"
         />
 
         <input-range
@@ -37,7 +37,7 @@
             :max="1440"
             :step="1"
             :label="$tc('home.rotation', circle.rotation)"
-            @input.native="$emit('circle-update', $event.target.value)"
+            @input.native="$emit('circle-update')"
         />
 
         <input-range
@@ -47,7 +47,7 @@
             :max="512"
             :step="1"
             :label="$tc('home.radiusX', circle.radiusX)"
-            @input.native="$emit('circle-update', $event.target.value)"
+            @input.native="$emit('circle-update')"
         />
 
         <input-range
@@ -57,7 +57,7 @@
             :max="512"
             :step="1"
             :label="$tc('home.radiusY', circle.radiusY)"
-            @input.native="$emit('circle-update', $event.target.value)"
+            @input.native="$emit('circle-update')"
         />
 
         <input-range
@@ -67,7 +67,7 @@
             :max="6.283185307179586"
             :step="0.01"
             :label="$tc('home.startAngle', circle.startAngle)"
-            @input.native="$emit('circle-update', $event.target.value)"
+            @input.native="$emit('circle-update')"
         />
 
         <input-range
@@ -77,7 +77,7 @@
             :max="6.283185307179586"
             :step="0.01"
             :label="$tc('home.endAngle', circle.endAngle)"
-            @input.native="$emit('circle-update', $event.target.value)"
+            @input.native="$emit('circle-update')"
         />
 
         <div>
@@ -89,7 +89,7 @@
                 v-model="circle.bgColor"
                 type="color"
                 name="bg-color"
-                @input="$emit('circle-update', $event.target.value)"
+                @input="$emit('circle-update')"
             >
         </div>
 
@@ -99,7 +99,7 @@
                 v-model="circle.stroke"
                 type="checkbox"
                 name="stroke"
-                @change="$emit('circle-update', $event.target.value)"
+                @change="$emit('circle-update')"
             >
             <label for="stroke">stroke</label>
         </div>
@@ -110,7 +110,7 @@
                 v-model="circle.interpolateOpacity"
                 type="checkbox"
                 name="interpolateOpacity"
-                @change="$emit('circle-update', $event.target.value)"
+                @change="$emit('circle-update')"
             >
             <label for="interpolateOpacity">interpolateOpacity</label>
             <input
@@ -118,7 +118,7 @@
                 v-model="circle.flipOpacity"
                 type="checkbox"
                 name="flipOpacity"
-                @change="$emit('circle-update', $event.target.value)"
+                @change="$emit('circle-update')"
             >
             <label for="flipOpacity">flipOpacity</label>
         </div>
@@ -129,7 +129,7 @@
                 v-model="circle.interpolateStrokeWidth"
                 type="checkbox"
                 name="interpolateStrokeWidth"
-                @change="$emit('circle-update', $event.target.value)"
+                @change="$emit('circle-update')"
             >l
             <label for="interpolateStrokeWidth">interpolateStrokeWidth</label>
             <input
@@ -137,7 +137,7 @@
                 v-model="circle.flipStrokeWidth"
                 type="checkbox"
                 name="flipStrokeWidth"
-                @change="$emit('circle-update', $event.target.value)"
+                @change="$emit('circle-update')"
             >
             <label for="flipStrokeWidth">flipStrokeWidth</label>
         </div>
@@ -149,7 +149,7 @@
             :max="256"
             :step="0.1"
             :label="$tc('home.centerX', circle.cx)"
-            @input.native="$emit('circle-update', $event.target.value)"
+            @input.native="$emit('circle-update')"
         />
 
         <input-range
@@ -159,7 +159,7 @@
             :max="256"
             :step="0.1"
             :label="$tc('home.centerY', circle.cy)"
-            @input.native="$emit('circle-update', $event.target.value)"
+            @input.native="$emit('circle-update')"
         />
 
         <div class="control__color">
@@ -169,7 +169,7 @@
                     v-model="circle.flipColorInterpolator"
                     type="checkbox"
                     name="circle-flip-color-interpolator"
-                    @change="$emit('circle-update', $event.target.value)"
+                    @change="$emit('circle-update')"
                 >
                 <label for="circle-flip-color-interpolator">flipColorInterpolator</label>
             </div>
@@ -226,7 +226,7 @@ export default {
         setColorInterPolator(inter) {
             this.circle.colorInterPolator = inter;
 
-            this.$emit('circle-update', inter);
+            this.$emit('circle-update');
         },
     },
 };
