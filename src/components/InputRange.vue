@@ -1,5 +1,10 @@
 <template>
     <div class="range">
+        <span
+            class="range__subtract"
+            @click="$emit('subtract', step)"
+            v-text="'-'"
+        />
         <label
             class="range__label"
             v-text="label"
@@ -13,6 +18,11 @@
             type="range"
             @input="handleInput"
         >
+        <span
+            class="range__add"
+            @click="$emit('add', step)"
+            v-text="'+'"
+        />
     </div>
 </template>
 
@@ -85,22 +95,55 @@ export default {
 
 <style lang="scss" scoped>
 .range {
-    display: flex;
-    flex-direction: column;
-}
+    display: grid;
+    gap: $margin-y / 2 $margin-x / 2;
+    grid-template-areas:
+        "label label label label"
+        "subtract input input add";
+    grid-template-columns: min-content 1fr 1fr min-content;
+    grid-template-rows: 1fr 1fr;
 
-.range__label {
-    color: $primary;
-    font-size: $font-size * 0.7;
-    font-weight: bolder;
-    margin-bottom: $margin-y / 2;
-    text-transform: uppercase;
-    white-space: nowrap;
-    z-index: 1;
-}
+    &__subtract,
+    &__add,
+    &__label {
+        align-items: center;
+        display: flex;
+    }
 
-.range__input {
-    @include input-type-range;
+    &__subtract,
+    &__add {
+        background-color: $white-75;
+        border-radius: $border-radius;
+        cursor: pointer;
+        padding: 0 $padding-x;
+    }
+
+    &__subtract {
+        grid-area: subtract;
+        justify-content: flex-start;
+    }
+
+    &__add {
+        grid-area: add;
+        justify-content: flex-end;
+    }
+
+    &__label {
+        color: $primary;
+        font-size: $font-size * 0.7;
+        font-weight: bolder;
+        grid-area: label;
+        justify-content: center;
+        text-transform: uppercase;
+        white-space: nowrap;
+        z-index: 1;
+    }
+
+    &__input {
+        grid-area: input;
+
+        @include input-type-range;
+    }
 }
 
 @media (max-width: $breakpoint-sm) {

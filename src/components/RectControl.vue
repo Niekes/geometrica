@@ -8,6 +8,8 @@
             :step="1"
             :label="$tc('home.amountOfRectangles', rect.amount)"
             @input.native="$emit('rect-update')"
+            @add="(step) => { rect.amount += step; $emit('rect-update')}"
+            @subtract="(step) => { rect.amount -= step; $emit('rect-update')}"
         />
 
         <input-range
@@ -18,6 +20,8 @@
             :step="0.1"
             :label="$tc('home.distance', rect.distance)"
             @input.native="$emit('rect-update')"
+            @add="(step) => { rect.distance += step; $emit('rect-update')}"
+            @subtract="(step) => { rect.distance -= step; $emit('rect-update')}"
         />
 
         <input-range
@@ -28,6 +32,8 @@
             :step="0.1"
             :label="$tc('home.strokeWidth', rect.strokeWidth)"
             @input.native="$emit('rect-update')"
+            @add="(step) => { rect.strokeWidth += step; $emit('rect-update')}"
+            @subtract="(step) => { rect.strokeWidth -= step; $emit('rect-update')}"
         />
 
         <input-range
@@ -38,6 +44,8 @@
             :step="1"
             :label="$tc('home.rotation', rect.rotation)"
             @input.native="$emit('rect-update')"
+            @add="(step) => { rect.rotation += step; $emit('rect-update')}"
+            @subtract="(step) => { rect.rotation -= step; $emit('rect-update')}"
         />
 
         <input-range
@@ -45,9 +53,11 @@
             class="sliders__input"
             :min="0"
             :max="100"
-            :step="0.01"
+            :step="0.1"
             :label="$tc('home.borderRadius', rect.borderRadius.tl / 2)"
             @input.native="$emit('rect-update')"
+            @add="(step) => { rect.borderRadius.tl += step; $emit('rect-update')}"
+            @subtract="(step) => { rect.borderRadius.tl -= step; $emit('rect-update')}"
         />
 
         <input-range
@@ -55,9 +65,11 @@
             class="sliders__input"
             :min="0"
             :max="100"
-            :step="0.01"
+            :step="0.1"
             :label="$tc('home.borderRadius', rect.borderRadius.tr / 2)"
             @input.native="$emit('rect-update')"
+            @add="(step) => { rect.borderRadius.tr += step; $emit('rect-update')}"
+            @subtract="(step) => { rect.borderRadius.tr -= step; $emit('rect-update')}"
         />
 
         <input-range
@@ -65,9 +77,11 @@
             class="sliders__input"
             :min="0"
             :max="100"
-            :step="0.01"
+            :step="0.1"
             :label="$tc('home.borderRadius', rect.borderRadius.bl / 2)"
             @input.native="$emit('rect-update')"
+            @add="(step) => { rect.borderRadius.bl += step; $emit('rect-update')}"
+            @subtract="(step) => { rect.borderRadius.bl -= step; $emit('rect-update')}"
         />
 
         <input-range
@@ -75,9 +89,11 @@
             class="sliders__input"
             :min="0"
             :max="100"
-            :step="0.01"
+            :step="0.1"
             :label="$tc('home.borderRadius', rect.borderRadius.br / 2)"
             @input.native="$emit('rect-update')"
+            @add="(step) => { rect.borderRadius.br += step; $emit('rect-update')}"
+            @subtract="(step) => { rect.borderRadius.br -= step; $emit('rect-update')}"
         />
 
         <input-range
@@ -88,6 +104,8 @@
             :step="1"
             :label="$tc('home.width', rect.width)"
             @input.native="$emit('rect-update')"
+            @add="(step) => { rect.width += step; $emit('rect-update')}"
+            @subtract="(step) => { rect.width -= step; $emit('rect-update')}"
         />
 
         <input-range
@@ -98,6 +116,8 @@
             :step="1"
             :label="$tc('home.height', rect.height)"
             @input.native="$emit('rect-update')"
+            @add="(step) => { rect.height += step; $emit('rect-update')}"
+            @subtract="(step) => { rect.height -= step; $emit('rect-update')}"
         />
         <div>
             <label>
@@ -169,6 +189,8 @@
             :step="0.1"
             :label="$tc('home.centerX', rect.cx)"
             @input.native="$emit('rect-update')"
+            @add="(step) => { rect.cx += step; $emit('rect-update')}"
+            @subtract="(step) => { rect.cx -= step; $emit('rect-update')}"
         />
 
         <input-range
@@ -176,9 +198,11 @@
             class="sliders__input"
             :min="-256"
             :max="256"
-            :step="0.1"
+            :step="0.5"
             :label="$tc('home.centerY', rect.cy)"
             @input.native="$emit('rect-update')"
+            @add="(step) => { rect.cy += step; $emit('rect-update')}"
+            @subtract="(step) => { rect.cy -= step; $emit('rect-update')}"
         />
 
         <div class="control__color">
