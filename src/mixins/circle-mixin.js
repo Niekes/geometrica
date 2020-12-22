@@ -10,6 +10,8 @@ export default {
 
             const {
                 amount,
+                startAngle,
+                endAngle,
             } = this.circle;
 
             const radians = (this.circle.rotation * this.PI / 180);
@@ -76,11 +78,11 @@ export default {
                     radiusX / 2,
                     radiusY / 2,
                     angle,
-                    this.circle.startAngle,
-                    this.circle.endAngle,
+                    startAngle * this.PI / 180,
+                    endAngle * this.PI / 180,
                 );
 
-                if (Math.abs(this.circle.startAngle - this.circle.endAngle) === 6.28) {
+                if (Math.abs(this.circle.startAngle - this.circle.endAngle) === 360) {
                     this.ctx.closePath();
                 }
 

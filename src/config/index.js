@@ -47,6 +47,12 @@ export default {
     links: {
         buymeacoffee: 'https://www.buymeacoffee.com/niekes',
     },
+    format: {
+        float: '.2~f',
+        standard: '.4~s',
+        currency: '$.3~s',
+        percent: '.1~%',
+    },
     colorInterPolators: [
         { name: 'interpolateBrBG', fn: interpolateBrBG },
         { name: 'interpolatePRGn', fn: interpolatePRGn },

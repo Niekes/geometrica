@@ -1,8 +1,9 @@
 @mixin input-type-range ($thumbColor: $white, $thumbWidth: 1.25rem, $thumbHeight: 1.25rem, $trackWidth: 100%, $trackHeight: 1rem, $borderRadius: $border-radius) {
     appearance: none;
     background: $black-10;
-    border: $border-width solid $white-70;
+    border: 0 solid transparent;
     border-radius: $borderRadius;
+    cursor: pointer;
     height: $trackHeight;
     margin: 0;
     outline: none;

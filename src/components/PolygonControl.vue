@@ -8,6 +8,8 @@
             :step="1"
             :label="$tc('home.amountOfPolygons', polygon.amount)"
             @input.native="$emit('polygon-update')"
+            @add="(step) => { polygon.amount += step; $emit('polygon-update')}"
+            @subtract="(step) => { polygon.amount -= step; $emit('polygon-update')}"
         />
 
         <input-range
@@ -16,8 +18,10 @@
             :min="-30"
             :max="30"
             :step="0.1"
-            :label="$tc('home.distance', polygon.distance)"
+            :label="$tc('home.distance', format(f.float)(polygon.distance))"
             @input.native="$emit('polygon-update')"
+            @add="(step) => { polygon.distance += step; $emit('polygon-update')}"
+            @subtract="(step) => { polygon.distance -= step; $emit('polygon-update')}"
         />
 
         <input-range
@@ -26,8 +30,10 @@
             :min="1"
             :max="30"
             :step="0.1"
-            :label="$tc('home.strokeWidth', polygon.strokeWidth)"
+            :label="$tc('home.strokeWidth', format(f.float)(polygon.strokeWidth))"
             @input.native="$emit('polygon-update')"
+            @add="(step) => { polygon.strokeWidth += step; $emit('polygon-update')}"
+            @subtract="(step) => { polygon.strokeWidth -= step; $emit('polygon-update')}"
         />
 
         <input-range
@@ -38,16 +44,20 @@
             :step="1"
             :label="$tc('home.rotation', polygon.rotation)"
             @input.native="$emit('polygon-update')"
+            @add="(step) => { polygon.rotation += step; $emit('polygon-update')}"
+            @subtract="(step) => { polygon.rotation -= step; $emit('polygon-update')}"
         />
 
         <input-range
             v-model.number="polygon.borderRadius"
             class="sliders__input"
             :min="0"
-            :max="100"
-            :step="1"
-            :label="$tc('home.borderRadius', polygon.borderRadius / 2)"
+            :max="1"
+            :step="0.01"
+            :label="$tc('home.borderRadius', format(f.percent)(polygon.borderRadius / 2))"
             @input.native="$emit('polygon-update')"
+            @add="(step) => { polygon.borderRadius += step; $emit('polygon-update')}"
+            @subtract="(step) => { polygon.borderRadius -= step; $emit('polygon-update')}"
         />
 
 
@@ -59,6 +69,8 @@
             :step="1"
             :label="$tc('home.sides', polygon.sides)"
             @input.native="$emit('polygon-update')"
+            @add="(step) => { polygon.sides += step; $emit('polygon-update')}"
+            @subtract="(step) => { polygon.sides -= step; $emit('polygon-update')}"
         />
 
         <input-range
@@ -69,6 +81,8 @@
             :step="1"
             :label="$tc('home.size', polygon.size)"
             @input.native="$emit('polygon-update')"
+            @add="(step) => { polygon.size += step; $emit('polygon-update')}"
+            @subtract="(step) => { polygon.size -= step; $emit('polygon-update')}"
         />
         <div>
             <label>
@@ -138,8 +152,10 @@
             :min="-256"
             :max="256"
             :step="0.1"
-            :label="$tc('home.centerX', polygon.cx)"
+            :label="$tc('home.centerX', format(f.float)(polygon.cx))"
             @input.native="$emit('polygon-update')"
+            @add="(step) => { polygon.cx += step; $emit('polygon-update')}"
+            @subtract="(step) => { polygon.cx -= step; $emit('polygon-update')}"
         />
 
         <input-range
@@ -148,8 +164,10 @@
             :min="-256"
             :max="256"
             :step="0.1"
-            :label="$tc('home.centerY', polygon.cy)"
+            :label="$tc('home.centerY', format(f.float)(polygon.cy))"
             @input.native="$emit('polygon-update')"
+            @add="(step) => { polygon.cy += step; $emit('polygon-update')}"
+            @subtract="(step) => { polygon.cy -= step; $emit('polygon-update')}"
         />
 
         <div class="control__color">
@@ -173,6 +191,10 @@
 </template>
 
 <script>
+import {
+    format,
+} from 'd3';
+
 import InputRange from '@/components/InputRange';
 import ColorInterpolator from '@/components/ColorInterpolator';
 
@@ -180,6 +202,7 @@ import config from '@/config';
 
 const {
     colorInterPolators,
+    format: f,
 } = config;
 
 export default {
@@ -198,6 +221,7 @@ export default {
     },
 
     created() {
+        this.f = f;
         this.polygon.colorInterPolator = this.polygon.colorInterPolator || colorInterPolators[0];
     },
 
@@ -207,6 +231,7 @@ export default {
 
             this.$emit('polygon-update');
         },
+        format,
     },
 };
 </script>

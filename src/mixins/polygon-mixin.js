@@ -103,7 +103,7 @@ export default {
                     this.ctx.lineWidth = this.polygon.strokeWidth;
                 }
 
-                const path = new Path2D(this.setPath(this.polygon.sides, borderRadius, s, i));
+                const path = new Path2D(this.setPath(this.polygon.sides, borderRadius * 100, s, i));
 
                 this.ctx.closePath();
 

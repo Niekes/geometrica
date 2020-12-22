@@ -122,7 +122,7 @@ export default {
                 rotation: 0,
                 stroke: true,
                 startAngle: 0,
-                endAngle: 6.283185307179586,
+                endAngle: 360,
             },
             polygon: {
                 amount: 16,

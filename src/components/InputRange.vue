@@ -2,9 +2,12 @@
     <div class="range">
         <span
             class="range__subtract"
-            @click="$emit('subtract', step)"
-            v-text="'-'"
-        />
+            @click="value > min ? $emit('subtract', step) : null"
+        >
+            <svg-icon
+                :xlink="'#minus'"
+            />
+        </span>
         <label
             class="range__label"
             v-text="label"
@@ -20,9 +23,12 @@
         >
         <span
             class="range__add"
-            @click="$emit('add', step)"
-            v-text="'+'"
-        />
+            @click="value < max ? $emit('add', step) : null"
+        >
+            <svg-icon
+                :xlink="'#plus'"
+            />
+        </span>
     </div>
 </template>
 
@@ -32,8 +38,17 @@ import {
     scaleLinear,
 } from 'd3';
 
+import SvgIcon from '@/components/SvgIcon';
+
+// eslint-disable-next-line import/extensions
+import localstyles from 'localstyles';
+
 export default {
     name: 'InputRange',
+
+    components: {
+        SvgIcon,
+    },
 
     props: {
         label: {
@@ -87,7 +102,7 @@ export default {
             this.p = this.scale(this.value) * 100;
 
             this.slider
-                .style('background', `linear-gradient(90deg, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0.20) ${this.p}%, white ${this.p}%)`);
+                .style('background', `linear-gradient(90deg, rgba(0, 0, 0, 0.10) 0%, ${localstyles.secondary} ${this.p}%, white ${this.p}%)`);
         },
     },
 };
@@ -96,7 +111,7 @@ export default {
 <style lang="scss" scoped>
 .range {
     display: grid;
-    gap: $margin-y / 2 $margin-x / 2;
+    gap: 0 $margin-x / 2;
     grid-template-areas:
         "label label label label"
         "subtract input input add";
@@ -112,20 +127,42 @@ export default {
 
     &__subtract,
     &__add {
-        background-color: $white-75;
+        background-color: $white;
         border-radius: $border-radius;
         cursor: pointer;
         padding: 0 $padding-x;
+
+        svg {
+            color: $black-75;
+            height: 0.4rem;
+            width: 0.4rem;
+        }
     }
 
     &__subtract {
         grid-area: subtract;
         justify-content: flex-start;
+
+        &:hover {
+            background: $white-75;
+        }
+
+        &:active:hover {
+            background: $black-10;
+        }
     }
 
     &__add {
         grid-area: add;
         justify-content: flex-end;
+
+        &:hover {
+            background: $white-75;
+        }
+
+        &:active:hover {
+            background: $black-10;
+        }
     }
 
     &__label {
@@ -135,6 +172,7 @@ export default {
         grid-area: label;
         justify-content: center;
         text-transform: uppercase;
+        user-select: none;
         white-space: nowrap;
         z-index: 1;
     }

@@ -12,7 +12,7 @@ export default {
         distance: 'Distance: {n}',
         strokeWidth: 'Stroke width: {n}',
         rotation: 'Rotation: {n}°',
-        borderRadius: 'Border radius: {n}%',
+        borderRadius: 'Border radius: {n}',
         width: 'Width: {n}px',
         height: 'Height: {n}px',
         radiusX: 'Radius X: {n}px',

@@ -8,6 +8,8 @@
             :step="1"
             :label="$tc('home.amountOfCircles', circle.amount)"
             @input.native="$emit('circle-update')"
+            @add="(step) => { circle.amount += step; $emit('circle-update')}"
+            @subtract="(step) => { circle.amount -= step; $emit('circle-update')}"
         />
 
         <input-range
@@ -16,8 +18,10 @@
             :min="-30"
             :max="30"
             :step="0.1"
-            :label="$tc('home.distance', circle.distance)"
+            :label="$tc('home.distance', format(f.float)(circle.distance))"
             @input.native="$emit('circle-update')"
+            @add="(step) => { circle.distance += step; $emit('circle-update')}"
+            @subtract="(step) => { circle.distance -= step; $emit('circle-update')}"
         />
 
         <input-range
@@ -26,8 +30,10 @@
             :min="1"
             :max="30"
             :step="0.1"
-            :label="$tc('home.strokeWidth', circle.strokeWidth)"
+            :label="$tc('home.strokeWidth', format(f.float)(circle.strokeWidth))"
             @input.native="$emit('circle-update')"
+            @add="(step) => { circle.strokeWidth += step; $emit('circle-update')}"
+            @subtract="(step) => { circle.strokeWidth -= step; $emit('circle-update')}"
         />
 
         <input-range
@@ -38,6 +44,8 @@
             :step="1"
             :label="$tc('home.rotation', circle.rotation)"
             @input.native="$emit('circle-update')"
+            @add="(step) => { circle.rotation += step; $emit('circle-update')}"
+            @subtract="(step) => { circle.rotation -= step; $emit('circle-update')}"
         />
 
         <input-range
@@ -48,6 +56,8 @@
             :step="1"
             :label="$tc('home.radiusX', circle.radiusX)"
             @input.native="$emit('circle-update')"
+            @add="(step) => { circle.radiusX += step; $emit('circle-update')}"
+            @subtract="(step) => { circle.radiusX -= step; $emit('circle-update')}"
         />
 
         <input-range
@@ -58,26 +68,32 @@
             :step="1"
             :label="$tc('home.radiusY', circle.radiusY)"
             @input.native="$emit('circle-update')"
+            @add="(step) => { circle.radiusY += step; $emit('circle-update')}"
+            @subtract="(step) => { circle.radiusY -= step; $emit('circle-update')}"
         />
 
         <input-range
             v-model.number="circle.startAngle"
             class="sliders__input"
             :min="0"
-            :max="6.283185307179586"
-            :step="0.01"
+            :max="360"
+            :step="1"
             :label="$tc('home.startAngle', circle.startAngle)"
             @input.native="$emit('circle-update')"
+            @add="(step) => { circle.startAngle += step; $emit('circle-update')}"
+            @subtract="(step) => { circle.startAngle -= step; $emit('circle-update')}"
         />
 
         <input-range
             v-model.number="circle.endAngle"
             class="sliders__input"
             :min="0"
-            :max="6.283185307179586"
-            :step="0.01"
+            :max="360"
+            :step="1"
             :label="$tc('home.endAngle', circle.endAngle)"
             @input.native="$emit('circle-update')"
+            @add="(step) => { circle.endAngle += step; $emit('circle-update')}"
+            @subtract="(step) => { circle.endAngle -= step; $emit('circle-update')}"
         />
 
         <div>
@@ -148,8 +164,10 @@
             :min="-256"
             :max="256"
             :step="0.1"
-            :label="$tc('home.centerX', circle.cx)"
+            :label="$tc('home.centerX', format(f.float)(circle.cx))"
             @input.native="$emit('circle-update')"
+            @add="(step) => { circle.cx += step; $emit('circle-update')}"
+            @subtract="(step) => { circle.cx -= step; $emit('circle-update')}"
         />
 
         <input-range
@@ -158,8 +176,10 @@
             :min="-256"
             :max="256"
             :step="0.1"
-            :label="$tc('home.centerY', circle.cy)"
+            :label="$tc('home.centerY', format(f.float)(circle.cy))"
             @input.native="$emit('circle-update')"
+            @add="(step) => { circle.cy += step; $emit('circle-update')}"
+            @subtract="(step) => { circle.cy -= step; $emit('circle-update')}"
         />
 
         <div class="control__color">
@@ -183,6 +203,10 @@
 </template>
 
 <script>
+import {
+    format,
+} from 'd3';
+
 import InputRange from '@/components/InputRange';
 import ColorInterpolator from '@/components/ColorInterpolator';
 
@@ -190,6 +214,7 @@ import config from '@/config';
 
 const {
     colorInterPolators,
+    format: f,
 } = config;
 
 export default {
@@ -208,6 +233,7 @@ export default {
     },
 
     created() {
+        this.f = f;
         this.circle.colorInterPolator = this.circle.colorInterPolator || colorInterPolators[0];
     },
 
@@ -217,6 +243,7 @@ export default {
 
             this.$emit('circle-update');
         },
+        format,
     },
 };
 </script>

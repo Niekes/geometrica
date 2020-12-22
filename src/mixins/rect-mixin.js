@@ -30,10 +30,10 @@ export default {
                 const x = -width / 2;
                 const y = -height / 2;
 
-                const brTl = this.rect.borderRadius.tl / 100 * Math.min(width, height) / 2;
-                const brTr = this.rect.borderRadius.tr / 100 * Math.min(width, height) / 2;
-                const brBl = this.rect.borderRadius.bl / 100 * Math.min(width, height) / 2;
-                const brBr = this.rect.borderRadius.br / 100 * Math.min(width, height) / 2;
+                const brTl = this.rect.borderRadius.tl * Math.min(width, height) / 2;
+                const brTr = this.rect.borderRadius.tr * Math.min(width, height) / 2;
+                const brBl = this.rect.borderRadius.bl * Math.min(width, height) / 2;
+                const brBr = this.rect.borderRadius.br * Math.min(width, height) / 2;
 
                 const c = color(this.rect.flipColorInterpolator
                     ? this.rect.colorInterPolator.fn(flippedK)

@@ -18,7 +18,7 @@
             :min="-30"
             :max="30"
             :step="0.1"
-            :label="$tc('home.distance', rect.distance)"
+            :label="$tc('home.distance', format(f.float)(rect.distance))"
             @input.native="$emit('rect-update')"
             @add="(step) => { rect.distance += step; $emit('rect-update')}"
             @subtract="(step) => { rect.distance -= step; $emit('rect-update')}"
@@ -30,7 +30,7 @@
             :min="1"
             :max="30"
             :step="0.1"
-            :label="$tc('home.strokeWidth', rect.strokeWidth)"
+            :label="$tc('home.strokeWidth', format(f.float)(rect.strokeWidth))"
             @input.native="$emit('rect-update')"
             @add="(step) => { rect.strokeWidth += step; $emit('rect-update')}"
             @subtract="(step) => { rect.strokeWidth -= step; $emit('rect-update')}"
@@ -52,9 +52,9 @@
             v-model.number="rect.borderRadius.tl"
             class="sliders__input"
             :min="0"
-            :max="100"
-            :step="0.1"
-            :label="$tc('home.borderRadius', rect.borderRadius.tl / 2)"
+            :max="1"
+            :step="0.01"
+            :label="$tc('home.borderRadius', format(f.percent)(rect.borderRadius.tl / 2))"
             @input.native="$emit('rect-update')"
             @add="(step) => { rect.borderRadius.tl += step; $emit('rect-update')}"
             @subtract="(step) => { rect.borderRadius.tl -= step; $emit('rect-update')}"
@@ -64,9 +64,9 @@
             v-model.number="rect.borderRadius.tr"
             class="sliders__input"
             :min="0"
-            :max="100"
-            :step="0.1"
-            :label="$tc('home.borderRadius', rect.borderRadius.tr / 2)"
+            :max="1"
+            :step="0.01"
+            :label="$tc('home.borderRadius', format(f.percent)(rect.borderRadius.tr / 2))"
             @input.native="$emit('rect-update')"
             @add="(step) => { rect.borderRadius.tr += step; $emit('rect-update')}"
             @subtract="(step) => { rect.borderRadius.tr -= step; $emit('rect-update')}"
@@ -76,9 +76,9 @@
             v-model.number="rect.borderRadius.bl"
             class="sliders__input"
             :min="0"
-            :max="100"
-            :step="0.1"
-            :label="$tc('home.borderRadius', rect.borderRadius.bl / 2)"
+            :max="1"
+            :step="0.01"
+            :label="$tc('home.borderRadius', format(f.percent)(rect.borderRadius.bl / 2))"
             @input.native="$emit('rect-update')"
             @add="(step) => { rect.borderRadius.bl += step; $emit('rect-update')}"
             @subtract="(step) => { rect.borderRadius.bl -= step; $emit('rect-update')}"
@@ -88,9 +88,9 @@
             v-model.number="rect.borderRadius.br"
             class="sliders__input"
             :min="0"
-            :max="100"
-            :step="0.1"
-            :label="$tc('home.borderRadius', rect.borderRadius.br / 2)"
+            :max="1"
+            :step="0.01"
+            :label="$tc('home.borderRadius', format(f.percent)(rect.borderRadius.br / 2))"
             @input.native="$emit('rect-update')"
             @add="(step) => { rect.borderRadius.br += step; $emit('rect-update')}"
             @subtract="(step) => { rect.borderRadius.br -= step; $emit('rect-update')}"
@@ -187,7 +187,7 @@
             :min="-256"
             :max="256"
             :step="0.1"
-            :label="$tc('home.centerX', rect.cx)"
+            :label="$tc('home.centerX', format(f.float)(rect.cx))"
             @input.native="$emit('rect-update')"
             @add="(step) => { rect.cx += step; $emit('rect-update')}"
             @subtract="(step) => { rect.cx -= step; $emit('rect-update')}"
@@ -198,8 +198,8 @@
             class="sliders__input"
             :min="-256"
             :max="256"
-            :step="0.5"
-            :label="$tc('home.centerY', rect.cy)"
+            :step="0.1"
+            :label="$tc('home.centerY', format(f.float)(rect.cy))"
             @input.native="$emit('rect-update')"
             @add="(step) => { rect.cy += step; $emit('rect-update')}"
             @subtract="(step) => { rect.cy -= step; $emit('rect-update')}"
@@ -226,6 +226,10 @@
 </template>
 
 <script>
+import {
+    format,
+} from 'd3';
+
 import InputRange from '@/components/InputRange';
 import ColorInterpolator from '@/components/ColorInterpolator';
 
@@ -233,6 +237,7 @@ import config from '@/config';
 
 const {
     colorInterPolators,
+    format: f,
 } = config;
 
 export default {
@@ -251,6 +256,7 @@ export default {
     },
 
     created() {
+        this.f = f;
         this.rect.colorInterPolator = this.rect.colorInterPolator || colorInterPolators[0];
     },
 
@@ -260,6 +266,7 @@ export default {
 
             this.$emit('rect-update');
         },
+        format,
     },
 };
 </script>
