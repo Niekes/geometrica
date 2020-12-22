@@ -6,6 +6,7 @@ export default {
     methods: {
         drawCircle() {
             this.ctx.fillStyle = this.circle.bgColor;
+            this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
             const {
                 amount,
@@ -32,8 +33,8 @@ export default {
                 const flippedK = Math.abs(k - 1);
 
                 const c = color(this.circle.flipColorInterpolator
-                    ? this.circle.colorInterPolator(flippedK)
-                    : this.circle.colorInterPolator(k));
+                    ? this.circle.colorInterPolator.fn(flippedK)
+                    : this.circle.colorInterPolator.fn(k));
 
                 if (this.circle.interpolateOpacity) {
                     c.opacity = k;

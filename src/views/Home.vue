@@ -23,18 +23,21 @@
             <div class="control__shapes">
                 <rect-control
                     v-if="selectedShape === 'rectangle'"
+                    class="shapes__rectangle"
                     :rect="rect"
                     @rect-update="draw"
                 />
 
                 <circle-control
                     v-if="selectedShape === 'circle'"
+                    class="shapes__circle"
                     :circle="circle"
                     @circle-update="draw"
                 />
 
                 <polygon-control
                     v-if="selectedShape === 'polygon'"
+                    class="shapes__polygon"
                     :polygon="polygon"
                     @polygon-update="draw"
                 />
@@ -140,7 +143,7 @@ export default {
                 size: 256,
                 stroke: true,
             },
-            selectedShape: 'polygon',
+            selectedShape: 'rectangle',
             shapes: [
                 { name: 'rectangle' },
                 { name: 'circle' },
@@ -177,8 +180,6 @@ export default {
 
     methods: {
         async draw() {
-            this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-
             await this.$nextTick();
 
             switch (this.selectedShape) {
@@ -247,6 +248,12 @@ export default {
 
     &__shapes {
         display: flex;
+
+        .shapes__rectangle,
+        .shapes__circle,
+        .shapes__polygon {
+            width: 100%;
+        }
     }
 }
 

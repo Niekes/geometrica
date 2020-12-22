@@ -193,38 +193,29 @@
                 <label for="rect-flip-color-interpolator">flipColorInterpolator</label>
             </div>
 
-            <div
-                v-if="colorInterPolators"
-                class="color-interpolators"
-            >
-                <div
-                    v-for="cip in colorInterPolators"
-                    :key="cip.name"
-                    class="color-interpolators__values"
-                >
-                    <button
-                        class="interpolator"
-                        :class="{
-                            'interpolator--active': cip.fn === rect.colorInterPolator,
-                        }"
-                        @click="setColorInterPolator(cip.fn)"
-                        v-text="cip.name"
-                    />
-                </div>
-            </div>
+            <color-interpolator
+                :active="rect.colorInterPolator"
+                @update-color-interpolator="setColorInterPolator"
+            />
         </div>
     </div>
 </template>
 
 <script>
 import InputRange from '@/components/InputRange';
+import ColorInterpolator from '@/components/ColorInterpolator';
 
 import config from '@/config';
+
+const {
+    colorInterPolators,
+} = config;
 
 export default {
     name: 'RectControl',
 
     components: {
+        ColorInterpolator,
         InputRange,
     },
 
@@ -235,11 +226,8 @@ export default {
         },
     },
 
-
     created() {
-        this.colorInterPolators = config.colorInterPolators;
-        this.rect.colorInterPolator = this.rect.colorInterPolator
-            || this.colorInterPolators[0].fn;
+        this.rect.colorInterPolator = this.rect.colorInterPolator || colorInterPolators[0];
     },
 
     methods: {
@@ -256,18 +244,5 @@ export default {
 .rect-control {
     display: flex;
     flex-direction: column;
-}
-
-.color-interpolators {
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.interpolator {
-    font-size: $font-size;
-
-    &--active {
-        font-weight: 900;
-    }
 }
 </style>

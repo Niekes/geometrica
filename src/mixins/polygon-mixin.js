@@ -41,6 +41,7 @@ export default {
         },
         drawPolygon() {
             this.ctx.fillStyle = this.polygon.bgColor;
+            this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
             const {
                 amount,
@@ -64,8 +65,8 @@ export default {
                 const cy = this.canvasHalfHeight + this.polygon.cy;
 
                 const c = color(this.polygon.flipColorInterpolator
-                    ? this.polygon.colorInterPolator(flippedK)
-                    : this.polygon.colorInterPolator(k));
+                    ? this.polygon.colorInterPolator.fn(flippedK)
+                    : this.polygon.colorInterPolator.fn(k));
 
                 if (this.polygon.interpolateOpacity) {
                     c.opacity = k;

@@ -6,6 +6,7 @@ export default {
     methods: {
         drawRect() {
             this.ctx.fillStyle = this.rect.bgColor;
+            this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
 
             const {
                 amount,
@@ -35,8 +36,8 @@ export default {
                 const brBr = this.rect.borderRadius.br / 100 * Math.min(width, height) / 2;
 
                 const c = color(this.rect.flipColorInterpolator
-                    ? this.rect.colorInterPolator(flippedK)
-                    : this.rect.colorInterPolator(k));
+                    ? this.rect.colorInterPolator.fn(flippedK)
+                    : this.rect.colorInterPolator.fn(k));
 
                 if (this.rect.interpolateOpacity) {
                     c.opacity = k;
