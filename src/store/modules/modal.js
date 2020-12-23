@@ -9,12 +9,18 @@ const s = {
 const getters = {
     downloadIsOpen: state => state.type === 'download',
     galleryIsOpen: state => state.type === 'gallery',
+    navigationMenuIsOpen: state => state.type === 'navigation-menu',
 };
 
 const actions = {
     openGallery({ commit }) {
         commit('setOverflow', 'hidden');
         commit('setType', 'gallery');
+    },
+
+    openNavigationMenu({ commit }) {
+        commit('setOverflow', 'hidden');
+        commit('setType', 'navigation-menu');
     },
 
     openDownload({ commit }) {

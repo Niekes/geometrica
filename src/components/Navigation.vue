@@ -1,36 +1,39 @@
 <template>
     <div class="navigation">
         <svg-icon
+            class="navigation__bg"
+            :xlink="'#pattern'"
+        />
+
+        <svg-icon
             class="navigation__logo"
             :xlink="'#logo'"
             @click.native="$router.push({ name: 'Home' })"
         />
 
         <div
-            v-if="!isMobile"
             class="navigation__items"
         >
-            <router-link
-                class="item__link"
-                to="/cookies"
-                v-text="$t('navigation.cookies')"
-            />
-            <router-link
-                class="item__link"
-                to="/imprint"
-                v-text="$t('navigation.imprint')"
-            />
             <a
                 class="item__sponsor"
                 :href="buymeacoffee"
                 target="_blank"
-                v-text="$t('navigation.buymeacoffee')"
-            />
+            >
+                {{ $t('navigation.buymeabeer') }}
+                <svg-icon :xlink="'#beer'" />
+            </a>
+            <button
+                class="item__menu"
+                @click="$store.dispatch('modal/openNavigationMenu')"
+            >
+                <svg-icon :xlink="'#menu'" />
+            </button>
         </div>
 
         <download-dialogue v-if="downloadIsOpen" />
         <image-gallery v-if="galleryIsOpen" />
         <cookies-banner v-if="showCookieBanner" />
+        <navigation-menu v-if="navigationMenuIsOpen" />
 
         <!--
             Embedd tutorial https://youtu.be/52M9FvpaBxE
@@ -42,6 +45,7 @@
 import CookiesBanner from '@/components/CookiesBanner';
 import DownloadDialogue from '@/components/DownloadDialogue';
 import ImageGallery from '@/components/ImageGallery';
+import NavigationMenu from '@/components/NavigationMenu';
 import SvgIcon from '@/components/SvgIcon';
 
 import config from '@/config';
@@ -53,6 +57,7 @@ export default {
         CookiesBanner,
         DownloadDialogue,
         ImageGallery,
+        NavigationMenu,
         SvgIcon,
     },
 
@@ -67,6 +72,10 @@ export default {
 
         galleryIsOpen() {
             return this.$store.getters['modal/galleryIsOpen'];
+        },
+
+        navigationMenuIsOpen() {
+            return this.$store.getters['modal/navigationMenuIsOpen'];
         },
 
         downloadIsOpen() {
@@ -87,22 +96,33 @@ export default {
     background-size: 100%, 100%;
     box-shadow: $box-shadow;
     display: grid;
-    grid-area: navigation;
     grid-template-areas: "logo items";
     grid-template-columns: min-content 1fr;
     grid-template-rows: 1fr;
     padding: 0 $padding-x * 2;
     position: relative;
+    z-index: 0;
+}
+
+.navigation__bg {
+    height: 100%;
+    pointer-events: none;
+    position: absolute;
+    user-select: none;
+    width: 100%;
+    z-index: 1;
 }
 
 .navigation__logo {
     align-self: center;
     color: $white;
+    display: flex;
     filter: drop-shadow(3px 3px 4px $black-30);
     grid-area: logo;
     height: 3rem;
     user-select: none;
-    width: 12rem;
+    width: 20rem;
+    z-index: 2;
 }
 
 .navigation__items {
@@ -110,22 +130,67 @@ export default {
     display: flex;
     grid-area: items;
     justify-content: flex-end;
-
-    .item__link,
-    .item__sponsor {
-        margin-left: $margin-x * 2;
-        text-shadow: $text-shadow;
-    }
+    z-index: 2;
 
     .item__link {
         color: $white-80;
         font-size: $font-size * 0.75;
         text-decoration: none;
+        text-shadow: $text-shadow;
+
+        &:not(:first-child) {
+            margin-left: $margin-x * 2;
+        }
     }
 
     .item__sponsor {
+        align-items: center;
+        background: rgba($primary, 0.9);
+        border-radius: $border-radius;
         color: $white;
+        display: flex;
         font-weight: bolder;
+        padding: $padding;
+        text-decoration: none;
+        text-shadow: $text-shadow;
+        transition: background $transition-duration $transition-timing-function;
+
+        &:hover {
+            background: $primary;
+        }
+
+        svg {
+            height: 1.5rem;
+            margin-left: $margin-x;
+            width: 1.5rem;
+        }
+    }
+
+    .item__menu {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        margin-left: $margin-x * 2;
+        padding: 0;
+
+        svg {
+            color: $white;
+            height: 1.5rem;
+            width: 1.5rem;
+        }
+    }
+}
+
+@media (max-width: $breakpoint-sm) {
+    .navigation__logo {
+        height: 2rem;
+        width: 9rem;
+    }
+
+    .navigation__items {
+        .item__sponsor {
+            display: none;
+        }
     }
 }
 </style>

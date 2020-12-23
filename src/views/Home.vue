@@ -217,7 +217,7 @@ export default {
     display: flex;
     flex-direction: column;
     overflow: auto;
-    padding: $padding;
+    padding: $padding-y * 2 $padding-x * 2;
 
     &__radio {
         display: flex;

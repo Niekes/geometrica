@@ -1,6 +1,7 @@
 export default {
     navigation: {
-        buymeacoffee: 'Buy me a coffee',
+        home: 'Home',
+        buymeabeer: 'Buy me a beer',
         cookies: 'Cookies',
         imprint: 'Imprint',
     },
