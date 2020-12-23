@@ -185,8 +185,20 @@ export default {
 }
 
 @media (max-width: $breakpoint-sm) {
-    .range__input {
-        @include input-type-range($white, 1.75rem, 1.75rem, 100%, 1.5rem);
+    .range {
+        &__subtract,
+        &__add {
+            color: green;
+
+            svg {
+                height: 0.7rem;
+                width: 0.7rem;
+            }
+        }
+
+        &__input {
+            @include input-type-range($white, 1.75rem, 1.75rem, 100%, 1.5rem);
+        }
     }
 }
 </style>
