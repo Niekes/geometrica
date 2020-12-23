@@ -62,7 +62,7 @@ export default {
                 const angle = radians / (adjustedAmount) * i;
 
                 const cx = this.canvasHalfWidth + this.polygon.cx;
-                const cy = this.canvasHalfHeight + this.polygon.cy;
+                const cy = this.canvasHalfHeight + this.polygon.cy * -1;
 
                 const c = color(this.polygon.flipColorInterpolator
                     ? this.polygon.colorInterPolator.fn(flippedK)
