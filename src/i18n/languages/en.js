@@ -1,8 +1,9 @@
 export default {
     navigation: {
-        home: 'Home',
         buymeabeer: 'Buy me a beer',
         cookies: 'Cookies',
+        faq: 'FAQ',
+        home: 'Home',
         imprint: 'Imprint',
     },
     home: {
@@ -29,5 +30,15 @@ export default {
         text: 'Our website uses cookies to improve your experience. We\'ll assume you\'re ok with this, but you can opt-out if you wish.',
         accept: 'Accept',
         learnMore: 'Learn more',
+    },
+    faq: {
+        what: 'What is geometrica?',
+        whatParagraph: 'Geometrica is a tool to create geometric line art icons. You can use them ass app icons or as a graphic designer you could use them as design assets.',
+        implement: 'Can you implement a new feature?',
+        implementParagraph: 'Yes, please send me an email to geometrica [at] niekes.com with detailed information about your feature request and I will try implement it as soon as possible.',
+        copyright: 'Who owns the copyright?',
+        copyrightParagraph: 'You own the copyright to any image that you created using geometrica.niekes.com.',
+        about: 'About',
+        aboutParagraph: 'My name is Stefan Nieke, I am a Front-end Engineer and a UI/UX Designer based in Berlin, Germany. If you want we can connect on social media. Please check <a style="color:#000" target="_blank" href="https://www.niekes.com">niekes.com</a>.',
     },
 };

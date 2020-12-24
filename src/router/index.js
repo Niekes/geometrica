@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Home from '@/views/Home';
+import Faq from '@/views/Faq';
 import Cookies from '@/views/Cookies';
 import Imprint from '@/views/Imprint';
 import config from '@/config';
@@ -15,6 +16,11 @@ export default new Router({
             path: '/',
             name: 'Home',
             component: Home,
+        },
+        {
+            path: '/faq',
+            name: 'Faq',
+            component: Faq,
         },
         {
             path: '/cookies',

@@ -1,5 +1,6 @@
 const path = require('path');
 const StylelintPlugin = require('stylelint-webpack-plugin');
+const PrerenderSPAPlugin = require('prerender-spa-plugin');
 
 process.env.VUE_APP_VERSION = require('./package.json').version;
 
@@ -14,6 +15,10 @@ module.exports = {
         plugins: [
             new StylelintPlugin({
                 files: ['**/*.vue', '**/*.scss'],
+            }),
+            new PrerenderSPAPlugin({
+                staticDir: path.join(__dirname, 'dist'),
+                routes: ['/faq'],
             }),
         ],
     },

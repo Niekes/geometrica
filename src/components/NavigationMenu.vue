@@ -8,6 +8,11 @@
             />
             <button
                 class="item__link"
+                @click="goTo('faq')"
+                v-text="$t('navigation.faq')"
+            />
+            <button
+                class="item__link"
                 @click="goTo('cookies')"
                 v-text="$t('navigation.cookies')"
             />
