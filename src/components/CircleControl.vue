@@ -54,7 +54,7 @@
             :min="1"
             :max="512"
             :step="1"
-            :label="$tc('home.radiusX', circle.radiusX)"
+            :label="$tc('home.radiusX', circle.radiusX / 2)"
             @input.native="$emit('circle-update')"
             @add="(step) => { circle.radiusX += step; $emit('circle-update')}"
             @subtract="(step) => { circle.radiusX -= step; $emit('circle-update')}"
@@ -66,7 +66,7 @@
             :min="1"
             :max="512"
             :step="1"
-            :label="$tc('home.radiusY', circle.radiusY)"
+            :label="$tc('home.radiusY', circle.radiusY / 2)"
             @input.native="$emit('circle-update')"
             @add="(step) => { circle.radiusY += step; $emit('circle-update')}"
             @subtract="(step) => { circle.radiusY -= step; $emit('circle-update')}"
@@ -96,68 +96,6 @@
             @subtract="(step) => { circle.endAngle -= step; $emit('circle-update')}"
         />
 
-        <div>
-            <label>
-                Bg
-            </label>
-            <input
-                id="bg-color"
-                v-model="circle.bgColor"
-                type="color"
-                name="bg-color"
-                @input="$emit('circle-update')"
-            >
-        </div>
-
-        <div>
-            <input
-                id="stroke"
-                v-model="circle.stroke"
-                type="checkbox"
-                name="stroke"
-                @change="$emit('circle-update')"
-            >
-            <label for="stroke">stroke</label>
-        </div>
-
-        <div>
-            <input
-                id="interpolateOpacity"
-                v-model="circle.interpolateOpacity"
-                type="checkbox"
-                name="interpolateOpacity"
-                @change="$emit('circle-update')"
-            >
-            <label for="interpolateOpacity">interpolateOpacity</label>
-            <input
-                id="flipOpacity"
-                v-model="circle.flipOpacity"
-                type="checkbox"
-                name="flipOpacity"
-                @change="$emit('circle-update')"
-            >
-            <label for="flipOpacity">flipOpacity</label>
-        </div>
-
-        <div>
-            <input
-                id="interpolateStrokeWidth"
-                v-model="circle.interpolateStrokeWidth"
-                type="checkbox"
-                name="interpolateStrokeWidth"
-                @change="$emit('circle-update')"
-            >l
-            <label for="interpolateStrokeWidth">interpolateStrokeWidth</label>
-            <input
-                id="flipStrokeWidth"
-                v-model="circle.flipStrokeWidth"
-                type="checkbox"
-                name="flipStrokeWidth"
-                @change="$emit('circle-update')"
-            >
-            <label for="flipStrokeWidth">flipStrokeWidth</label>
-        </div>
-
         <input-range
             v-model.number="circle.cx"
             class="sliders__input"
@@ -182,23 +120,59 @@
             @subtract="(step) => { circle.cy -= step; $emit('circle-update')}"
         />
 
-        <div class="control__color">
-            <div>
-                <input
-                    id="circle-flip-color-interpolator"
-                    v-model="circle.flipColorInterpolator"
-                    type="checkbox"
-                    name="circle-flip-color-interpolator"
-                    @change="$emit('circle-update')"
-                >
-                <label for="circle-flip-color-interpolator">flipColorInterpolator</label>
-            </div>
+        <input-radio
+            :id="'how-to-draw-shape'"
+            v-model="circle.stroke"
+            class="radio__input"
+            :options="circle.strokeOptions"
+            :label="$t('home.howToDrawShape')"
+            @change.native="$emit('circle-update')"
+        />
 
-            <color-interpolator
-                :active="circle.colorInterPolator"
-                @update-color-interpolator="setColorInterPolator"
-            />
-        </div>
+        <input-checkbox
+            :id="'opacity'"
+            v-model="circle.calcOpacity"
+            class="checkbox__input"
+            :options="circle.calcOpacityOptions"
+            :label="$t('home.opacity')"
+            @change.native="$emit('circle-update')"
+        />
+
+        <input-checkbox
+            :id="'stroke-width'"
+            v-model="circle.calcStrokeWidth"
+            class="checkbox__input"
+            :options="circle.calcStrokeWidthOptions"
+            :label="$t('home.strokeWidth')"
+            @change.native="$emit('circle-update')"
+        />
+
+        <input-radio
+            :id="'flip-color-interpolator'"
+            v-model="circle.flipColorInterpolator"
+            class="radio__input"
+            :options="circle.flipColorInterpolatorOptions"
+            :label="$t('home.flipColorScheme')"
+            @change.native="$emit('circle-update')"
+        />
+
+        <!--         <div>
+            <label>
+                Bg
+            </label>
+            <input
+                id="bg-color"
+                v-model="circle.bgColor"
+                type="color"
+                name="bg-color"
+                @input="$emit('circle-update')"
+            >
+        </div> -->
+
+        <color-interpolator
+            :active="circle.colorInterPolator"
+            @update-color-interpolator="setColorInterPolator"
+        />
     </div>
 </template>
 
@@ -208,6 +182,8 @@ import {
 } from 'd3';
 
 import InputRange from '@/components/InputRange';
+import InputRadio from '@/components/InputRadio';
+import InputCheckbox from '@/components/InputCheckbox';
 import ColorInterpolator from '@/components/ColorInterpolator';
 
 import config from '@/config';
@@ -222,6 +198,8 @@ export default {
 
     components: {
         ColorInterpolator,
+        InputCheckbox,
+        InputRadio,
         InputRange,
     },
 
@@ -252,5 +230,11 @@ export default {
 .circle-control {
     display: flex;
     flex-direction: column;
+
+    .radio__input,
+    .checkbox__input,
+    .sliders__input {
+        margin-bottom: $margin-y;
+    }
 }
 </style>

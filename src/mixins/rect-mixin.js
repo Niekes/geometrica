@@ -10,10 +10,18 @@ export default {
 
             const {
                 amount,
+                calcOpacity,
+                calcStrokeWidth,
             } = this.rect;
 
             const radians = (this.rect.rotation * this.PI / 180);
             const adjustedAmount = amount - 1;
+
+            const interpolateOpacity = calcOpacity.indexOf('interpolate') !== -1;
+            const flipOpacity = calcOpacity.indexOf('flip') !== -1;
+
+            const interpolateStrokeWidth = calcStrokeWidth.indexOf('interpolate') !== -1;
+            const flipStrokeWidth = calcStrokeWidth.indexOf('flip') !== -1;
 
             for (let i = 0; i < this.rect.amount; i += 1) {
                 if (this.rect.width - (i * this.rect.distance) < 0) return;
@@ -39,14 +47,13 @@ export default {
                     ? this.rect.colorInterPolator.fn(flippedK)
                     : this.rect.colorInterPolator.fn(k));
 
-                if (this.rect.interpolateOpacity) {
+                if (interpolateOpacity) {
                     c.opacity = k;
                 }
 
-                if (this.rect.interpolateOpacity && this.rect.flipOpacity) {
+                if (interpolateOpacity && flipOpacity) {
                     c.opacity = flippedK;
                 }
-
 
                 this.ctx.save();
 
@@ -63,15 +70,15 @@ export default {
                 this.ctx.translate(cx, cy);
                 this.ctx.rotate(angle);
 
-                if (this.rect.interpolateStrokeWidth) {
+                if (interpolateStrokeWidth) {
                     this.ctx.lineWidth = Math.max(this.rect.strokeWidth * k, 1e-10);
                 }
 
-                if (this.rect.interpolateStrokeWidth && this.rect.flipStrokeWidth) {
+                if (interpolateStrokeWidth && flipStrokeWidth) {
                     this.ctx.lineWidth = Math.max(this.rect.strokeWidth * flippedK, 1e-10);
                 }
 
-                if (!this.rect.interpolateStrokeWidth) {
+                if (!interpolateStrokeWidth) {
                     this.ctx.lineWidth = this.rect.strokeWidth;
                 }
 

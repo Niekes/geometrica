@@ -84,67 +84,6 @@
             @add="(step) => { polygon.size += step; $emit('polygon-update')}"
             @subtract="(step) => { polygon.size -= step; $emit('polygon-update')}"
         />
-        <div>
-            <label>
-                Bg
-            </label>
-            <input
-                id="bg-color"
-                v-model="polygon.bgColor"
-                type="color"
-                name="bg-color"
-                @input="$emit('polygon-update')"
-            >
-        </div>
-
-        <div>
-            <input
-                id="stroke"
-                v-model="polygon.stroke"
-                type="checkbox"
-                name="stroke"
-                @change="$emit('polygon-update')"
-            >
-            <label for="stroke">stroke</label>
-        </div>
-
-        <div>
-            <input
-                id="interpolateOpacity"
-                v-model="polygon.interpolateOpacity"
-                type="checkbox"
-                name="interpolateOpacity"
-                @change="$emit('polygon-update')"
-            >
-            <label for="interpolateOpacity">interpolateOpacity</label>
-            <input
-                id="flipOpacity"
-                v-model="polygon.flipOpacity"
-                type="checkbox"
-                name="flipOpacity"
-                @change="$emit('polygon-update')"
-            >
-            <label for="flipOpacity">flipOpacity</label>
-        </div>
-
-        <div>
-            <input
-                id="interpolateStrokeWidth"
-                v-model="polygon.interpolateStrokeWidth"
-                type="checkbox"
-                name="interpolateStrokeWidth"
-                @change="$emit('polygon-update')"
-            >
-            <label for="interpolateStrokeWidth">interpolateStrokeWidth</label>
-            <input
-                id="flipStrokeWidth"
-                v-model="polygon.flipStrokeWidth"
-                type="checkbox"
-                name="flipStrokeWidth"
-                @change="$emit('polygon-update')"
-            >
-            <label for="flipStrokeWidth">flipStrokeWidth</label>
-        </div>
 
         <input-range
             v-model.number="polygon.cx"
@@ -170,23 +109,59 @@
             @subtract="(step) => { polygon.cy -= step; $emit('polygon-update')}"
         />
 
-        <div class="control__color">
-            <div>
-                <input
-                    id="polygon-flip-color-interpolator"
-                    v-model="polygon.flipColorInterpolator"
-                    type="checkbox"
-                    name="polygon-flip-color-interpolator"
-                    @change="$emit('polygon-update')"
-                >
-                <label for="polygon-flip-color-interpolator">flipColorInterpolator</label>
-            </div>
+        <input-radio
+            :id="'how-to-draw-shape'"
+            v-model="polygon.stroke"
+            class="radio__input"
+            :options="polygon.strokeOptions"
+            :label="$t('home.howToDrawShape')"
+            @change.native="$emit('polygon-update')"
+        />
 
-            <color-interpolator
-                :active="polygon.colorInterPolator"
-                @update-color-interpolator="setColorInterPolator"
-            />
-        </div>
+        <input-checkbox
+            :id="'opacity'"
+            v-model="polygon.calcOpacity"
+            class="checkbox__input"
+            :options="polygon.calcOpacityOptions"
+            :label="$t('home.opacity')"
+            @change.native="$emit('polygon-update')"
+        />
+
+        <input-checkbox
+            :id="'stroke-width'"
+            v-model="polygon.calcStrokeWidth"
+            class="checkbox__input"
+            :options="polygon.calcStrokeWidthOptions"
+            :label="$t('home.strokeWidth')"
+            @change.native="$emit('polygon-update')"
+        />
+
+        <input-radio
+            :id="'flip-color-interpolator'"
+            v-model="polygon.flipColorInterpolator"
+            class="radio__input"
+            :options="polygon.flipColorInterpolatorOptions"
+            :label="$t('home.flipColorScheme')"
+            @change.native="$emit('polygon-update')"
+        />
+
+        <!--         <div>
+            <label>
+                Bg
+            </label>
+            <input
+                id="bg-color"
+                v-model="polygon.bgColor"
+                type="color"
+                name="bg-color"
+                @input="$emit('polygon-update')"
+            >
+        </div> -->
+
+        <color-interpolator
+            :active="polygon.colorInterPolator"
+            @update-color-interpolator="setColorInterPolator"
+        />
     </div>
 </template>
 
@@ -196,6 +171,8 @@ import {
 } from 'd3';
 
 import InputRange from '@/components/InputRange';
+import InputRadio from '@/components/InputRadio';
+import InputCheckbox from '@/components/InputCheckbox';
 import ColorInterpolator from '@/components/ColorInterpolator';
 
 import config from '@/config';
@@ -210,6 +187,8 @@ export default {
 
     components: {
         ColorInterpolator,
+        InputCheckbox,
+        InputRadio,
         InputRange,
     },
 
@@ -240,5 +219,11 @@ export default {
 .polygon-control {
     display: flex;
     flex-direction: column;
+
+    .radio__input,
+    .checkbox__input,
+    .sliders__input {
+        margin-bottom: $margin-y;
+    }
 }
 </style>

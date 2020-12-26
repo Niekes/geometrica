@@ -40,9 +40,6 @@ import {
 
 import SvgIcon from '@/components/SvgIcon';
 
-// eslint-disable-next-line import/extensions
-import localstyles from 'localstyles';
-
 export default {
     name: 'InputRange',
 
@@ -102,7 +99,7 @@ export default {
             this.p = this.scale(this.value) * 100;
 
             this.slider
-                .style('background', `linear-gradient(90deg, rgba(0, 0, 0, 0.10) 0%, ${localstyles.secondary} ${this.p}%, white ${this.p}%)`);
+                .style('background', `linear-gradient(90deg, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0.20) ${this.p}%, white ${this.p}%)`);
         },
     },
 };
@@ -166,7 +163,7 @@ export default {
     }
 
     &__label {
-        color: $primary;
+        color: $secondary;
         font-size: $font-size * 0.7;
         font-weight: bolder;
         grid-area: label;

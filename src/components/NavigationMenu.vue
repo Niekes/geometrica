@@ -21,14 +21,9 @@
                 @click="goTo('imprint')"
                 v-text="$t('navigation.imprint')"
             />
-            <a
+            <beer-button
                 class="item__sponsor"
-                :href="buymeacoffee"
-                target="_blank"
-            >
-                {{ $t('navigation.buymeabeer') }}
-                <svg-icon :xlink="'#beer'" />
-            </a>
+            />
         </div>
     </modal>
 </template>
@@ -36,23 +31,17 @@
 <script>
 import Modal from '@/components/Modal';
 import ModalMixin from '@/mixins/modal-mixin';
-import SvgIcon from '@/components/SvgIcon';
-
-import config from '@/config';
+import BeerButton from '@/components/BeerButton';
 
 export default {
     name: 'NavigationMenu',
 
     components: {
         Modal,
-        SvgIcon,
+        BeerButton,
     },
 
     mixins: [ModalMixin],
-
-    created() {
-        this.buymeacoffee = config.links.buymeacoffee;
-    },
 
     methods: {
         goTo(path) {
@@ -75,6 +64,8 @@ export default {
 
 .item__link,
 .item__sponsor {
+    margin: $margin-y 0;
+    padding: $padding-y * 2 0;
     width: 100%;
 }
 
@@ -83,38 +74,11 @@ export default {
     border: none;
     cursor: pointer;
     font-size: $font-size;
-    margin: $margin-y 0;
-    padding: $padding-y * 2 0;
     text-decoration: none;
     transition: background $transition-duration $transition-timing-function;
 
     &:hover {
         background: rgba($primary, 0.1);
-    }
-}
-
-.item__sponsor {
-    align-items: center;
-    background: rgba($primary, 0.9);
-    border-radius: $border-radius;
-    color: $white;
-    display: flex;
-    font-weight: bolder;
-    justify-content: center;
-    margin-top: $margin-y;
-    padding: $padding;
-    text-decoration: none;
-    text-shadow: $text-shadow;
-    transition: background $transition-duration $transition-timing-function;
-
-    &:hover {
-        background: $primary;
-    }
-
-    svg {
-        height: 1.5rem;
-        margin-left: $margin-x;
-        width: 1.5rem;
     }
 }
 </style>

@@ -5,6 +5,7 @@
                 <div
                     v-for="shape in shapes"
                     :key="shape.name"
+                    class="radio__wrapper"
                 >
                     <input
                         :id="shape.name"
@@ -16,8 +17,9 @@
                     >
                     <label
                         :for="shape.name"
-                        v-text="shape.name"
-                    />
+                    >
+                        <svg-icon :xlink="`#${shape.name}`" />
+                    </label>
                 </div>
             </div>
             <div class="control__shapes">
@@ -59,6 +61,7 @@ import {
     select,
 } from 'd3';
 
+import SvgIcon from '@/components/SvgIcon';
 import RectControl from '@/components/RectControl';
 import CircleControl from '@/components/CircleControl';
 import PolygonControl from '@/components/PolygonControl';
@@ -70,6 +73,7 @@ export default {
     name: 'Home',
 
     components: {
+        SvgIcon,
         CircleControl,
         RectControl,
         PolygonControl,
@@ -93,15 +97,53 @@ export default {
                 cx: 0,
                 cy: 0,
                 distance: 16,
-                flipColorInterpolator: false,
-                flipStrokeWidth: false,
-                flipOpacity: false,
                 height: 256,
-                interpolateStrokeWidth: false,
-                interpolateOpacity: false,
-                strokeWidth: 3,
+                calcOpacity: [],
+                calcOpacityOptions: [
+                    {
+                        value: 'interpolate',
+                        text: this.$t('home.interpolate'),
+                    },
+                    {
+                        value: 'flip',
+                        text: this.$t('home.flip'),
+                    },
+                ],
+                flipColorInterpolator: false,
+                flipColorInterpolatorOptions: [
+                    {
+                        value: true,
+                        text: this.$t('home.yes'),
+                    },
+                    {
+                        value: false,
+                        text: this.$t('home.no'),
+                    },
+                ],
                 rotation: 0,
                 stroke: true,
+                strokeOptions: [
+                    {
+                        value: true,
+                        text: this.$t('home.stroke'),
+                    },
+                    {
+                        value: false,
+                        text: this.$t('home.fill'),
+                    },
+                ],
+                strokeWidth: 3,
+                calcStrokeWidth: [],
+                calcStrokeWidthOptions: [
+                    {
+                        value: 'interpolate',
+                        text: this.$t('home.interpolate'),
+                    },
+                    {
+                        value: 'flip',
+                        text: this.$t('home.flip'),
+                    },
+                ],
                 width: 256,
             },
             circle: {
@@ -112,15 +154,53 @@ export default {
                 cy: 0,
                 distance: 16,
                 flipColorInterpolator: false,
-                flipStrokeWidth: false,
-                flipOpacity: false,
-                interpolateStrokeWidth: false,
-                interpolateOpacity: false,
+                flipColorInterpolatorOptions: [
+                    {
+                        value: true,
+                        text: this.$t('home.yes'),
+                    },
+                    {
+                        value: false,
+                        text: this.$t('home.no'),
+                    },
+                ],
                 strokeWidth: 3,
+                calcStrokeWidth: [],
+                calcStrokeWidthOptions: [
+                    {
+                        value: 'interpolate',
+                        text: this.$t('home.interpolate'),
+                    },
+                    {
+                        value: 'flip',
+                        text: this.$t('home.flip'),
+                    },
+                ],
+                calcOpacity: [],
+                calcOpacityOptions: [
+                    {
+                        value: 'interpolate',
+                        text: this.$t('home.interpolate'),
+                    },
+                    {
+                        value: 'flip',
+                        text: this.$t('home.flip'),
+                    },
+                ],
                 radiusX: 256,
                 radiusY: 256,
                 rotation: 0,
                 stroke: true,
+                strokeOptions: [
+                    {
+                        value: true,
+                        text: this.$t('home.stroke'),
+                    },
+                    {
+                        value: false,
+                        text: this.$t('home.fill'),
+                    },
+                ],
                 startAngle: 0,
                 endAngle: 360,
             },
@@ -133,15 +213,53 @@ export default {
                 cy: 0,
                 distance: 16,
                 flipColorInterpolator: false,
-                flipStrokeWidth: false,
-                flipOpacity: false,
-                interpolateStrokeWidth: false,
-                interpolateOpacity: false,
+                flipColorInterpolatorOptions: [
+                    {
+                        value: true,
+                        text: this.$t('home.yes'),
+                    },
+                    {
+                        value: false,
+                        text: this.$t('home.no'),
+                    },
+                ],
                 strokeWidth: 3,
+                calcStrokeWidth: [],
+                calcStrokeWidthOptions: [
+                    {
+                        value: 'interpolate',
+                        text: this.$t('home.interpolate'),
+                    },
+                    {
+                        value: 'flip',
+                        text: this.$t('home.flip'),
+                    },
+                ],
+                calcOpacity: [],
+                calcOpacityOptions: [
+                    {
+                        value: 'interpolate',
+                        text: this.$t('home.interpolate'),
+                    },
+                    {
+                        value: 'flip',
+                        text: this.$t('home.flip'),
+                    },
+                ],
                 rotation: 0,
                 sides: 5,
                 size: 256,
                 stroke: true,
+                strokeOptions: [
+                    {
+                        value: true,
+                        text: this.$t('home.stroke'),
+                    },
+                    {
+                        value: false,
+                        text: this.$t('home.fill'),
+                    },
+                ],
             },
             selectedShape: 'rectangle',
             shapes: [
@@ -221,27 +339,50 @@ export default {
 
     &__radio {
         display: flex;
-        justify-content: space-between;
-        padding: $padding-y * 2 0;
+        padding-bottom: $padding-y * 2;
 
-        input {
-            appearance: none;
+        .radio__wrapper {
+            display: flex;
+            flex: 1;
 
-            + label {
-                background: $black-10;
-                border-radius: $border-radius;
-                color: $secondary;
-                cursor: pointer;
-                padding: $padding;
-                text-transform: capitalize;
+            input {
+                display: none;
 
-                &:hover {
-                    color: $black;
+                + label {
+                    background: $black-10;
+                    color: $secondary;
+                    cursor: pointer;
+                    display: flex;
+                    justify-content: center;
+                    padding: $padding;
+                    transition:
+                        background $transition-duration $transition-timing-function,
+                        color $transition-duration $transition-timing-function;
+                    width: 100%;
+
+                    &:hover {
+                        background: rgba($black, 0.15);
+                        color: $black-90;
+                    }
+
+                    svg {
+                        height: 1rem;
+                        width: 1rem;
+                    }
+                }
+
+                &:checked + label {
+                    background: $black-20;
+                    color: $primary;
                 }
             }
 
-            &:checked + label {
-                color: $black;
+            &:first-child input + label {
+                border-radius: $border-radius 0 0 $border-radius;
+            }
+
+            &:last-child input + label {
+                border-radius: 0 $border-radius $border-radius 0;
             }
         }
     }

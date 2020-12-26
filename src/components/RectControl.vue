@@ -30,7 +30,7 @@
             :min="1"
             :max="30"
             :step="0.1"
-            :label="$tc('home.strokeWidth', format(f.float)(rect.strokeWidth))"
+            :label="$tc('home.strokeWidthN', format(f.float)(rect.strokeWidth))"
             @input.native="$emit('rect-update')"
             @add="(step) => { rect.strokeWidth += step; $emit('rect-update')}"
             @subtract="(step) => { rect.strokeWidth -= step; $emit('rect-update')}"
@@ -119,67 +119,6 @@
             @add="(step) => { rect.height += step; $emit('rect-update')}"
             @subtract="(step) => { rect.height -= step; $emit('rect-update')}"
         />
-        <div>
-            <label>
-                Bg
-            </label>
-            <input
-                id="bg-color"
-                v-model="rect.bgColor"
-                type="color"
-                name="bg-color"
-                @input="$emit('rect-update')"
-            >
-        </div>
-
-        <div>
-            <input
-                id="stroke"
-                v-model="rect.stroke"
-                type="checkbox"
-                name="stroke"
-                @change="$emit('rect-update')"
-            >
-            <label for="stroke">stroke</label>
-        </div>
-
-        <div>
-            <input
-                id="interpolateOpacity"
-                v-model="rect.interpolateOpacity"
-                type="checkbox"
-                name="interpolateOpacity"
-                @change="$emit('rect-update')"
-            >
-            <label for="interpolateOpacity">interpolateOpacity</label>
-            <input
-                id="flipOpacity"
-                v-model="rect.flipOpacity"
-                type="checkbox"
-                name="flipOpacity"
-                @change="$emit('rect-update')"
-            >
-            <label for="flipOpacity">flipOpacity</label>
-        </div>
-
-        <div>
-            <input
-                id="interpolateStrokeWidth"
-                v-model="rect.interpolateStrokeWidth"
-                type="checkbox"
-                name="interpolateStrokeWidth"
-                @change="$emit('rect-update')"
-            >
-            <label for="interpolateStrokeWidth">interpolateStrokeWidth</label>
-            <input
-                id="flipStrokeWidth"
-                v-model="rect.flipStrokeWidth"
-                type="checkbox"
-                name="flipStrokeWidth"
-                @change="$emit('rect-update')"
-            >
-            <label for="flipStrokeWidth">flipStrokeWidth</label>
-        </div>
 
         <input-range
             v-model.number="rect.cx"
@@ -205,23 +144,59 @@
             @subtract="(step) => { rect.cy -= step; $emit('rect-update')}"
         />
 
-        <div class="control__color">
-            <div>
-                <input
-                    id="rect-flip-color-interpolator"
-                    v-model="rect.flipColorInterpolator"
-                    type="checkbox"
-                    name="rect-flip-color-interpolator"
-                    @change="$emit('rect-update')"
-                >
-                <label for="rect-flip-color-interpolator">flipColorInterpolator</label>
-            </div>
+        <input-radio
+            :id="'how-to-draw-shape'"
+            v-model="rect.stroke"
+            class="radio__input"
+            :options="rect.strokeOptions"
+            :label="$t('home.howToDrawShape')"
+            @change.native="$emit('rect-update')"
+        />
 
-            <color-interpolator
-                :active="rect.colorInterPolator"
-                @update-color-interpolator="setColorInterPolator"
-            />
-        </div>
+        <input-checkbox
+            :id="'opacity'"
+            v-model="rect.calcOpacity"
+            class="checkbox__input"
+            :options="rect.calcOpacityOptions"
+            :label="$t('home.opacity')"
+            @change.native="$emit('rect-update')"
+        />
+
+        <input-checkbox
+            :id="'stroke-width'"
+            v-model="rect.calcStrokeWidth"
+            class="checkbox__input"
+            :options="rect.calcStrokeWidthOptions"
+            :label="$t('home.strokeWidth')"
+            @change.native="$emit('rect-update')"
+        />
+
+        <input-radio
+            :id="'flip-color-interpolator'"
+            v-model="rect.flipColorInterpolator"
+            class="radio__input"
+            :options="rect.flipColorInterpolatorOptions"
+            :label="$t('home.flipColorScheme')"
+            @change.native="$emit('rect-update')"
+        />
+
+        <!--         <div>
+            <label>
+                Bg
+            </label>
+            <input
+                id="bg-color"
+                v-model="rect.bgColor"
+                type="color"
+                name="bg-color"
+                @input="$emit('rect-update')"
+            >
+        </div> -->
+
+        <color-interpolator
+            :active="rect.colorInterPolator"
+            @update-color-interpolator="setColorInterPolator"
+        />
     </div>
 </template>
 
@@ -231,6 +206,8 @@ import {
 } from 'd3';
 
 import InputRange from '@/components/InputRange';
+import InputRadio from '@/components/InputRadio';
+import InputCheckbox from '@/components/InputCheckbox';
 import ColorInterpolator from '@/components/ColorInterpolator';
 
 import config from '@/config';
@@ -245,6 +222,8 @@ export default {
 
     components: {
         ColorInterpolator,
+        InputCheckbox,
+        InputRadio,
         InputRange,
     },
 
@@ -275,5 +254,11 @@ export default {
 .rect-control {
     display: flex;
     flex-direction: column;
+
+    .radio__input,
+    .checkbox__input,
+    .sliders__input {
+        margin-bottom: $margin-y;
+    }
 }
 </style>

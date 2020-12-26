@@ -14,14 +14,10 @@
         <div
             class="navigation__items"
         >
-            <a
+            <beer-button
                 class="item__sponsor"
-                :href="buymeacoffee"
-                target="_blank"
-            >
-                {{ $t('navigation.buymeabeer') }}
-                <svg-icon :xlink="'#beer'" />
-            </a>
+            />
+
             <button
                 class="item__menu"
                 @click="$store.dispatch('modal/openNavigationMenu')"
@@ -42,18 +38,18 @@
 </template>
 
 <script>
+import BeerButton from '@/components/BeerButton';
 import CookiesBanner from '@/components/CookiesBanner';
 import DownloadDialogue from '@/components/DownloadDialogue';
 import ImageGallery from '@/components/ImageGallery';
 import NavigationMenu from '@/components/NavigationMenu';
 import SvgIcon from '@/components/SvgIcon';
 
-import config from '@/config';
-
 export default {
     name: 'Navigation',
 
     components: {
+        BeerButton,
         CookiesBanner,
         DownloadDialogue,
         ImageGallery,
@@ -82,10 +78,6 @@ export default {
             return this.$store.getters['modal/downloadIsOpen'];
         },
 
-    },
-
-    created() {
-        this.buymeacoffee = config.links.buymeacoffee;
     },
 };
 </script>
@@ -119,7 +111,7 @@ export default {
     display: flex;
     filter: drop-shadow(3px 3px 4px $black-30);
     grid-area: logo;
-    height: 3rem;
+    height: 2rem;
     user-select: none;
     width: 20rem;
     z-index: 2;
@@ -143,29 +135,6 @@ export default {
         }
     }
 
-    .item__sponsor {
-        align-items: center;
-        background: rgba($primary, 0.9);
-        border-radius: $border-radius;
-        color: $white;
-        display: flex;
-        font-weight: bolder;
-        padding: $padding;
-        text-decoration: none;
-        text-shadow: $text-shadow;
-        transition: background $transition-duration $transition-timing-function;
-
-        &:hover {
-            background: $primary;
-        }
-
-        svg {
-            height: 1.5rem;
-            margin-left: $margin-x;
-            width: 1.5rem;
-        }
-    }
-
     .item__menu {
         background: transparent;
         border: none;
@@ -184,7 +153,7 @@ export default {
 @media (max-width: $breakpoint-sm) {
     .navigation__logo {
         height: 2rem;
-        width: 9rem;
+        width: 15rem;
     }
 
     .navigation__items {

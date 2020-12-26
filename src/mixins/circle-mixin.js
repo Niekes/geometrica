@@ -12,10 +12,18 @@ export default {
                 amount,
                 startAngle,
                 endAngle,
+                calcOpacity,
+                calcStrokeWidth,
             } = this.circle;
 
             const radians = (this.circle.rotation * this.PI / 180);
             const adjustedAmount = amount - 1;
+
+            const interpolateOpacity = calcOpacity.indexOf('interpolate') !== -1;
+            const flipOpacity = calcOpacity.indexOf('flip') !== -1;
+
+            const interpolateStrokeWidth = calcStrokeWidth.indexOf('interpolate') !== -1;
+            const flipStrokeWidth = calcStrokeWidth.indexOf('flip') !== -1;
 
             for (let i = 0; i < amount; i += 1) {
                 if (this.circle.radiusX - (i * this.circle.distance) < 0) return;
@@ -38,11 +46,11 @@ export default {
                     ? this.circle.colorInterPolator.fn(flippedK)
                     : this.circle.colorInterPolator.fn(k));
 
-                if (this.circle.interpolateOpacity) {
+                if (interpolateOpacity) {
                     c.opacity = k;
                 }
 
-                if (this.circle.interpolateOpacity && this.circle.flipOpacity) {
+                if (interpolateOpacity && flipOpacity) {
                     c.opacity = flippedK;
                 }
 
@@ -60,16 +68,16 @@ export default {
                 this.ctx.translate(cx, cy);
                 this.ctx.rotate(angle);
 
-                if (this.circle.interpolateStrokeWidth) {
-                    this.ctx.lineWidth = Math.max(this.circle.strokeWidth * k, 1e-10);
+                if (interpolateStrokeWidth) {
+                    this.ctx.lineWidth = Math.max(this.rect.strokeWidth * k, 1e-10);
                 }
 
-                if (this.circle.interpolateStrokeWidth && this.circle.flipStrokeWidth) {
-                    this.ctx.lineWidth = Math.max(this.circle.strokeWidth * flippedK, 1e-10);
+                if (interpolateStrokeWidth && flipStrokeWidth) {
+                    this.ctx.lineWidth = Math.max(this.rect.strokeWidth * flippedK, 1e-10);
                 }
 
-                if (!this.circle.interpolateStrokeWidth) {
-                    this.ctx.lineWidth = this.circle.strokeWidth;
+                if (!interpolateStrokeWidth) {
+                    this.ctx.lineWidth = this.rect.strokeWidth;
                 }
 
                 this.ctx.ellipse(

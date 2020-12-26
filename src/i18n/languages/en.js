@@ -1,18 +1,30 @@
 export default {
-    navigation: {
+    general: {
         buymeabeer: 'Buy me a beer',
+    },
+    navigation: {
         cookies: 'Cookies',
         faq: 'FAQ',
         home: 'Home',
         imprint: 'Imprint',
     },
     home: {
+        yes: 'yes',
+        no: 'no',
+        flipColorScheme: 'Flip color scheme',
         amountOfRectangles: 'Amount of rectangles: {n}',
         amountOfCircles: 'Amount of circles: {n}',
         amountOfTriangles: 'Amount of triangles: {n}',
         amountOfPolygons: 'Amount of polygons: {n}',
         distance: 'Distance: {n}',
-        strokeWidth: 'Stroke width: {n}',
+        strokeWidthN: 'Stroke width: {n}',
+        strokeWidth: 'Stroke width',
+        stroke: 'Stroke',
+        fill: 'Fill',
+        opacity: 'Opacity',
+        interpolate: 'interpolate',
+        flip: 'flip',
+        howToDrawShape: 'How to draw shape',
         rotation: 'Rotation: {n}°',
         borderRadius: 'Border radius: {n}',
         width: 'Width: {n}px',

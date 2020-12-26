@@ -11,12 +11,16 @@ import './registerServiceWorker';
 
 /* eslint-disable import/extensions */
 import '@/assets/svg/beer.svg?sprite';
+import '@/assets/svg/circle.svg?sprite';
 import '@/assets/svg/close.svg?sprite';
 import '@/assets/svg/logo.svg?sprite';
 import '@/assets/svg/menu.svg?sprite';
 import '@/assets/svg/minus.svg?sprite';
 import '@/assets/svg/pattern.svg?sprite';
 import '@/assets/svg/plus.svg?sprite';
+import '@/assets/svg/polygon.svg?sprite';
+import '@/assets/svg/rectangle.svg?sprite';
+/* eslint-enable import/extensions */
 
 /*
     Google Analytics

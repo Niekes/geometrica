@@ -48,10 +48,18 @@ export default {
                 borderRadius,
                 distance,
                 size,
+                calcOpacity,
+                calcStrokeWidth,
             } = this.polygon;
 
             const radians = (this.polygon.rotation * this.PI / 180);
             const adjustedAmount = amount - 1;
+
+            const interpolateOpacity = calcOpacity.indexOf('interpolate') !== -1;
+            const flipOpacity = calcOpacity.indexOf('flip') !== -1;
+
+            const interpolateStrokeWidth = calcStrokeWidth.indexOf('interpolate') !== -1;
+            const flipStrokeWidth = calcStrokeWidth.indexOf('flip') !== -1;
 
             for (let i = 0; i < amount; i += 1) {
                 if (size - (i * distance) < 0) return;
@@ -68,14 +76,13 @@ export default {
                     ? this.polygon.colorInterPolator.fn(flippedK)
                     : this.polygon.colorInterPolator.fn(k));
 
-                if (this.polygon.interpolateOpacity) {
+                if (interpolateOpacity) {
                     c.opacity = k;
                 }
 
-                if (this.polygon.interpolateOpacity && this.polygon.flipOpacity) {
+                if (interpolateOpacity && flipOpacity) {
                     c.opacity = flippedK;
                 }
-
 
                 this.ctx.save();
                 if (this.polygon.stroke) {
@@ -91,16 +98,16 @@ export default {
                 this.ctx.translate(cx, cy);
                 this.ctx.rotate(angle - this.PI / 2);
 
-                if (this.polygon.interpolateStrokeWidth) {
-                    this.ctx.lineWidth = Math.max(this.polygon.strokeWidth * k, 1e-10);
+                if (interpolateStrokeWidth) {
+                    this.ctx.lineWidth = Math.max(this.rect.strokeWidth * k, 1e-10);
                 }
 
-                if (this.polygon.interpolateStrokeWidth && this.polygon.flipStrokeWidth) {
-                    this.ctx.lineWidth = Math.max(this.polygon.strokeWidth * flippedK, 1e-10);
+                if (interpolateStrokeWidth && flipStrokeWidth) {
+                    this.ctx.lineWidth = Math.max(this.rect.strokeWidth * flippedK, 1e-10);
                 }
 
-                if (!this.polygon.interpolateStrokeWidth) {
-                    this.ctx.lineWidth = this.polygon.strokeWidth;
+                if (!interpolateStrokeWidth) {
+                    this.ctx.lineWidth = this.rect.strokeWidth;
                 }
 
                 const path = new Path2D(this.setPath(this.polygon.sides, borderRadius * 100, s, i));
