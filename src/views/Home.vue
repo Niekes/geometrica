@@ -145,6 +145,7 @@ export default {
                     },
                 ],
                 width: 256,
+                borderRadisIsLocked: true,
             },
             circle: {
                 amount: 16,

@@ -48,53 +48,101 @@
             @subtract="(step) => { rect.rotation -= step; $emit('rect-update')}"
         />
 
-        <input-range
-            v-model.number="rect.borderRadius.tl"
-            class="sliders__input"
-            :min="0"
-            :max="1"
-            :step="0.01"
-            :label="$tc('home.borderRadius', format(f.percent)(rect.borderRadius.tl / 2))"
-            @input.native="$emit('rect-update')"
-            @add="(step) => { rect.borderRadius.tl += step; $emit('rect-update')}"
-            @subtract="(step) => { rect.borderRadius.tl -= step; $emit('rect-update')}"
-        />
+        <div class="border-radius">
+            <input-range
+                v-model.number="rect.borderRadius.tl"
+                class="sliders__input border-radius__tl"
+                :min="0"
+                :max="1"
+                :step="0.01"
+                :label="$tc(
+                    'home.borderRadiusTopLeft',
+                    format(f.percent)(rect.borderRadius.tl / 2),
+                )"
+                @input.native="handleBorderRadiusTopLeft"
+                @add="(step) => {
+                    rect.borderRadius.tl += step;
+                    handleBorderRadiusTopLeft();
+                }"
+                @subtract="(step) => {
+                    rect.borderRadius.tl -= step;
+                    handleBorderRadiusTopLeft();
+                }"
+            />
 
-        <input-range
-            v-model.number="rect.borderRadius.tr"
-            class="sliders__input"
-            :min="0"
-            :max="1"
-            :step="0.01"
-            :label="$tc('home.borderRadius', format(f.percent)(rect.borderRadius.tr / 2))"
-            @input.native="$emit('rect-update')"
-            @add="(step) => { rect.borderRadius.tr += step; $emit('rect-update')}"
-            @subtract="(step) => { rect.borderRadius.tr -= step; $emit('rect-update')}"
-        />
+            <input-range
+                v-model.number="rect.borderRadius.tr"
+                class="sliders__input border-radius__tr"
+                :min="0"
+                :max="1"
+                :step="0.01"
+                :label="$tc(
+                    'home.borderRadiusTopRight',
+                    format(f.percent)(rect.borderRadius.tr / 2)
+                )"
+                @input.native="handleBorderRadiusTopRight"
+                @add="(step) => {
+                    rect.borderRadius.tr += step;
+                    handleBorderRadiusTopRight();
+                }"
+                @subtract="(step) => {
+                    rect.borderRadius.tr -= step;
+                    handleBorderRadiusTopRight();
+                }"
+            />
 
-        <input-range
-            v-model.number="rect.borderRadius.bl"
-            class="sliders__input"
-            :min="0"
-            :max="1"
-            :step="0.01"
-            :label="$tc('home.borderRadius', format(f.percent)(rect.borderRadius.bl / 2))"
-            @input.native="$emit('rect-update')"
-            @add="(step) => { rect.borderRadius.bl += step; $emit('rect-update')}"
-            @subtract="(step) => { rect.borderRadius.bl -= step; $emit('rect-update')}"
-        />
+            <input-range
+                v-model.number="rect.borderRadius.bl"
+                class="sliders__input border-radius__bl"
+                :min="0"
+                :max="1"
+                :step="0.01"
+                :label="$tc(
+                    'home.borderRadiusBottomLeft',
+                    format(f.percent)(rect.borderRadius.bl / 2)
+                )"
+                @input.native="handleBorderRadiusBottomLeft"
+                @add="(step) => {
+                    rect.borderRadius.bl += step;
+                    handleBorderRadiusBottomLeft();
+                }"
+                @subtract="(step) => {
+                    rect.borderRadius.bl -= step;
+                    handleBorderRadiusBottomLeft();
+                }"
+            />
 
-        <input-range
-            v-model.number="rect.borderRadius.br"
-            class="sliders__input"
-            :min="0"
-            :max="1"
-            :step="0.01"
-            :label="$tc('home.borderRadius', format(f.percent)(rect.borderRadius.br / 2))"
-            @input.native="$emit('rect-update')"
-            @add="(step) => { rect.borderRadius.br += step; $emit('rect-update')}"
-            @subtract="(step) => { rect.borderRadius.br -= step; $emit('rect-update')}"
-        />
+            <input-range
+                v-model.number="rect.borderRadius.br"
+                class="sliders__input border-radius__br"
+                :min="0"
+                :max="1"
+                :step="0.01"
+                :label="$tc(
+                    'home.borderRadiusBottomRight',
+                    format(f.percent)(rect.borderRadius.br / 2),
+                )"
+                @input.native="handleBorderRadiusBottomRight"
+                @add="(step) => {
+                    rect.borderRadius.br += step;
+                    handleBorderRadiusBottomRight();
+                }"
+                @subtract="(step) => {
+                    rect.borderRadius.br -= step;
+                    handleBorderRadiusBottomRight();
+                }"
+            />
+
+            <button
+                class="border-radius__lock"
+                @click="rect.borderRadisIsLocked = !rect.borderRadisIsLocked"
+            >
+                <svg-icon
+                    :xlink="rect.borderRadisIsLocked ? '#lock-closed' : '#lock-open'"
+                />
+            </button>
+        </div>
+
 
         <input-range
             v-model.number="rect.width"
@@ -209,6 +257,7 @@ import InputRange from '@/components/InputRange';
 import InputRadio from '@/components/InputRadio';
 import InputCheckbox from '@/components/InputCheckbox';
 import ColorInterpolator from '@/components/ColorInterpolator';
+import SvgIcon from '@/components/SvgIcon';
 
 import config from '@/config';
 
@@ -225,6 +274,7 @@ export default {
         InputCheckbox,
         InputRadio,
         InputRange,
+        SvgIcon,
     },
 
     props: {
@@ -245,6 +295,42 @@ export default {
 
             this.$emit('rect-update');
         },
+        handleBorderRadiusTopLeft() {
+            if (this.rect.borderRadisIsLocked) {
+                this.rect.borderRadius.tr = this.rect.borderRadius.tl;
+                this.rect.borderRadius.bl = this.rect.borderRadius.tl;
+                this.rect.borderRadius.br = this.rect.borderRadius.tl;
+            }
+
+            this.$emit('rect-update');
+        },
+        handleBorderRadiusTopRight() {
+            if (this.rect.borderRadisIsLocked) {
+                this.rect.borderRadius.tl = this.rect.borderRadius.tr;
+                this.rect.borderRadius.bl = this.rect.borderRadius.tr;
+                this.rect.borderRadius.br = this.rect.borderRadius.tr;
+            }
+
+            this.$emit('rect-update');
+        },
+        handleBorderRadiusBottomLeft() {
+            if (this.rect.borderRadisIsLocked) {
+                this.rect.borderRadius.tl = this.rect.borderRadius.bl;
+                this.rect.borderRadius.tr = this.rect.borderRadius.bl;
+                this.rect.borderRadius.br = this.rect.borderRadius.bl;
+            }
+
+            this.$emit('rect-update');
+        },
+        handleBorderRadiusBottomRight() {
+            if (this.rect.borderRadisIsLocked) {
+                this.rect.borderRadius.tl = this.rect.borderRadius.br;
+                this.rect.borderRadius.tr = this.rect.borderRadius.br;
+                this.rect.borderRadius.bl = this.rect.borderRadius.br;
+            }
+
+            this.$emit('rect-update');
+        },
         format,
     },
 };
@@ -254,6 +340,61 @@ export default {
 .rect-control {
     display: flex;
     flex-direction: column;
+
+    .border-radius {
+        display: grid;
+        gap: 0 $margin-x;
+        grid-template-areas:
+            "border-radius-tl border-radius-lock"
+            "border-radius-tr border-radius-lock"
+            "border-radius-bl border-radius-lock"
+            "border-radius-br border-radius-lock";
+        grid-template-columns: 1fr min-content;
+        grid-template-rows: 1fr 1fr 1fr 1fr;
+    }
+
+    .border-radius__tl {
+        grid-area: border-radius-tl;
+    }
+
+    .border-radius__tr {
+        grid-area: border-radius-tr;
+    }
+
+    .border-radius__bl {
+        grid-area: border-radius-bl;
+    }
+
+    .border-radius__br {
+        grid-area: border-radius-br;
+    }
+
+    .border-radius__lock {
+        background: transparent;
+        border-bottom: $border-width solid $black-50;
+        border-left: 0;
+        border-radius: 0 $border-radius $border-radius 0;
+        border-right: $border-width solid $black-50;
+        border-top: $border-width solid $black-50;
+        cursor: pointer;
+        grid-area: border-radius-lock;
+        margin: $margin-y * 2 0 $margin-y 0;
+        padding: $padding-y / 2 $padding-x / 2;
+        transition: background $transition-duration / 2 $transition-timing-function;
+
+        svg {
+            height: 1rem;
+            width: 1rem;
+        }
+
+        &:focus {
+            outline: none;
+        }
+
+        &:hover {
+            background: $black-10;
+        }
+    }
 
     .radio__input,
     .checkbox__input,

@@ -13,6 +13,8 @@ import './registerServiceWorker';
 import '@/assets/svg/beer.svg?sprite';
 import '@/assets/svg/circle.svg?sprite';
 import '@/assets/svg/close.svg?sprite';
+import '@/assets/svg/lock-closed.svg?sprite';
+import '@/assets/svg/lock-open.svg?sprite';
 import '@/assets/svg/logo.svg?sprite';
 import '@/assets/svg/menu.svg?sprite';
 import '@/assets/svg/minus.svg?sprite';
