@@ -379,7 +379,7 @@ export default {
         cursor: pointer;
         grid-area: border-radius-lock;
         margin: $margin-y * 2 0 $margin-y 0;
-        padding: $padding-y / 2 $padding-x / 2;
+        padding: 0 $padding-x / 4;
         transition: background $transition-duration / 2 $transition-timing-function;
 
         svg {
