@@ -5,8 +5,8 @@ import {
 export default {
     methods: {
         drawRect() {
-            this.ctx.fillStyle = this.rect.bgColor;
-            this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+            // this.ctx.fillStyle = this.rect.bgColor;
+            this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
             const {
                 amount,
@@ -56,17 +56,7 @@ export default {
                 }
 
                 this.ctx.save();
-
-                if (this.rect.stroke) {
-                    this.ctx.strokeStyle = c.toString();
-                }
-
-                if (!this.rect.stroke) {
-                    this.ctx.fillStyle = c.toString();
-                }
-
                 this.ctx.beginPath();
-
                 this.ctx.translate(cx, cy);
                 this.ctx.rotate(angle);
 
@@ -82,7 +72,6 @@ export default {
                     this.ctx.lineWidth = this.rect.strokeWidth;
                 }
 
-                this.ctx.beginPath();
                 this.ctx.moveTo(x + brTl, y);
                 this.ctx.lineTo(x + width - brTr, y);
                 this.ctx.quadraticCurveTo(x + width, y, x + width, y + brTr);
@@ -95,10 +84,12 @@ export default {
                 this.ctx.closePath();
 
                 if (this.rect.stroke) {
+                    this.ctx.strokeStyle = c.toString();
                     this.ctx.stroke();
                 }
 
                 if (!this.rect.stroke) {
+                    this.ctx.fillStyle = c.toString();
                     this.ctx.fill();
                 }
                 this.ctx.restore();

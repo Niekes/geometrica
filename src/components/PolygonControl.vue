@@ -30,7 +30,7 @@
             :min="1"
             :max="30"
             :step="0.1"
-            :label="$tc('home.strokeWidth', format(f.float)(polygon.strokeWidth))"
+            :label="$tc('home.strokeWidthN', format(f.float)(polygon.strokeWidth))"
             @input.native="$emit('polygon-update')"
             @add="(step) => { polygon.strokeWidth += step; $emit('polygon-update')}"
             @subtract="(step) => { polygon.strokeWidth -= step; $emit('polygon-update')}"
@@ -219,6 +219,11 @@ export default {
 .polygon-control {
     display: flex;
     flex-direction: column;
+
+    .radio__input,
+    .checkbox__input {
+        margin-top: $margin-y;
+    }
 
     .radio__input,
     .checkbox__input,

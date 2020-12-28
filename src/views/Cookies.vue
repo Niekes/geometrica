@@ -91,6 +91,9 @@ export default {
 
 <style lang="scss" scoped>
 .cookies {
-    padding: $padding-y $padding-x * 2;
+    margin: 0 auto;
+    max-width: $breakpoint-md;
+    padding: $padding-y * 2 $padding-x * 2;
+    width: 100%;
 }
 </style>

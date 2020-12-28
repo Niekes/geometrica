@@ -5,8 +5,8 @@ import {
 export default {
     methods: {
         drawCircle() {
-            this.ctx.fillStyle = this.circle.bgColor;
-            this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+            // this.ctx.fillStyle = this.circle.bgColor;
+            this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
             const {
                 amount,
@@ -55,29 +55,20 @@ export default {
                 }
 
                 this.ctx.save();
-                if (this.circle.stroke) {
-                    this.ctx.strokeStyle = c.toString();
-                }
-
-                if (!this.circle.stroke) {
-                    this.ctx.fillStyle = c.toString();
-                }
-
                 this.ctx.beginPath();
-
                 this.ctx.translate(cx, cy);
                 this.ctx.rotate(angle);
 
                 if (interpolateStrokeWidth) {
-                    this.ctx.lineWidth = Math.max(this.rect.strokeWidth * k, 1e-10);
+                    this.ctx.lineWidth = Math.max(this.circle.strokeWidth * k, 1e-10);
                 }
 
                 if (interpolateStrokeWidth && flipStrokeWidth) {
-                    this.ctx.lineWidth = Math.max(this.rect.strokeWidth * flippedK, 1e-10);
+                    this.ctx.lineWidth = Math.max(this.circle.strokeWidth * flippedK, 1e-10);
                 }
 
                 if (!interpolateStrokeWidth) {
-                    this.ctx.lineWidth = this.rect.strokeWidth;
+                    this.ctx.lineWidth = this.circle.strokeWidth;
                 }
 
                 this.ctx.ellipse(
@@ -95,10 +86,12 @@ export default {
                 }
 
                 if (this.circle.stroke) {
+                    this.ctx.strokeStyle = c.toString();
                     this.ctx.stroke();
                 }
 
                 if (!this.circle.stroke) {
+                    this.ctx.fillStyle = c.toString();
                     this.ctx.fill();
                 }
 

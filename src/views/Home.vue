@@ -145,7 +145,8 @@ export default {
                     },
                 ],
                 width: 256,
-                borderRadisIsLocked: true,
+                borderRadiusIsLocked: true,
+                sizeIsLocked: true,
             },
             circle: {
                 amount: 16,
@@ -204,6 +205,7 @@ export default {
                 ],
                 startAngle: 0,
                 endAngle: 360,
+                radiusIsLocked: true,
             },
             polygon: {
                 amount: 16,
@@ -326,13 +328,13 @@ export default {
 .home {
     display: grid;
     grid-template-areas: "control context";
-    grid-template-columns: minmax(0, 24rem) 1fr;
+    grid-template-columns: minmax(0, 21rem) 1fr;
     grid-template-rows: minmax(0, 1fr);
     height: 100%;
 }
 
 .control {
-    background-color: rgba($primary, 0.2);
+    background-color: lighten(desaturate($primary, 75%), 70%);
     display: flex;
     flex-direction: column;
     overflow: auto;
@@ -406,6 +408,7 @@ export default {
     justify-content: center;
 
     &__canvas {
+        background: $black;
         border: $border-width solid $black-50;
         border-radius: 10%;
         box-shadow: $box-shadow;

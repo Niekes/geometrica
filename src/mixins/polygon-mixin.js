@@ -40,8 +40,8 @@ export default {
             return `${p}z`;
         },
         drawPolygon() {
-            this.ctx.fillStyle = this.polygon.bgColor;
-            this.ctx.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
+            // this.ctx.fillStyle = this.polygon.bgColor;
+            this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
             const {
                 amount,
@@ -59,6 +59,8 @@ export default {
             const flipOpacity = calcOpacity.indexOf('flip') !== -1;
 
             const interpolateStrokeWidth = calcStrokeWidth.indexOf('interpolate') !== -1;
+
+            console.log(interpolateStrokeWidth);
             const flipStrokeWidth = calcStrokeWidth.indexOf('flip') !== -1;
 
             for (let i = 0; i < amount; i += 1) {
@@ -85,44 +87,33 @@ export default {
                 }
 
                 this.ctx.save();
-                if (this.polygon.stroke) {
-                    this.ctx.strokeStyle = c.toString();
-                }
-
-                if (!this.polygon.stroke) {
-                    this.ctx.fillStyle = c.toString();
-                }
-
                 this.ctx.beginPath();
-
                 this.ctx.translate(cx, cy);
                 this.ctx.rotate(angle - this.PI / 2);
 
                 if (interpolateStrokeWidth) {
-                    this.ctx.lineWidth = Math.max(this.rect.strokeWidth * k, 1e-10);
+                    this.ctx.lineWidth = Math.max(this.polygon.strokeWidth * k, 1e-10);
                 }
 
                 if (interpolateStrokeWidth && flipStrokeWidth) {
-                    this.ctx.lineWidth = Math.max(this.rect.strokeWidth * flippedK, 1e-10);
+                    this.ctx.lineWidth = Math.max(this.polygon.strokeWidth * flippedK, 1e-10);
                 }
 
                 if (!interpolateStrokeWidth) {
-                    this.ctx.lineWidth = this.rect.strokeWidth;
+                    this.ctx.lineWidth = this.polygon.strokeWidth;
                 }
 
                 const path = new Path2D(this.setPath(this.polygon.sides, borderRadius * 100, s, i));
 
                 this.ctx.closePath();
 
-                if (i === this.polygon.amount - 1) {
-                    // console.log(this.setPath(this.polygon.sides, borderRadius, s, i));
-                }
-
                 if (this.polygon.stroke) {
+                    this.ctx.strokeStyle = c.toString();
                     this.ctx.stroke(path);
                 }
 
                 if (!this.polygon.stroke) {
+                    this.ctx.fillStyle = c.toString();
                     this.ctx.fill(path);
                 }
 

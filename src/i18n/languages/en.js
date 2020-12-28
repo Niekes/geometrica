@@ -49,7 +49,7 @@ export default {
     },
     faq: {
         what: 'What is geometrica?',
-        whatParagraph: 'Geometrica is a tool to create geometric line art icons. You can use them ass app icons or as a graphic designer you could use them as design assets.',
+        whatParagraph: 'Geometrica is a tool to create geometric line art icons. You can use them as app icons or as a graphic designer you could use them as design assets. Or maybe just use them as an inspiration for your next artwork.',
         implement: 'Can you implement a new feature?',
         implementParagraph: 'Yes, please send me an email to geometrica [at] niekes.com with detailed information about your feature request and I will try implement it as soon as possible.',
         copyright: 'Who owns the copyright?',

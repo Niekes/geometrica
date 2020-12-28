@@ -135,38 +135,49 @@
 
             <button
                 class="border-radius__lock"
-                @click="rect.borderRadisIsLocked = !rect.borderRadisIsLocked"
+                @click="rect.borderRadiusIsLocked = !rect.borderRadiusIsLocked"
             >
                 <svg-icon
-                    :xlink="rect.borderRadisIsLocked ? '#lock-closed' : '#lock-open'"
+                    :xlink="rect.borderRadiusIsLocked ? '#lock-closed' : '#lock-open'"
                 />
             </button>
         </div>
 
+        <div class="size">
+            <input-range
+                v-model.number="rect.width"
+                class="sliders__input width"
+                :min="1"
+                :max="512"
+                :step="1"
+                :label="$tc('home.width', rect.width)"
+                @input.native="handleWidth"
+                @add="(step) => { rect.width += step; handleWidth()}"
+                @subtract="(step) => { rect.width -= step; handleWidth()}"
+            />
 
-        <input-range
-            v-model.number="rect.width"
-            class="sliders__input"
-            :min="1"
-            :max="512"
-            :step="1"
-            :label="$tc('home.width', rect.width)"
-            @input.native="$emit('rect-update')"
-            @add="(step) => { rect.width += step; $emit('rect-update')}"
-            @subtract="(step) => { rect.width -= step; $emit('rect-update')}"
-        />
+            <input-range
+                v-model.number="rect.height"
+                class="sliders__input height"
+                :min="1"
+                :max="512"
+                :step="1"
+                :label="$tc('home.height', rect.height)"
+                @input.native="handleHeight"
+                @add="(step) => { rect.height += step; handleHeight()}"
+                @subtract="(step) => { rect.height -= step; handleHeight()}"
+            />
 
-        <input-range
-            v-model.number="rect.height"
-            class="sliders__input"
-            :min="1"
-            :max="512"
-            :step="1"
-            :label="$tc('home.height', rect.height)"
-            @input.native="$emit('rect-update')"
-            @add="(step) => { rect.height += step; $emit('rect-update')}"
-            @subtract="(step) => { rect.height -= step; $emit('rect-update')}"
-        />
+            <button
+                class="size__lock"
+                @click="rect.sizeIsLocked = !rect.sizeIsLocked"
+            >
+                <svg-icon
+                    :xlink="rect.sizeIsLocked ? '#lock-closed' : '#lock-open'"
+                />
+            </button>
+        </div>
+
 
         <input-range
             v-model.number="rect.cx"
@@ -296,7 +307,7 @@ export default {
             this.$emit('rect-update');
         },
         handleBorderRadiusTopLeft() {
-            if (this.rect.borderRadisIsLocked) {
+            if (this.rect.borderRadiusIsLocked) {
                 this.rect.borderRadius.tr = this.rect.borderRadius.tl;
                 this.rect.borderRadius.bl = this.rect.borderRadius.tl;
                 this.rect.borderRadius.br = this.rect.borderRadius.tl;
@@ -305,7 +316,7 @@ export default {
             this.$emit('rect-update');
         },
         handleBorderRadiusTopRight() {
-            if (this.rect.borderRadisIsLocked) {
+            if (this.rect.borderRadiusIsLocked) {
                 this.rect.borderRadius.tl = this.rect.borderRadius.tr;
                 this.rect.borderRadius.bl = this.rect.borderRadius.tr;
                 this.rect.borderRadius.br = this.rect.borderRadius.tr;
@@ -314,7 +325,7 @@ export default {
             this.$emit('rect-update');
         },
         handleBorderRadiusBottomLeft() {
-            if (this.rect.borderRadisIsLocked) {
+            if (this.rect.borderRadiusIsLocked) {
                 this.rect.borderRadius.tl = this.rect.borderRadius.bl;
                 this.rect.borderRadius.tr = this.rect.borderRadius.bl;
                 this.rect.borderRadius.br = this.rect.borderRadius.bl;
@@ -323,10 +334,24 @@ export default {
             this.$emit('rect-update');
         },
         handleBorderRadiusBottomRight() {
-            if (this.rect.borderRadisIsLocked) {
+            if (this.rect.borderRadiusIsLocked) {
                 this.rect.borderRadius.tl = this.rect.borderRadius.br;
                 this.rect.borderRadius.tr = this.rect.borderRadius.br;
                 this.rect.borderRadius.bl = this.rect.borderRadius.br;
+            }
+
+            this.$emit('rect-update');
+        },
+        handleWidth() {
+            if (this.rect.sizeIsLocked) {
+                this.rect.height = this.rect.width;
+            }
+
+            this.$emit('rect-update');
+        },
+        handleHeight() {
+            if (this.rect.sizeIsLocked) {
+                this.rect.width = this.rect.height;
             }
 
             this.$emit('rect-update');
@@ -369,6 +394,33 @@ export default {
         grid-area: border-radius-br;
     }
 
+    .size {
+        display: grid;
+        gap: 0 $margin-x;
+        grid-template-areas:
+            "width size-lock"
+            "height size-lock";
+        grid-template-columns: 1fr min-content;
+        grid-template-rows: 1fr 1fr;
+    }
+
+    .width {
+        grid-area: width;
+    }
+
+    .height {
+        grid-area: height;
+    }
+
+    .size__lock {
+        grid-area: size-lock;
+    }
+
+    .border-radius__lock {
+        grid-area: border-radius-lock;
+    }
+
+    .size__lock,
     .border-radius__lock {
         background: transparent;
         border-bottom: $border-width solid $black-50;
@@ -377,7 +429,6 @@ export default {
         border-right: $border-width solid $black-50;
         border-top: $border-width solid $black-50;
         cursor: pointer;
-        grid-area: border-radius-lock;
         margin: $margin-y * 2 0 $margin-y 0;
         padding: 0 $padding-x / 4;
         transition: background $transition-duration / 2 $transition-timing-function;
@@ -394,6 +445,11 @@ export default {
         &:hover {
             background: $black-10;
         }
+    }
+
+    .radio__input,
+    .checkbox__input {
+        margin-top: $margin-y;
     }
 
     .radio__input,

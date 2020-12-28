@@ -69,21 +69,26 @@ export default {
 
 <style lang="scss" scoped>
 .checkbox {
-    border: $border-width solid $secondary;
+    border: $border-width solid $black-20;
     border-radius: $border-radius;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     margin: 0;
     padding: $padding;
+    position: relative;
 
     &__legend {
+        background-color: lighten(desaturate($primary, 75%), 70%);
         color: $secondary;
         font-size: $font-size * 0.7;
         font-weight: bolder;
-        margin-left: auto;
-        margin-right: auto;
+        left: 50%;
+        margin: 0 auto;
         padding: 0 $padding-x;
+        position: absolute;
         text-transform: uppercase;
+        top: -0.4rem;
+        transform: translate(-50%, 0);
         user-select: none;
         white-space: nowrap;
         width: auto;
