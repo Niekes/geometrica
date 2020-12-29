@@ -7,6 +7,10 @@
 @import '~normalize.css';
 @import './variables';
 
+.hidden {
+    display: none !important;
+}
+
 /*
     Flash-Message
 */

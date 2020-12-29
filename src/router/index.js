@@ -2,8 +2,6 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import Home from '@/views/Home';
 import Faq from '@/views/Faq';
-import Cookies from '@/views/Cookies';
-import Imprint from '@/views/Imprint';
 import config from '@/config';
 
 Vue.use(Router);
@@ -25,12 +23,12 @@ export default new Router({
         {
             path: '/cookies',
             name: 'Cookies',
-            component: Cookies,
+            component: () => import(/* webpackChunkName: "cookies" */ '@/views/Cookies'),
         },
         {
             path: '/imprint',
             name: 'Imprint',
-            component: Imprint,
+            component: () => import(/* webpackChunkName: "imprint" */ '@/views/Imprint'),
         },
         {
             path: '*',

@@ -69,6 +69,8 @@ import rectMixin from '@/mixins/rect-mixin';
 import circleMixin from '@/mixins/circle-mixin';
 import polygonMixin from '@/mixins/polygon-mixin';
 
+import config from '@/config';
+
 export default {
     name: 'Home',
 
@@ -87,183 +89,9 @@ export default {
 
     data() {
         return {
-            rect: {
-                amount: 16,
-                bgColor: '#000000',
-                borderRadius: {
-                    tl: 0, tr: 0, bl: 0, br: 0,
-                },
-                colorInterPolator: null,
-                cx: 0,
-                cy: 0,
-                distance: 16,
-                height: 256,
-                calcOpacity: [],
-                calcOpacityOptions: [
-                    {
-                        value: 'interpolate',
-                        text: this.$t('home.interpolate'),
-                    },
-                    {
-                        value: 'flip',
-                        text: this.$t('home.flip'),
-                    },
-                ],
-                flipColorInterpolator: false,
-                flipColorInterpolatorOptions: [
-                    {
-                        value: true,
-                        text: this.$t('home.yes'),
-                    },
-                    {
-                        value: false,
-                        text: this.$t('home.no'),
-                    },
-                ],
-                rotation: 0,
-                stroke: true,
-                strokeOptions: [
-                    {
-                        value: true,
-                        text: this.$t('home.stroke'),
-                    },
-                    {
-                        value: false,
-                        text: this.$t('home.fill'),
-                    },
-                ],
-                strokeWidth: 3,
-                calcStrokeWidth: [],
-                calcStrokeWidthOptions: [
-                    {
-                        value: 'interpolate',
-                        text: this.$t('home.interpolate'),
-                    },
-                    {
-                        value: 'flip',
-                        text: this.$t('home.flip'),
-                    },
-                ],
-                width: 256,
-                borderRadiusIsLocked: true,
-                sizeIsLocked: true,
-            },
-            circle: {
-                amount: 16,
-                bgColor: '#000000',
-                colorInterPolator: null,
-                cx: 0,
-                cy: 0,
-                distance: 16,
-                flipColorInterpolator: false,
-                flipColorInterpolatorOptions: [
-                    {
-                        value: true,
-                        text: this.$t('home.yes'),
-                    },
-                    {
-                        value: false,
-                        text: this.$t('home.no'),
-                    },
-                ],
-                strokeWidth: 3,
-                calcStrokeWidth: [],
-                calcStrokeWidthOptions: [
-                    {
-                        value: 'interpolate',
-                        text: this.$t('home.interpolate'),
-                    },
-                    {
-                        value: 'flip',
-                        text: this.$t('home.flip'),
-                    },
-                ],
-                calcOpacity: [],
-                calcOpacityOptions: [
-                    {
-                        value: 'interpolate',
-                        text: this.$t('home.interpolate'),
-                    },
-                    {
-                        value: 'flip',
-                        text: this.$t('home.flip'),
-                    },
-                ],
-                radiusX: 256,
-                radiusY: 256,
-                rotation: 0,
-                stroke: true,
-                strokeOptions: [
-                    {
-                        value: true,
-                        text: this.$t('home.stroke'),
-                    },
-                    {
-                        value: false,
-                        text: this.$t('home.fill'),
-                    },
-                ],
-                startAngle: 0,
-                endAngle: 360,
-                radiusIsLocked: true,
-            },
-            polygon: {
-                amount: 16,
-                bgColor: '#000000',
-                borderRadius: 0,
-                colorInterPolator: null,
-                cx: 0,
-                cy: 0,
-                distance: 16,
-                flipColorInterpolator: false,
-                flipColorInterpolatorOptions: [
-                    {
-                        value: true,
-                        text: this.$t('home.yes'),
-                    },
-                    {
-                        value: false,
-                        text: this.$t('home.no'),
-                    },
-                ],
-                strokeWidth: 3,
-                calcStrokeWidth: [],
-                calcStrokeWidthOptions: [
-                    {
-                        value: 'interpolate',
-                        text: this.$t('home.interpolate'),
-                    },
-                    {
-                        value: 'flip',
-                        text: this.$t('home.flip'),
-                    },
-                ],
-                calcOpacity: [],
-                calcOpacityOptions: [
-                    {
-                        value: 'interpolate',
-                        text: this.$t('home.interpolate'),
-                    },
-                    {
-                        value: 'flip',
-                        text: this.$t('home.flip'),
-                    },
-                ],
-                rotation: 0,
-                sides: 5,
-                size: 256,
-                stroke: true,
-                strokeOptions: [
-                    {
-                        value: true,
-                        text: this.$t('home.stroke'),
-                    },
-                    {
-                        value: false,
-                        text: this.$t('home.fill'),
-                    },
-                ],
-            },
+            rect: config.shapes.rect,
+            circle: config.shapes.circle,
+            polygon: config.shapes.polygon,
             selectedShape: 'rectangle',
             shapes: [
                 { name: 'rectangle' },
@@ -334,15 +162,19 @@ export default {
 }
 
 .control {
-    background-color: lighten(desaturate($primary, 75%), 70%);
+    background-color: $primary;
     display: flex;
     flex-direction: column;
     overflow: auto;
-    padding: $padding-y * 2 $padding-x * 2;
+    padding: $padding-y $padding-x;
 
     &__radio {
+        border: $border-width solid $tertiary;
+        border-radius: $border-radius;
         display: flex;
-        padding-bottom: $padding-y * 2;
+        flex-shrink: 0;
+        margin-bottom: $margin-y;
+        overflow: hidden;
 
         .radio__wrapper {
             display: flex;
@@ -352,8 +184,8 @@ export default {
                 display: none;
 
                 + label {
-                    background: $black-10;
-                    color: $secondary;
+                    background: $secondary;
+                    color: $white-50;
                     cursor: pointer;
                     display: flex;
                     justify-content: center;
@@ -364,8 +196,8 @@ export default {
                     width: 100%;
 
                     &:hover {
-                        background: rgba($black, 0.15);
-                        color: $black-90;
+                        background: rgba($primary, 0.9);
+                        color: rgba($tertiary, 0.75);
                     }
 
                     svg {
@@ -375,17 +207,9 @@ export default {
                 }
 
                 &:checked + label {
-                    background: $black-20;
-                    color: $primary;
+                    background: $primary;
+                    color: $tertiary;
                 }
-            }
-
-            &:first-child input + label {
-                border-radius: $border-radius 0 0 $border-radius;
-            }
-
-            &:last-child input + label {
-                border-radius: 0 $border-radius $border-radius 0;
             }
         }
     }

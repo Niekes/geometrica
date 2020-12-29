@@ -48,7 +48,8 @@ export default {
 
             select(this.$el).node().appendChild(canvas.node());
 
-            canvas.node().width = Number.parseInt(select(this.$el).style('width'), 10);
+            // canvas.node().width = Number.parseInt(select(this.$el).style('width'), 10);
+            canvas.node().width = 32;
             canvas.node().height = 1;
 
             const ctx = canvas.node().getContext('2d');

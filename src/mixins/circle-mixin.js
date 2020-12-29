@@ -25,6 +25,9 @@ export default {
             const interpolateStrokeWidth = calcStrokeWidth.indexOf('interpolate') !== -1;
             const flipStrokeWidth = calcStrokeWidth.indexOf('flip') !== -1;
 
+            const cx = this.canvasHalfWidth + this.circle.cx;
+            const cy = this.canvasHalfHeight + this.circle.cy * -1;
+
             for (let i = 0; i < amount; i += 1) {
                 if (this.circle.radiusX - (i * this.circle.distance) < 0) return;
                 if (this.circle.radiusY - (i * this.circle.distance) < 0) return;
@@ -33,9 +36,6 @@ export default {
                 const radiusY = this.circle.radiusY - (i * this.circle.distance);
                 const k = i / adjustedAmount;
                 const angle = radians / adjustedAmount * i;
-
-                const cx = this.canvasHalfWidth + this.circle.cx;
-                const cy = this.canvasHalfHeight + this.circle.cy * -1;
 
                 const x = -radiusX + this.circle.radiusX - (i * this.circle.distance);
                 const y = -radiusY + this.circle.radiusY - (i * this.circle.distance);

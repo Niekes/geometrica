@@ -1,13 +1,8 @@
 <template>
-    <fieldset
+    <div
         :id="id"
         class="checkbox"
     >
-        <legend
-            v-if="label"
-            class="checkbox__legend"
-            v-text="label"
-        />
         <div
             v-for="(option, index) in options"
             :key="option.text"
@@ -27,7 +22,7 @@
                 v-text="option.text"
             />
         </div>
-    </fieldset>
+    </div>
 </template>
 
 <script>
@@ -69,31 +64,9 @@ export default {
 
 <style lang="scss" scoped>
 .checkbox {
-    border: $border-width solid $black-20;
-    border-radius: $border-radius;
     display: flex;
     justify-content: space-between;
-    margin: 0;
-    padding: $padding;
-    position: relative;
-
-    &__legend {
-        background-color: lighten(desaturate($primary, 75%), 70%);
-        color: $secondary;
-        font-size: $font-size * 0.7;
-        font-weight: bolder;
-        left: 50%;
-        margin: 0 auto;
-        padding: 0 $padding-x;
-        position: absolute;
-        text-transform: uppercase;
-        top: -0.4rem;
-        transform: translate(-50%, 0);
-        user-select: none;
-        white-space: nowrap;
-        width: auto;
-        z-index: 1;
-    }
+    padding: $padding-y 0;
 
     &__content {
         align-items: center;
@@ -108,7 +81,7 @@ export default {
         }
 
         .content__label {
-            color: $primary;
+            color: $white;
             cursor: pointer;
             font-size: $font-size * 0.7;
             font-weight: bolder;
@@ -121,7 +94,7 @@ export default {
 
             &::before {
                 border: $border-width solid;
-                border-color: $primary;
+                border-color: $white;
                 border-radius: $border-radius;
                 bottom: 0;
                 content: '';
@@ -136,7 +109,7 @@ export default {
 
             &::after {
                 background: transparent;
-                background-image: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"><path fill="%231c243f" d="M19.343,4.739l2.261,2.261l-12.424,12.424l-6.784,-6.784l2.261,-2.262l4.523,4.523l10.163,-10.162Z"/></svg>');
+                background-image: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve"><path fill="%23fff" d="M19.343,4.739l2.261,2.261l-12.424,12.424l-6.784,-6.784l2.261,-2.262l4.523,4.523l10.163,-10.162Z"/></svg>');
                 background-position: center;
                 background-repeat: no-repeat;
                 background-size: 100%;

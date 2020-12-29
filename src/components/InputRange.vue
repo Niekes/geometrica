@@ -40,6 +40,9 @@ import {
 
 import SvgIcon from '@/components/SvgIcon';
 
+// eslint-disable-next-line import/extensions
+import localstyles from 'localstyles';
+
 export default {
     name: 'InputRange',
 
@@ -99,7 +102,7 @@ export default {
             this.p = this.scale(this.value) * 100;
 
             this.slider
-                .style('background', `linear-gradient(90deg, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0.20) ${this.p}%, white ${this.p}%)`);
+                .style('background', `linear-gradient(90deg, ${localstyles.secondary} 0%, ${localstyles.secondary} ${this.p}%, rgba(255, 255, 255, 0.3) ${this.p}%)`);
         },
     },
 };
@@ -122,48 +125,43 @@ export default {
         display: flex;
     }
 
-    &__subtract,
-    &__add {
-        background-color: $white;
-        border-radius: $border-radius;
-        cursor: pointer;
-        padding: 0 $padding-x;
-
-        svg {
-            color: $black-75;
-            height: 0.4rem;
-            width: 0.4rem;
-        }
-    }
-
     &__subtract {
         grid-area: subtract;
         justify-content: flex-start;
-
-        &:hover {
-            background: $white-75;
-        }
-
-        &:active:hover {
-            background: $black-10;
-        }
     }
 
     &__add {
         grid-area: add;
         justify-content: flex-end;
+    }
+
+    &__subtract,
+    &__add {
+        background-color: $secondary;
+        border: $border-width solid $primary;
+        border-radius: $border-radius;
+        cursor: pointer;
+        padding: $padding-y $padding-x;
+        transition: background-color $transition-duration / 2 $transition-timing-function;
+
+        svg {
+            color: $white;
+            height: 0.5rem;
+            width: 0.5rem;
+        }
 
         &:hover {
-            background: $white-75;
+            background: rgba($primary, 0.9);
         }
 
         &:active:hover {
-            background: $black-10;
+            background: $black;
         }
     }
 
     &__label {
-        color: $secondary;
+        align-self: flex-end;
+        color: $white;
         font-size: $font-size * 0.7;
         font-weight: bolder;
         grid-area: label;
@@ -176,8 +174,9 @@ export default {
 
     &__input {
         grid-area: input;
+        place-self: center;
 
-        @include input-type-range;
+        @include input-type-range($white, 1rem, 1rem, 100%, 0.6rem);
     }
 }
 
@@ -194,7 +193,7 @@ export default {
         }
 
         &__input {
-            @include input-type-range($white, 1.75rem, 1.75rem, 100%, 1.5rem);
+            @include input-type-range($white, 1rem, 1rem, 100%, 0.5rem);
         }
     }
 }

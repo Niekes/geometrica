@@ -59,9 +59,10 @@ export default {
             const flipOpacity = calcOpacity.indexOf('flip') !== -1;
 
             const interpolateStrokeWidth = calcStrokeWidth.indexOf('interpolate') !== -1;
-
-            console.log(interpolateStrokeWidth);
             const flipStrokeWidth = calcStrokeWidth.indexOf('flip') !== -1;
+
+            const cx = this.canvasHalfWidth + this.polygon.cx;
+            const cy = this.canvasHalfHeight + this.polygon.cy * -1;
 
             for (let i = 0; i < amount; i += 1) {
                 if (size - (i * distance) < 0) return;
@@ -71,8 +72,6 @@ export default {
                 const flippedK = Math.abs(k - 1);
                 const angle = radians / (adjustedAmount) * i;
 
-                const cx = this.canvasHalfWidth + this.polygon.cx;
-                const cy = this.canvasHalfHeight + this.polygon.cy * -1;
 
                 const c = color(this.polygon.flipColorInterpolator
                     ? this.polygon.colorInterPolator.fn(flippedK)

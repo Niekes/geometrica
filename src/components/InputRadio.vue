@@ -1,13 +1,8 @@
 <template>
-    <fieldset
+    <div
         :id="id"
         class="radio"
     >
-        <legend
-            v-if="label"
-            class="radio__legend"
-            v-text="label"
-        />
         <div
             v-for="(option, index) in options"
             :key="option.text"
@@ -29,7 +24,7 @@
                 v-text="option.text"
             />
         </div>
-    </fieldset>
+    </div>
 </template>
 
 <script>
@@ -39,10 +34,6 @@ export default {
     },
     props: {
         id: {
-            type: String,
-            required: true,
-        },
-        label: {
             type: String,
             required: true,
         },
@@ -64,31 +55,9 @@ export default {
 
 <style lang="scss" scoped>
 .radio {
-    border: $border-width solid $black-20;
-    border-radius: $border-radius;
     display: flex;
     justify-content: space-between;
-    margin: 0;
-    padding: $padding;
-    position: relative;
-
-    &__legend {
-        background-color: lighten(desaturate($primary, 75%), 70%);
-        color: $secondary;
-        font-size: $font-size * 0.7;
-        font-weight: bolder;
-        left: 50%;
-        margin: 0 auto;
-        padding: 0 $padding-x;
-        position: absolute;
-        text-transform: uppercase;
-        top: -0.4rem;
-        transform: translate(-50%, 0);
-        user-select: none;
-        white-space: nowrap;
-        width: auto;
-        z-index: 1;
-    }
+    padding: $padding-y 0;
 
     &__content {
         .content__input {
@@ -96,7 +65,7 @@ export default {
 
             &:checked + label {
                 &::after {
-                    background: $primary;
+                    background: $white;
                     transform: scale(0.5);
                 }
             }
@@ -104,7 +73,7 @@ export default {
 
         .content__label {
             align-items: center;
-            color: $primary;
+            color: $white;
             cursor: pointer;
             display: flex;
             font-size: $font-size * 0.7;
@@ -118,7 +87,7 @@ export default {
 
             &::before {
                 border: $border-width solid;
-                border-color: $primary;
+                border-color: $white;
                 border-radius: 50%;
                 bottom: 0;
                 content: '';

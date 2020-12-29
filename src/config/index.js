@@ -39,6 +39,8 @@ import {
     interpolateSinebow,
 } from 'd3';
 
+import i18n from '@/i18n';
+
 export default {
     base: process.env.VUE_APP_BASE,
     title: process.env.VUE_APP_TITLE,
@@ -46,6 +48,183 @@ export default {
     version: process.env.VUE_APP_VERSION,
     links: {
         buymeacoffee: 'https://www.buymeacoffee.com/niekes',
+    },
+    shapes: {
+        rect: {
+            amount: 16,
+            bgColor: '#000000',
+            borderRadius: {
+                tl: 0, tr: 0, bl: 0, br: 0,
+            },
+            colorInterPolator: null,
+            cx: 0,
+            cy: 0,
+            distance: 16,
+            height: 256,
+            calcOpacity: [],
+            calcOpacityOptions: [
+                {
+                    value: 'interpolate',
+                    text: i18n.t('home.interpolateOpacity'),
+                },
+                {
+                    value: 'flip',
+                    text: i18n.t('home.flip'),
+                },
+            ],
+            flipColorInterpolator: false,
+            flipColorInterpolatorOptions: [
+                {
+                    value: true,
+                    text: i18n.t('home.flipColorScheme'),
+                },
+            ],
+            rotation: 0,
+            stroke: true,
+            strokeOptions: [
+                {
+                    value: true,
+                    text: i18n.t('home.stroke'),
+                },
+                {
+                    value: false,
+                    text: i18n.t('home.fill'),
+                },
+            ],
+            strokeWidth: 1,
+            calcStrokeWidth: [],
+            calcStrokeWidthOptions: [
+                {
+                    value: 'interpolate',
+                    text: i18n.t('home.interpolateStrokeWidth'),
+                },
+                {
+                    value: 'flip',
+                    text: i18n.t('home.flip'),
+                },
+            ],
+            width: 256,
+            borderRadiusIsLocked: true,
+            sizeIsLocked: true,
+
+        },
+        circle: {
+            amount: 16,
+            bgColor: '#000000',
+            colorInterPolator: null,
+            cx: 0,
+            cy: 0,
+            distance: 16,
+            flipColorInterpolator: false,
+            flipColorInterpolatorOptions: [
+                {
+                    value: true,
+                    text: i18n.t('home.yes'),
+                },
+                {
+                    value: false,
+                    text: i18n.t('home.no'),
+                },
+            ],
+            strokeWidth: 1,
+            calcStrokeWidth: [],
+            calcStrokeWidthOptions: [
+                {
+                    value: 'interpolate',
+                    text: i18n.t('home.interpolateStrokeWidth'),
+                },
+                {
+                    value: 'flip',
+                    text: i18n.t('home.flip'),
+                },
+            ],
+            calcOpacity: [],
+            calcOpacityOptions: [
+                {
+                    value: 'interpolate',
+                    text: i18n.t('home.interpolateOpacity'),
+                },
+                {
+                    value: 'flip',
+                    text: i18n.t('home.flip'),
+                },
+            ],
+            radiusX: 256,
+            radiusY: 256,
+            rotation: 0,
+            stroke: true,
+            strokeOptions: [
+                {
+                    value: true,
+                    text: i18n.t('home.stroke'),
+                },
+                {
+                    value: false,
+                    text: i18n.t('home.fill'),
+                },
+            ],
+            startAngle: 0,
+            endAngle: 360,
+            radiusIsLocked: true,
+        },
+        polygon: {
+
+            amount: 16,
+            bgColor: '#000000',
+            borderRadius: 0,
+            colorInterPolator: null,
+            cx: 0,
+            cy: 0,
+            distance: 16,
+            flipColorInterpolator: false,
+            flipColorInterpolatorOptions: [
+                {
+                    value: true,
+                    text: i18n.t('home.yes'),
+                },
+                {
+                    value: false,
+                    text: i18n.t('home.no'),
+                },
+            ],
+            strokeWidth: 1,
+            calcStrokeWidth: [],
+            calcStrokeWidthOptions: [
+                {
+                    value: 'interpolate',
+                    text: i18n.t('home.interpolateStrokeWidth'),
+                },
+                {
+                    value: 'flip',
+                    text: i18n.t('home.flip'),
+                },
+            ],
+            calcOpacity: [],
+            calcOpacityOptions: [
+                {
+                    value: 'interpolate',
+                    text: i18n.t('home.interpolateOpacity'),
+                },
+                {
+                    value: 'flip',
+                    text: i18n.t('home.flip'),
+                },
+            ],
+            rotation: 0,
+            sides: 5,
+            size: 256,
+            stroke: true,
+            strokeOptions: [
+                {
+                    value: true,
+                    text: i18n.t('home.stroke'),
+                },
+                {
+                    value: false,
+                    text: i18n.t('home.fill'),
+                },
+            ],
+        },
     },
     format: {
         float: '.2~f',

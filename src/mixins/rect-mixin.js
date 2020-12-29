@@ -23,6 +23,9 @@ export default {
             const interpolateStrokeWidth = calcStrokeWidth.indexOf('interpolate') !== -1;
             const flipStrokeWidth = calcStrokeWidth.indexOf('flip') !== -1;
 
+            const cx = this.canvasHalfWidth + this.rect.cx;
+            const cy = this.canvasHalfHeight + this.rect.cy * -1;
+
             for (let i = 0; i < this.rect.amount; i += 1) {
                 if (this.rect.width - (i * this.rect.distance) < 0) return;
                 if (this.rect.height - (i * this.rect.distance) < 0) return;
@@ -32,12 +35,8 @@ export default {
                 const k = i / adjustedAmount;
                 const flippedK = Math.abs(k - 1);
                 const angle = radians / adjustedAmount * i;
-
-                const cx = this.canvasHalfWidth + this.rect.cx;
-                const cy = this.canvasHalfHeight + this.rect.cy * -1;
                 const x = -width / 2;
                 const y = -height / 2;
-
                 const brTl = this.rect.borderRadius.tl * Math.min(width, height) / 2;
                 const brTr = this.rect.borderRadius.tr * Math.min(width, height) / 2;
                 const brBl = this.rect.borderRadius.bl * Math.min(width, height) / 2;
