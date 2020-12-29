@@ -68,6 +68,7 @@ export default {
         text-decoration: none;
         text-shadow: 1px 1px 2px $black-30, -1px -1px 2px $black-30;
         transition: box-shadow $transition-duration $transition-timing-function;
+        width: 100%;
 
         &:hover {
             box-shadow: 1px 1px 3px 1px rgba($primary, 0.4), -1px -1px 3px 1px rgba($primary, 0.4);
