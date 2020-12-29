@@ -1,167 +1,228 @@
 <template>
     <div class="polygon-control">
-        <input-range
-            v-model.number="polygon.amount"
-            class="sliders__input"
-            :min="2"
-            :max="1000"
-            :step="1"
-            :label="$tc('home.amountN', polygon.amount)"
-            @input.native="$emit('polygon-update')"
-            @add="(step) => { polygon.amount += step; $emit('polygon-update')}"
-            @subtract="(step) => { polygon.amount -= step; $emit('polygon-update')}"
-        />
+        <div class="polygon-control__general">
+            <div
+                class="general__caption"
+                @click="toggle"
+                v-text="$t('home.polygons')"
+            />
+            <div class="general__content hidden">
+                <input-range
+                    v-model.number="polygon.amount"
+                    class="sliders__input"
+                    :min="2"
+                    :max="1000"
+                    :step="1"
+                    :label="$tc('home.amountN', polygon.amount)"
+                    @input.native="$emit('polygon-update')"
+                    @add="(step) => { polygon.amount += step; $emit('polygon-update')}"
+                    @subtract="(step) => { polygon.amount -= step; $emit('polygon-update')}"
+                />
+                <input-range
+                    v-model.number="polygon.distance"
+                    class="sliders__input"
+                    :min="-64"
+                    :max="64"
+                    :step="0.1"
+                    :label="$tc('home.distance', format(f.float)(polygon.distance))"
+                    @input.native="$emit('polygon-update')"
+                    @add="(step) => { polygon.distance += step; $emit('polygon-update')}"
+                    @subtract="(step) => { polygon.distance -= step; $emit('polygon-update')}"
+                />
 
-        <input-range
-            v-model.number="polygon.distance"
-            class="sliders__input"
-            :min="-64"
-            :max="64"
-            :step="0.1"
-            :label="$tc('home.distance', format(f.float)(polygon.distance))"
-            @input.native="$emit('polygon-update')"
-            @add="(step) => { polygon.distance += step; $emit('polygon-update')}"
-            @subtract="(step) => { polygon.distance -= step; $emit('polygon-update')}"
-        />
+                <input-range
+                    v-model.number="polygon.rotation"
+                    class="sliders__input"
+                    :min="-1440"
+                    :max="1440"
+                    :step="1"
+                    :label="$tc('home.offsetRotation', polygon.rotation)"
+                    @input.native="$emit('polygon-update')"
+                    @add="(step) => { polygon.rotation += step; $emit('polygon-update')}"
+                    @subtract="(step) => { polygon.rotation -= step; $emit('polygon-update')}"
+                />
 
-        <input-range
-            v-model.number="polygon.strokeWidth"
-            class="sliders__input"
-            :min="1"
-            :max="30"
-            :step="0.1"
-            :label="$tc('home.strokeWidthN', format(f.float)(polygon.strokeWidth))"
-            @input.native="$emit('polygon-update')"
-            @add="(step) => { polygon.strokeWidth += step; $emit('polygon-update')}"
-            @subtract="(step) => { polygon.strokeWidth -= step; $emit('polygon-update')}"
-        />
+                <input-radio
+                    :id="'how-to-draw-shape'"
+                    v-model="polygon.stroke"
+                    class="radio__input"
+                    :options="polygon.strokeOptions"
+                    :label="$t('home.howToDrawShape')"
+                    @change.native="$emit('polygon-update')"
+                />
+            </div>
+        </div>
 
-        <input-range
-            v-model.number="polygon.rotation"
-            class="sliders__input"
-            :min="-1440"
-            :max="1440"
-            :step="1"
-            :label="$tc('home.offsetRotation', polygon.rotation)"
-            @input.native="$emit('polygon-update')"
-            @add="(step) => { polygon.rotation += step; $emit('polygon-update')}"
-            @subtract="(step) => { polygon.rotation -= step; $emit('polygon-update')}"
-        />
+        <div class="polygon-control__border-radius">
+            <div
+                class="border-radius__caption"
+                @click="toggle"
+                v-text="$t('home.borderRadius')"
+            />
+            <div class="border-radius__content hidden">
+                <input-range
+                    v-model.number="polygon.borderRadius"
+                    class="sliders__input"
+                    :min="0"
+                    :max="1"
+                    :step="0.01"
+                    :label="$tc('home.borderRadiusN', format(f.percent)(polygon.borderRadius / 2))"
+                    @input.native="$emit('polygon-update')"
+                    @add="(step) => { polygon.borderRadius += step; $emit('polygon-update')}"
+                    @subtract="(step) => { polygon.borderRadius -= step; $emit('polygon-update')}"
+                />
+            </div>
+        </div>
 
-        <input-range
-            v-model.number="polygon.borderRadius"
-            class="sliders__input"
-            :min="0"
-            :max="1"
-            :step="0.01"
-            :label="$tc('home.borderRadiusN', format(f.percent)(polygon.borderRadius / 2))"
-            @input.native="$emit('polygon-update')"
-            @add="(step) => { polygon.borderRadius += step; $emit('polygon-update')}"
-            @subtract="(step) => { polygon.borderRadius -= step; $emit('polygon-update')}"
-        />
+        <div class="polygon-control__stroke-width">
+            <div
+                class="stroke-width__caption"
+                @click="toggle"
+                v-text="$t('home.strokeWidth')"
+            />
+            <div class="stroke-width__content hidden">
+                <input-range
+                    v-model.number="polygon.strokeWidth"
+                    class="sliders__input"
+                    :min="1"
+                    :max="30"
+                    :step="0.1"
+                    :label="$tc('home.strokeWidthN', format(f.float)(polygon.strokeWidth))"
+                    @input.native="$emit('polygon-update')"
+                    @add="(step) => { polygon.strokeWidth += step; $emit('polygon-update')}"
+                    @subtract="(step) => { polygon.strokeWidth -= step; $emit('polygon-update')}"
+                />
+                <input-checkbox
+                    :id="'stroke-width'"
+                    v-model="polygon.calcStrokeWidth"
+                    class="checkbox__input"
+                    :options="polygon.calcStrokeWidthOptions"
+                    :label="$t('home.strokeWidth')"
+                    @change.native="$emit('polygon-update')"
+                />
+            </div>
+        </div>
 
+        <div class="polygon-control__color">
+            <div
+                class="color__caption"
+                @click="toggle"
+                v-text="$t('home.color')"
+            />
+            <div class="color__content hidden">
+                <input-checkbox
+                    :id="'opacity'"
+                    v-model="polygon.calcOpacity"
+                    class="checkbox__input"
+                    :options="polygon.calcOpacityOptions"
+                    :label="$t('home.opacity')"
+                    @change.native="$emit('polygon-update')"
+                />
 
-        <input-range
-            v-model.number="polygon.sides"
-            class="sliders__input"
-            :min="3"
-            :max="16"
-            :step="1"
-            :label="$tc('home.sides', polygon.sides)"
-            @input.native="$emit('polygon-update')"
-            @add="(step) => { polygon.sides += step; $emit('polygon-update')}"
-            @subtract="(step) => { polygon.sides -= step; $emit('polygon-update')}"
-        />
+                <input-checkbox
+                    :id="'flip-color-interpolator'"
+                    v-model="polygon.flipColorInterpolator"
+                    class="radio__input"
+                    :options="polygon.flipColorInterpolatorOptions"
+                    :label="$t('home.flipColorScheme')"
+                    @change.native="$emit('polygon-update')"
+                />
 
-        <input-range
-            v-model.number="polygon.size"
-            class="sliders__input"
-            :min="1"
-            :max="512"
-            :step="1"
-            :label="$tc('home.sizeN', polygon.size)"
-            @input.native="$emit('polygon-update')"
-            @add="(step) => { polygon.size += step; $emit('polygon-update')}"
-            @subtract="(step) => { polygon.size -= step; $emit('polygon-update')}"
-        />
+                <!--         <div>
+                    <label>
+                        Bg
+                    </label>
+                    <input
+                        id="bg-color"
+                        v-model="polygon.bgColor"
+                        type="color"
+                        name="bg-color"
+                        @input="$emit('polygon-update')"
+                    >
+                </div> -->
 
-        <input-range
-            v-model.number="polygon.cx"
-            class="sliders__input"
-            :min="-256"
-            :max="256"
-            :step="0.1"
-            :label="$tc('home.centerX', format(f.float)(polygon.cx))"
-            @input.native="$emit('polygon-update')"
-            @add="(step) => { polygon.cx += step; $emit('polygon-update')}"
-            @subtract="(step) => { polygon.cx -= step; $emit('polygon-update')}"
-        />
+                <color-interpolator
+                    :active="polygon.colorInterPolator"
+                    @update-color-interpolator="setColorInterPolator"
+                />
+            </div>
+        </div>
 
-        <input-range
-            v-model.number="polygon.cy"
-            class="sliders__input"
-            :min="-256"
-            :max="256"
-            :step="0.1"
-            :label="$tc('home.centerY', format(f.float)(polygon.cy))"
-            @input.native="$emit('polygon-update')"
-            @add="(step) => { polygon.cy += step; $emit('polygon-update')}"
-            @subtract="(step) => { polygon.cy -= step; $emit('polygon-update')}"
-        />
+        <div class="polygon-control__sides">
+            <div
+                class="size__caption"
+                @click="toggle"
+                v-text="$t('home.sides')"
+            />
+            <div class="size__content hidden">
+                <input-range
+                    v-model.number="polygon.sides"
+                    class="sliders__input"
+                    :min="3"
+                    :max="16"
+                    :step="1"
+                    :label="$tc('home.sidesN', polygon.sides)"
+                    @input.native="$emit('polygon-update')"
+                    @add="(step) => { polygon.sides += step; $emit('polygon-update')}"
+                    @subtract="(step) => { polygon.sides -= step; $emit('polygon-update')}"
+                />
+            </div>
+        </div>
 
-        <input-radio
-            :id="'how-to-draw-shape'"
-            v-model="polygon.stroke"
-            class="radio__input"
-            :options="polygon.strokeOptions"
-            :label="$t('home.howToDrawShape')"
-            @change.native="$emit('polygon-update')"
-        />
+        <div class="polygon-control__size">
+            <div
+                class="size__caption"
+                @click="toggle"
+                v-text="$t('home.size')"
+            />
+            <div class="size__content hidden">
+                <input-range
+                    v-model.number="polygon.size"
+                    class="sliders__input"
+                    :min="1"
+                    :max="512"
+                    :step="1"
+                    :label="$tc('home.sizeN', polygon.size)"
+                    @input.native="$emit('polygon-update')"
+                    @add="(step) => { polygon.size += step; $emit('polygon-update')}"
+                    @subtract="(step) => { polygon.size -= step; $emit('polygon-update')}"
+                />
+            </div>
+        </div>
 
-        <input-checkbox
-            :id="'opacity'"
-            v-model="polygon.calcOpacity"
-            class="checkbox__input"
-            :options="polygon.calcOpacityOptions"
-            :label="$t('home.opacity')"
-            @change.native="$emit('polygon-update')"
-        />
+        <div class="polygon-control__position">
+            <div
+                class="position__caption"
+                @click="toggle"
+                v-text="$t('home.position')"
+            />
 
-        <input-checkbox
-            :id="'stroke-width'"
-            v-model="polygon.calcStrokeWidth"
-            class="checkbox__input"
-            :options="polygon.calcStrokeWidthOptions"
-            :label="$t('home.strokeWidth')"
-            @change.native="$emit('polygon-update')"
-        />
+            <div class="position__content hidden">
+                <input-range
+                    v-model.number="polygon.cx"
+                    class="sliders__input"
+                    :min="-256"
+                    :max="256"
+                    :step="0.1"
+                    :label="$tc('home.centerX', format(f.float)(polygon.cx))"
+                    @input.native="$emit('polygon-update')"
+                    @add="(step) => { polygon.cx += step; $emit('polygon-update')}"
+                    @subtract="(step) => { polygon.cx -= step; $emit('polygon-update')}"
+                />
 
-        <input-radio
-            :id="'flip-color-interpolator'"
-            v-model="polygon.flipColorInterpolator"
-            class="radio__input"
-            :options="polygon.flipColorInterpolatorOptions"
-            :label="$t('home.flipColorScheme')"
-            @change.native="$emit('polygon-update')"
-        />
-
-        <!--         <div>
-            <label>
-                Bg
-            </label>
-            <input
-                id="bg-color"
-                v-model="polygon.bgColor"
-                type="color"
-                name="bg-color"
-                @input="$emit('polygon-update')"
-            >
-        </div> -->
-
-        <color-interpolator
-            :active="polygon.colorInterPolator"
-            @update-color-interpolator="setColorInterPolator"
-        />
+                <input-range
+                    v-model.number="polygon.cy"
+                    class="sliders__input"
+                    :min="-256"
+                    :max="256"
+                    :step="0.1"
+                    :label="$tc('home.centerY', format(f.float)(polygon.cy))"
+                    @input.native="$emit('polygon-update')"
+                    @add="(step) => { polygon.cy += step; $emit('polygon-update')}"
+                    @subtract="(step) => { polygon.cy -= step; $emit('polygon-update')}"
+                />
+            </div>
+        </div>
     </div>
 </template>
 
@@ -226,15 +287,47 @@ export default {
     display: flex;
     flex-direction: column;
 
-    .radio__input,
-    .checkbox__input {
-        margin-top: $margin-y;
-    }
-
-    .radio__input,
-    .checkbox__input,
-    .sliders__input {
+    &__general,
+    &__border-radius,
+    &__stroke-width,
+    &__color,
+    &__sides,
+    &__size,
+    &__position {
+        border: $border-width solid $tertiary;
+        border-radius: $border-radius;
+        display: flex;
+        flex-direction: column;
         margin-bottom: $margin-y;
+        overflow: hidden;
+
+        div[class$="__caption"] {
+            background: $tertiary;
+            color: $primary;
+            cursor: pointer;
+            font-weight: light;
+            padding: $padding-y $padding-x;
+            text-transform: uppercase;
+            transition: background $transition-duration $transition-timing-function;
+
+            &:hover {
+                background: rgba($tertiary, 0.9);
+            }
+        }
+
+        div[class$="__content"] {
+            background: rgba($tertiary, 0.4);
+            cursor: pointer;
+            padding: $padding-y $padding-x;
+
+            .sliders__input,
+            .radio__input,
+            .checkbox__input {
+                &:not(:last-child) {
+                    margin-bottom: $margin-y;
+                }
+            }
+        }
     }
 }
 </style>

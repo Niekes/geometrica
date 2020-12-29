@@ -55,46 +55,37 @@
             </div>
         </div>
 
-        <div class="circle-control__radius">
+        <div class="circle-control__angle">
             <div
-                class="radius__caption"
+                class="position__caption"
                 @click="toggle"
-                v-text="$t('home.radius')"
+                v-text="$t('home.angle')"
             />
 
-            <div class="radius__content hidden">
+            <div class="position__content hidden">
                 <input-range
-                    v-model.number="circle.radiusX"
-                    class="sliders__input x"
-                    :min="1"
-                    :max="512"
+                    v-model.number="circle.startAngle"
+                    class="sliders__input"
+                    :min="0"
+                    :max="360"
                     :step="1"
-                    :label="$tc('home.radiusX', circle.radiusX / 2)"
-                    @input.native="handleRadiusX"
-                    @add="(step) => { circle.radiusX += step; handleRadiusX()}"
-                    @subtract="(step) => { circle.radiusX -= step; handleRadiusX()}"
+                    :label="$tc('home.startAngle', circle.startAngle)"
+                    @input.native="$emit('circle-update')"
+                    @add="(step) => { circle.startAngle += step; $emit('circle-update')}"
+                    @subtract="(step) => { circle.startAngle -= step; $emit('circle-update')}"
                 />
 
                 <input-range
-                    v-model.number="circle.radiusY"
-                    class="sliders__input y"
-                    :min="1"
-                    :max="512"
+                    v-model.number="circle.endAngle"
+                    class="sliders__input"
+                    :min="0"
+                    :max="360"
                     :step="1"
-                    :label="$tc('home.radiusY', circle.radiusY / 2)"
-                    @input.native="handleRadiusY"
-                    @add="(step) => { circle.radiusY += step; handleRadiusY()}"
-                    @subtract="(step) => { circle.radiusY -= step; handleRadiusY()}"
+                    :label="$tc('home.endAngle', circle.endAngle)"
+                    @input.native="$emit('circle-update')"
+                    @add="(step) => { circle.endAngle += step; $emit('circle-update')}"
+                    @subtract="(step) => { circle.endAngle -= step; $emit('circle-update')}"
                 />
-
-                <button
-                    class="radius__lock"
-                    @click="circle.radiusIsLocked = !circle.radiusIsLocked"
-                >
-                    <svg-icon
-                        :xlink="circle.radiusIsLocked ? '#lock-closed' : '#lock-open'"
-                    />
-                </button>
             </div>
         </div>
 
@@ -144,7 +135,7 @@
                     @change.native="$emit('circle-update')"
                 />
 
-                <input-radio
+                <input-checkbox
                     :id="'flip-color-interpolator'"
                     v-model="circle.flipColorInterpolator"
                     class="radio__input"
@@ -173,40 +164,48 @@
             </div>
         </div>
 
-        <div class="circle-control__angle">
+        <div class="circle-control__radius">
             <div
-                class="position__caption"
+                class="radius__caption"
                 @click="toggle"
-                v-text="$t('home.angle')"
+                v-text="$t('home.radius')"
             />
 
-            <div class="position__content hidden">
+            <div class="radius__content hidden">
                 <input-range
-                    v-model.number="circle.startAngle"
-                    class="sliders__input"
-                    :min="0"
-                    :max="360"
+                    v-model.number="circle.radiusX"
+                    class="sliders__input x"
+                    :min="1"
+                    :max="512"
                     :step="1"
-                    :label="$tc('home.startAngle', circle.startAngle)"
-                    @input.native="$emit('circle-update')"
-                    @add="(step) => { circle.startAngle += step; $emit('circle-update')}"
-                    @subtract="(step) => { circle.startAngle -= step; $emit('circle-update')}"
+                    :label="$tc('home.radiusX', circle.radiusX / 2)"
+                    @input.native="handleRadiusX"
+                    @add="(step) => { circle.radiusX += step; handleRadiusX()}"
+                    @subtract="(step) => { circle.radiusX -= step; handleRadiusX()}"
                 />
 
                 <input-range
-                    v-model.number="circle.endAngle"
-                    class="sliders__input"
-                    :min="0"
-                    :max="360"
+                    v-model.number="circle.radiusY"
+                    class="sliders__input y"
+                    :min="1"
+                    :max="512"
                     :step="1"
-                    :label="$tc('home.endAngle', circle.endAngle)"
-                    @input.native="$emit('circle-update')"
-                    @add="(step) => { circle.endAngle += step; $emit('circle-update')}"
-                    @subtract="(step) => { circle.endAngle -= step; $emit('circle-update')}"
+                    :label="$tc('home.radiusY', circle.radiusY / 2)"
+                    @input.native="handleRadiusY"
+                    @add="(step) => { circle.radiusY += step; handleRadiusY()}"
+                    @subtract="(step) => { circle.radiusY -= step; handleRadiusY()}"
                 />
+
+                <button
+                    class="radius__lock"
+                    @click="circle.radiusIsLocked = !circle.radiusIsLocked"
+                >
+                    <svg-icon
+                        :xlink="circle.radiusIsLocked ? '#lock-closed' : '#lock-open'"
+                    />
+                </button>
             </div>
         </div>
-
 
         <div class="circle-control__position">
             <div
