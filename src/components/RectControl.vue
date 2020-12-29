@@ -51,6 +51,11 @@
                     :label="$t('home.howToDrawShape')"
                     @change.native="$emit('rect-update')"
                 />
+
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetRectangles"
+                />
             </div>
         </div>
 
@@ -153,6 +158,12 @@
                         :xlink="rect.borderRadiusIsLocked ? '#lock-closed' : '#lock-open'"
                     />
                 </button>
+
+                <base-button
+                    class="border-radius__reset"
+                    :text="$t('home.reset')"
+                    @click.native="resetBorderRadius"
+                />
             </div>
         </div>
 
@@ -174,6 +185,7 @@
                     @add="(step) => { rect.strokeWidth += step; $emit('rect-update')}"
                     @subtract="(step) => { rect.strokeWidth -= step; $emit('rect-update')}"
                 />
+
                 <input-checkbox
                     :id="'stroke-width'"
                     v-model="rect.calcStrokeWidth"
@@ -181,6 +193,11 @@
                     :options="rect.calcStrokeWidthOptions"
                     :label="$t('home.strokeWidth')"
                     @change.native="$emit('rect-update')"
+                />
+
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetStrokeWidth"
                 />
             </div>
         </div>
@@ -227,6 +244,11 @@
                     :active="rect.colorInterPolator"
                     @update-color-interpolator="setColorInterPolator"
                 />
+
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetColor"
+                />
             </div>
         </div>
 
@@ -269,6 +291,12 @@
                         :xlink="rect.sizeIsLocked ? '#lock-closed' : '#lock-open'"
                     />
                 </button>
+
+                <base-button
+                    class="size__reset"
+                    :text="$t('home.reset')"
+                    @click.native="resetSize"
+                />
             </div>
         </div>
         <div class="rect-control__position">
@@ -302,6 +330,10 @@
                     @add="(step) => { rect.cy += step; $emit('rect-update')}"
                     @subtract="(step) => { rect.cy -= step; $emit('rect-update')}"
                 />
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetPosition"
+                />
             </div>
         </div>
     </div>
@@ -313,6 +345,7 @@ import {
     format,
 } from 'd3';
 
+import BaseButton from '@/components/BaseButton';
 import InputRange from '@/components/InputRange';
 import InputRadio from '@/components/InputRadio';
 import InputCheckbox from '@/components/InputCheckbox';
@@ -324,12 +357,14 @@ import config from '@/config';
 const {
     colorInterPolators,
     format: f,
+    shapes,
 } = config;
 
 export default {
     name: 'RectControl',
 
     components: {
+        BaseButton,
         ColorInterpolator,
         InputCheckbox,
         InputRadio,
@@ -405,12 +440,55 @@ export default {
 
             this.$emit('rect-update');
         },
-        format,
         toggle(e) {
             const isHidden = select(e.target.nextSibling).classed('hidden');
 
             select(e.target.nextSibling).classed('hidden', !isHidden);
         },
+        resetRectangles() {
+            this.rect.amount = shapes.rect.amount;
+            this.rect.distance = shapes.rect.distance;
+            this.rect.rotation = shapes.rect.rotation;
+            this.rect.stroke = shapes.rect.stroke;
+
+            this.$emit('rect-update');
+        },
+        resetBorderRadius() {
+            this.rect.borderRadius.tl = 0;
+            this.rect.borderRadius.tr = 0;
+            this.rect.borderRadius.bl = 0;
+            this.rect.borderRadius.br = 0;
+            this.rect.borderRadiusIsLocked = shapes.rect.borderRadiusIsLocked;
+
+            this.$emit('rect-update');
+        },
+        resetStrokeWidth() {
+            this.rect.strokeWidth = shapes.rect.strokeWidth;
+            this.rect.calcStrokeWidth = shapes.rect.calcStrokeWidth;
+
+            this.$emit('rect-update');
+        },
+        resetColor() {
+            this.rect.calcOpacity = shapes.rect.calcOpacity;
+            this.rect.flipColorInterpolator = shapes.rect.flipColorInterpolator;
+            [this.rect.colorInterPolator] = colorInterPolators;
+
+            this.$emit('rect-update');
+        },
+        resetSize() {
+            this.rect.width = shapes.rect.width;
+            this.rect.height = shapes.rect.height;
+            this.rect.sizeIsLocked = shapes.rect.sizeIsLocked;
+
+            this.$emit('rect-update');
+        },
+        resetPosition() {
+            this.rect.cx = shapes.rect.cx;
+            this.rect.cy = shapes.rect.cy;
+
+            this.$emit('rect-update');
+        },
+        format,
     },
 };
 </script>
@@ -469,9 +547,10 @@ export default {
             "border-radius-tl border-radius-lock"
             "border-radius-tr border-radius-lock"
             "border-radius-bl border-radius-lock"
-            "border-radius-br border-radius-lock";
+            "border-radius-br border-radius-lock"
+            "border-radius-reset border-radius-reset";
         grid-template-columns: 1fr min-content;
-        grid-template-rows: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr 1fr min-content;
     }
 
     .border-radius__tl {
@@ -490,14 +569,19 @@ export default {
         grid-area: border-radius-br;
     }
 
+    .border-radius__reset {
+        grid-area: border-radius-reset;
+    }
+
     .size__content {
         display: grid;
         gap: 0 $margin-x;
         grid-template-areas:
             "width size-lock"
-            "height size-lock";
+            "height size-lock"
+            "size-reset size-reset";
         grid-template-columns: 1fr min-content;
-        grid-template-rows: 1fr 1fr;
+        grid-template-rows: 1fr 1fr min-content;
     }
 
     .width {
@@ -510,6 +594,10 @@ export default {
 
     .size__lock {
         grid-area: size-lock;
+    }
+
+    .size__reset {
+        grid-area: size-reset;
     }
 
     .border-radius__lock {

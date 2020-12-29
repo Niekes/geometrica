@@ -159,6 +159,11 @@
                     :active="polygon.colorInterPolator"
                     @update-color-interpolator="setColorInterPolator"
                 />
+
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetColor"
+                />
             </div>
         </div>
 
@@ -324,6 +329,13 @@ export default {
         resetStrokeWidth() {
             this.polygon.strokeWidth = shapes.polygon.strokeWidth;
             this.polygon.calcStrokeWidth = shapes.polygon.calcStrokeWidth;
+
+            this.$emit('polygon-update');
+        },
+        resetColor() {
+            this.polygon.calcOpacity = shapes.polygon.calcOpacity;
+            this.polygon.flipColorInterpolator = shapes.polygon.flipColorInterpolator;
+            [this.polygon.colorInterPolator] = colorInterPolators;
 
             this.$emit('polygon-update');
         },

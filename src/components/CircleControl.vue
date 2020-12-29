@@ -52,6 +52,11 @@
                     :label="$t('home.howToDrawShape')"
                     @change.native="$emit('circle-update')"
                 />
+
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetCircles"
+                />
             </div>
         </div>
 
@@ -86,6 +91,11 @@
                     @add="(step) => { circle.endAngle += step; $emit('circle-update')}"
                     @subtract="(step) => { circle.endAngle -= step; $emit('circle-update')}"
                 />
+
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetAngle"
+                />
             </div>
         </div>
 
@@ -115,6 +125,11 @@
                     :options="circle.calcStrokeWidthOptions"
                     :label="$t('home.strokeWidth')"
                     @change.native="$emit('circle-update')"
+                />
+
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetStrokeWidth"
                 />
             </div>
         </div>
@@ -161,6 +176,11 @@
                     :active="circle.colorInterPolator"
                     @update-color-interpolator="setColorInterPolator"
                 />
+
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetColor"
+                />
             </div>
         </div>
 
@@ -204,6 +224,12 @@
                         :xlink="circle.radiusIsLocked ? '#lock-closed' : '#lock-open'"
                     />
                 </button>
+
+                <base-button
+                    class="radius__reset"
+                    :text="$t('home.reset')"
+                    @click.native="resetRadius"
+                />
             </div>
         </div>
 
@@ -238,6 +264,11 @@
                     @add="(step) => { circle.cy += step; $emit('circle-update')}"
                     @subtract="(step) => { circle.cy -= step; $emit('circle-update')}"
                 />
+
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetPosition"
+                />
             </div>
         </div>
     </div>
@@ -249,6 +280,7 @@ import {
     format,
 } from 'd3';
 
+import BaseButton from '@/components/BaseButton';
 import InputRange from '@/components/InputRange';
 import InputRadio from '@/components/InputRadio';
 import InputCheckbox from '@/components/InputCheckbox';
@@ -260,12 +292,14 @@ import config from '@/config';
 const {
     colorInterPolators,
     format: f,
+    shapes,
 } = config;
 
 export default {
     name: 'CircleControl',
 
     components: {
+        BaseButton,
         ColorInterpolator,
         InputCheckbox,
         InputRadio,
@@ -309,6 +343,46 @@ export default {
             const isHidden = select(e.target.nextSibling).classed('hidden');
 
             select(e.target.nextSibling).classed('hidden', !isHidden);
+        },
+        resetCircles() {
+            this.circle.amount = shapes.circle.amount;
+            this.circle.distance = shapes.circle.distance;
+            this.circle.rotation = shapes.circle.rotation;
+            this.circle.stroke = shapes.circle.stroke;
+
+            this.$emit('circle-update');
+        },
+        resetAngle() {
+            this.circle.startAngle = shapes.circle.startAngle;
+            this.circle.endAngle = shapes.circle.endAngle;
+
+            this.$emit('circle-update');
+        },
+        resetStrokeWidth() {
+            this.circle.strokeWidth = shapes.circle.strokeWidth;
+            this.circle.calcStrokeWidth = shapes.circle.calcStrokeWidth;
+
+            this.$emit('circle-update');
+        },
+        resetColor() {
+            this.circle.calcOpacity = shapes.circle.calcOpacity;
+            this.circle.flipColorInterpolator = shapes.circle.flipColorInterpolator;
+            [this.circle.colorInterPolator] = colorInterPolators;
+
+            this.$emit('circle-update');
+        },
+        resetRadius() {
+            this.circle.radiusX = shapes.circle.radiusX;
+            this.circle.radiusY = shapes.circle.radiusY;
+            this.circle.radiusIsLocked = shapes.circle.radiusIsLocked;
+
+            this.$emit('circle-update');
+        },
+        resetPosition() {
+            this.circle.cx = shapes.circle.cx;
+            this.circle.cy = shapes.circle.cy;
+
+            this.$emit('circle-update');
         },
         format,
     },
@@ -367,9 +441,10 @@ export default {
         gap: 0 $margin-x;
         grid-template-areas:
             "radius-x radius-lock"
-            "radius-y radius-lock";
+            "radius-y radius-lock"
+            "radius-reset radius-reset";
         grid-template-columns: 1fr min-content;
-        grid-template-rows: 1fr 1fr;
+        grid-template-rows: 1fr 1fr min-content;
     }
 
     .x {
@@ -406,6 +481,10 @@ export default {
         &:hover {
             background: $black-10;
         }
+    }
+
+    .radius__reset {
+        grid-area: radius-reset;
     }
 }
 </style>

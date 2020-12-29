@@ -90,11 +90,8 @@ export default {
         border-radius: $border-radius;
         cursor: pointer;
         height: 2rem;
+        margin-bottom: $margin-y;
         width: 100%;
-
-        &:not(:last-child) {
-            margin-bottom: $margin-y;
-        }
 
         &:not(&--active):hover {
             border: $border-width * 2 solid $black-75;
