@@ -89,9 +89,9 @@ export default {
 
     data() {
         return {
-            rect: config.shapes.rect,
-            circle: config.shapes.circle,
-            polygon: config.shapes.polygon,
+            rect: Object.assign({}, config.shapes.rect),
+            circle: Object.assign({}, config.shapes.circle),
+            polygon: Object.assign({}, config.shapes.polygon),
             selectedShape: 'rectangle',
             shapes: [
                 { name: 'rectangle' },

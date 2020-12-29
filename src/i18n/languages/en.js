@@ -49,6 +49,7 @@ export default {
         topLeftN: 'Top left: {n}',
         topRightN: 'Top right: {n}',
         width: 'Width: {n}px',
+        reset: 'Reset',
     },
     cookiesBanner: {
         text: 'Our website uses cookies to improve your experience. We\'ll assume you\'re ok with this, but you can opt-out if you wish.',

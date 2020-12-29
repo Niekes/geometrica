@@ -18,6 +18,7 @@
                     @add="(step) => { polygon.amount += step; $emit('polygon-update')}"
                     @subtract="(step) => { polygon.amount -= step; $emit('polygon-update')}"
                 />
+
                 <input-range
                     v-model.number="polygon.distance"
                     class="sliders__input"
@@ -50,6 +51,11 @@
                     :label="$t('home.howToDrawShape')"
                     @change.native="$emit('polygon-update')"
                 />
+
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetPolygons"
+                />
             </div>
         </div>
 
@@ -70,6 +76,10 @@
                     @input.native="$emit('polygon-update')"
                     @add="(step) => { polygon.borderRadius += step; $emit('polygon-update')}"
                     @subtract="(step) => { polygon.borderRadius -= step; $emit('polygon-update')}"
+                />
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetBorderRadius"
                 />
             </div>
         </div>
@@ -99,6 +109,10 @@
                     :options="polygon.calcStrokeWidthOptions"
                     :label="$t('home.strokeWidth')"
                     @change.native="$emit('polygon-update')"
+                />
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetStrokeWidth"
                 />
             </div>
         </div>
@@ -166,6 +180,10 @@
                     @add="(step) => { polygon.sides += step; $emit('polygon-update')}"
                     @subtract="(step) => { polygon.sides -= step; $emit('polygon-update')}"
                 />
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetSides"
+                />
             </div>
         </div>
 
@@ -186,6 +204,11 @@
                     @input.native="$emit('polygon-update')"
                     @add="(step) => { polygon.size += step; $emit('polygon-update')}"
                     @subtract="(step) => { polygon.size -= step; $emit('polygon-update')}"
+                />
+
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetSize"
                 />
             </div>
         </div>
@@ -221,6 +244,11 @@
                     @add="(step) => { polygon.cy += step; $emit('polygon-update')}"
                     @subtract="(step) => { polygon.cy -= step; $emit('polygon-update')}"
                 />
+
+                <base-button
+                    :text="$t('home.reset')"
+                    @click.native="resetPosition"
+                />
             </div>
         </div>
     </div>
@@ -232,6 +260,7 @@ import {
     format,
 } from 'd3';
 
+import BaseButton from '@/components/BaseButton';
 import InputRange from '@/components/InputRange';
 import InputRadio from '@/components/InputRadio';
 import InputCheckbox from '@/components/InputCheckbox';
@@ -242,12 +271,14 @@ import config from '@/config';
 const {
     colorInterPolators,
     format: f,
+    shapes,
 } = config;
 
 export default {
     name: 'PolygonControl',
 
     components: {
+        BaseButton,
         ColorInterpolator,
         InputCheckbox,
         InputRadio,
@@ -276,6 +307,41 @@ export default {
             const isHidden = select(e.target.nextSibling).classed('hidden');
 
             select(e.target.nextSibling).classed('hidden', !isHidden);
+        },
+        resetPolygons() {
+            this.polygon.amount = shapes.polygon.amount;
+            this.polygon.distance = shapes.polygon.distance;
+            this.polygon.rotation = shapes.polygon.rotation;
+            this.polygon.stroke = shapes.polygon.stroke;
+
+            this.$emit('polygon-update');
+        },
+        resetBorderRadius() {
+            this.polygon.borderRadius = shapes.polygon.borderRadius;
+
+            this.$emit('polygon-update');
+        },
+        resetStrokeWidth() {
+            this.polygon.strokeWidth = shapes.polygon.strokeWidth;
+            this.polygon.calcStrokeWidth = shapes.polygon.calcStrokeWidth;
+
+            this.$emit('polygon-update');
+        },
+        resetSides() {
+            this.polygon.sides = shapes.polygon.sides;
+
+            this.$emit('polygon-update');
+        },
+        resetSize() {
+            this.polygon.size = shapes.polygon.size;
+
+            this.$emit('polygon-update');
+        },
+        resetPosition() {
+            this.polygon.cx = shapes.polygon.cx;
+            this.polygon.cy = shapes.polygon.cy;
+
+            this.$emit('polygon-update');
         },
         format,
     },
