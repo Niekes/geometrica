@@ -454,10 +454,10 @@ export default {
             this.$emit('rect-update');
         },
         resetBorderRadius() {
-            this.rect.borderRadius.tl = 0;
-            this.rect.borderRadius.tr = 0;
-            this.rect.borderRadius.bl = 0;
-            this.rect.borderRadius.br = 0;
+            this.rect.borderRadius.tl = shapes.rect.borderRadius.tl;
+            this.rect.borderRadius.tr = shapes.rect.borderRadius.tr;
+            this.rect.borderRadius.bl = shapes.rect.borderRadius.bl;
+            this.rect.borderRadius.br = shapes.rect.borderRadius.br;
             this.rect.borderRadiusIsLocked = shapes.rect.borderRadiusIsLocked;
 
             this.$emit('rect-update');
