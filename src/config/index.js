@@ -119,11 +119,7 @@ export default {
             flipColorInterpolatorOptions: [
                 {
                     value: true,
-                    text: i18n.t('home.yes'),
-                },
-                {
-                    value: false,
-                    text: i18n.t('home.no'),
+                    text: i18n.t('home.flipColorScheme'),
                 },
             ],
             strokeWidth: 1,
@@ -168,7 +164,6 @@ export default {
             radiusIsLocked: true,
         },
         polygon: {
-
             amount: 16,
             bgColor: '#000000',
             borderRadius: 0,
@@ -180,11 +175,7 @@ export default {
             flipColorInterpolatorOptions: [
                 {
                     value: true,
-                    text: i18n.t('home.yes'),
-                },
-                {
-                    value: false,
-                    text: i18n.t('home.no'),
+                    text: i18n.t('home.flipColorScheme'),
                 },
             ],
             strokeWidth: 1,

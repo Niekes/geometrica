@@ -4,7 +4,7 @@
             <div
                 class="general__caption"
                 @click="toggle"
-                v-text="$t('home.general')"
+                v-text="$t('home.rectangles')"
             />
             <div class="general__content hidden">
                 <input-range
@@ -13,7 +13,7 @@
                     :min="2"
                     :max="1000"
                     :step="1"
-                    :label="$tc('home.amountOfRectangles', rect.amount)"
+                    :label="$tc('home.amountN', rect.amount)"
                     @input.native="$emit('rect-update')"
                     @add="(step) => { rect.amount += step; $emit('rect-update')}"
                     @subtract="(step) => { rect.amount -= step; $emit('rect-update')}"
@@ -422,10 +422,10 @@ export default {
 
     &__general,
     &__border-radius,
-    &__size,
-    &__position,
+    &__stroke-width,
     &__color,
-    &__stroke-width {
+    &__size,
+    &__position {
         border: $border-width solid $tertiary;
         border-radius: $border-radius;
         display: flex;

@@ -6,7 +6,7 @@
             :min="2"
             :max="1000"
             :step="1"
-            :label="$tc('home.amountOfPolygons', polygon.amount)"
+            :label="$tc('home.amountN', polygon.amount)"
             @input.native="$emit('polygon-update')"
             @add="(step) => { polygon.amount += step; $emit('polygon-update')}"
             @subtract="(step) => { polygon.amount -= step; $emit('polygon-update')}"
@@ -167,6 +167,7 @@
 
 <script>
 import {
+    select,
     format,
 } from 'd3';
 
@@ -209,6 +210,11 @@ export default {
             this.polygon.colorInterPolator = inter;
 
             this.$emit('polygon-update');
+        },
+        toggle(e) {
+            const isHidden = select(e.target.nextSibling).classed('hidden');
+
+            select(e.target.nextSibling).classed('hidden', !isHidden);
         },
         format,
     },
