@@ -1,0 +1,11 @@
+@mixin font-face($fontFamily, $weight) {
+    @font-face {
+        font-family: $fontFamily;
+        font-weight: $weight;
+        src:
+            url('~@/assets/fonts/' + $fontFamily + '-' + $weight + '.eot?') format('eot'),
+            url('~@/assets/fonts/' + $fontFamily + '-' + $weight + '.woff2') format('woff2'),
+            url('~@/assets/fonts/' + $fontFamily + '-' + $weight + '.woff') format('woff'),
+            url('~@/assets/fonts/' + $fontFamily + '-' + $weight + '.ttf') format('truetype');
+    }
+}

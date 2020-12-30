@@ -53,12 +53,12 @@ export default {
     align-items: center;
     display: flex;
     justify-content: center;
+    user-select: none;
 
     &--variant-1 {
-        background: $black-10;
+        background: $white-10;
         border: $border-width solid $white-70;
         border-radius: $border-radius;
-        box-shadow: 1px 1px 3px 1px rgba($primary, 0.2), -1px -1px 3px 1px rgba($primary, 0.2);
         color: $white;
         cursor: pointer;
         font-size: 1rem;
@@ -67,11 +67,11 @@ export default {
         text-align: center;
         text-decoration: none;
         text-shadow: 1px 1px 2px $black-30, -1px -1px 2px $black-30;
-        transition: box-shadow $transition-duration $transition-timing-function;
+        transition: background $transition-duration / 2 $transition-timing-function;
         width: 100%;
 
         &:hover {
-            box-shadow: 1px 1px 3px 1px rgba($primary, 0.4), -1px -1px 3px 1px rgba($primary, 0.4);
+            background: $white-20;
         }
     }
 

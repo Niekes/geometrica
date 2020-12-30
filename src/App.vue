@@ -61,6 +61,7 @@ body,
 
 body {
     font-family:
+        BeVietnam,
         -apple-system,
         BlinkMacSystemFont,
         "Segoe UI",

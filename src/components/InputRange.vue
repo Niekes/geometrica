@@ -163,10 +163,10 @@ export default {
         align-self: flex-end;
         color: $white;
         font-size: $font-size * 0.7;
-        font-weight: bolder;
+        font-weight: 700;
         grid-area: label;
         justify-content: center;
-        text-transform: uppercase;
+        letter-spacing: 0.5px;
         user-select: none;
         white-space: nowrap;
         z-index: 1;
@@ -176,7 +176,7 @@ export default {
         grid-area: input;
         place-self: center;
 
-        @include input-type-range($white, 1rem, 1rem, 100%, 0.6rem);
+        @include input-type-range($white, 1rem, 1rem, 100%, 0.5rem);
     }
 }
 

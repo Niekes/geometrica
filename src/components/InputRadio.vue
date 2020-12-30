@@ -77,10 +77,10 @@ export default {
             cursor: pointer;
             display: flex;
             font-size: $font-size * 0.7;
-            font-weight: bolder;
+            font-weight: 700;
+            letter-spacing: 0.5px;
             padding-left: $font-size * 0.7 + $padding-x;
             position: relative;
-            text-transform: uppercase;
             user-select: none;
             white-space: nowrap;
             z-index: 1;

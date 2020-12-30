@@ -7,6 +7,15 @@
 @import '~normalize.css';
 @import './variables';
 
+/*
+    Typography/Font-Family
+*/
+@import './mixins/font-face';
+
+@include font-face(BeVietnam, 300);
+@include font-face(BeVietnam, 400);
+@include font-face(BeVietnam, 700);
+
 .hidden {
     display: none !important;
 }
