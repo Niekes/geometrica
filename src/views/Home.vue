@@ -126,6 +126,7 @@ export default {
         this.ctx = canvasSelection.node().getContext('2d');
 
         this.ctx.scale(2, 2);
+        this.ctx.imageSmoothingEnabled = false;
 
         this.draw();
     },

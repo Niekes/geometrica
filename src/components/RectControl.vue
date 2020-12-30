@@ -515,7 +515,7 @@ export default {
             background: $tertiary;
             color: $primary;
             cursor: pointer;
-            font-weight: light;
+            font-weight: 400;
             padding: $padding-y $padding-x;
             text-transform: uppercase;
             transition: background $transition-duration $transition-timing-function;
@@ -526,7 +526,12 @@ export default {
         }
 
         div[class$="__content"] {
-            background: rgba($tertiary, 0.4);
+            background:
+                linear-gradient(
+                    45deg,
+                    rgba($tertiary, 0.5),
+                    rgba(lighten($tertiary, 10%), 0.5),
+                );
             cursor: pointer;
             padding: $padding-y $padding-x;
 

@@ -102,7 +102,7 @@ export default {
             this.p = this.scale(this.value) * 100;
 
             this.slider
-                .style('background', `linear-gradient(90deg, ${localstyles.secondary} 0%, ${localstyles.secondary} ${this.p}%, rgba(255, 255, 255, 0.3) ${this.p}%)`);
+                .style('background', `linear-gradient(90deg, ${localstyles.primary} 0%, ${localstyles.primary} ${this.p}%, rgba(255, 255, 255, 0.3) ${this.p}%)`);
         },
     },
 };
@@ -137,8 +137,8 @@ export default {
 
     &__subtract,
     &__add {
-        background-color: $secondary;
-        border: $border-width solid $primary;
+        background-color: $white-10;
+        border: $border-width solid $white-70;
         border-radius: $border-radius;
         cursor: pointer;
         padding: $padding-y $padding-x;
@@ -151,11 +151,11 @@ export default {
         }
 
         &:hover {
-            background: rgba($primary, 0.9);
+            background: $white-20;
         }
 
         &:active:hover {
-            background: $black;
+            background: $white-50;
         }
     }
 

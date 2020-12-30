@@ -1,10 +1,10 @@
 /*
     All variables in here are available in every .vue file
 */
-$primary: #1c243f;
-$secondary: #3d4f69;
-$tertiary: #70bcbf;
-$quaternary: #feb8c4;
+$primary: desaturate(#1c243f, 10%);
+$secondary: darken(#3d4f69, 10%);
+$tertiary: #5fede1;
+$quaternary: #62b3e2;
 
 $white: rgb(255, 255, 255);
 $black: rgb(0, 0, 0);
@@ -36,7 +36,7 @@ $black-75: rgba($black, 0.75);
 $black-80: rgba($black, 0.8);
 $black-90: rgba($black, 0.9);
 
-$border-radius: 0.15rem;
+$border-radius: 0.1rem;
 $border-width: 1px;
 
 $breakpoint-xs: 0;
