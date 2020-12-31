@@ -127,8 +127,8 @@ export default {
             amount: (isCircle && +query.amount) || 16,
             bgColor: (isCircle && query.bgColor) || '#000000',
             colorInterPolator: (isCircle && query.colorInterPolator),
-            cx: (isCircle && +query.cx) || 16,
-            cy: (isCircle && +query.cy) || 16,
+            cx: (isCircle && +query.cx) || 0,
+            cy: (isCircle && +query.cy) || 0,
             distance: (isCircle && +query.distance) || 16,
             flipColorInterpolator: isCircle ? JSON.parse(query.flipColorInterpolator) : false,
             flipColorInterpolatorOptions: [
