@@ -2,6 +2,10 @@ import {
     color,
 } from 'd3';
 
+import config from '@/config';
+
+const { colorInterPolators } = config;
+
 export default {
     methods: {
         setPath(numberOfVertices, borderRadius, size) {
@@ -50,6 +54,8 @@ export default {
                 size,
                 calcOpacity,
                 calcStrokeWidth,
+                colorInterPolator,
+                flipColorInterpolator,
             } = this.polygon;
 
             const radians = (this.polygon.rotation * this.PI / 180);
@@ -64,6 +70,8 @@ export default {
             const cx = this.canvasHalfWidth + this.polygon.cx;
             const cy = this.canvasHalfHeight + this.polygon.cy * -1;
 
+            const colorIp = colorInterPolators.find(c => colorInterPolator === c.name).fn;
+
             for (let i = 0; i < amount; i += 1) {
                 if (size - (i * distance) < 0) return;
 
@@ -71,11 +79,7 @@ export default {
                 const k = i / adjustedAmount;
                 const flippedK = Math.abs(k - 1);
                 const angle = radians / (adjustedAmount) * i;
-
-
-                const c = color(this.polygon.flipColorInterpolator
-                    ? this.polygon.colorInterPolator.fn(flippedK)
-                    : this.polygon.colorInterPolator.fn(k));
+                const c = color(flipColorInterpolator ? colorIp(flippedK) : colorIp(k));
 
                 if (interpolateOpacity) {
                     c.opacity = k;

@@ -144,6 +144,8 @@ export default {
         this.ctx.imageSmoothingEnabled = false;
 
         this.draw();
+
+        this.$root.$on('apply-icon', this.apply);
     },
 
     methods: {
@@ -166,6 +168,35 @@ export default {
                 this.drawRect();
                 break;
             }
+        },
+        apply(icon) {
+            this.selectedShape = icon.shape;
+
+            if (icon.shape === 'rect') {
+                this.rect = {
+                    ...Object.assign({}, config.shapes.rect),
+                    ...icon.parameters,
+                    borderRadius: {
+                        ...icon.parameters.borderRadius,
+                    },
+                };
+            }
+
+            if (icon.shape === 'circle') {
+                this.circle = {
+                    ...Object.assign({}, config.shapes.circle),
+                    ...icon.parameters,
+                };
+            }
+
+            if (icon.shape === 'polygon') {
+                this.polygon = {
+                    ...Object.assign({}, config.shapes.polygon),
+                    ...icon.parameters,
+                };
+            }
+
+            this.draw();
         },
     },
 };

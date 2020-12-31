@@ -125,7 +125,7 @@ export default {
     font-size: $font-size * 1.25;
     font-weight: bolder;
     padding: $padding-y $padding-x;
-    transition: color $transition-duration $transition-timing-function;
+    transition: color $transition-duration / 2 $transition-timing-function;
 
     svg {
         height: 1rem;

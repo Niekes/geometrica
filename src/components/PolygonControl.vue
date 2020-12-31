@@ -299,12 +299,11 @@ export default {
 
     created() {
         this.f = f;
-        this.polygon.colorInterPolator = this.polygon.colorInterPolator || colorInterPolators[0];
     },
 
     methods: {
         setColorInterPolator(inter) {
-            this.polygon.colorInterPolator = inter;
+            this.polygon.colorInterPolator = inter.name;
 
             this.$emit('polygon-update');
         },
@@ -335,7 +334,7 @@ export default {
         resetColor() {
             this.polygon.calcOpacity = shapes.polygon.calcOpacity;
             this.polygon.flipColorInterpolator = shapes.polygon.flipColorInterpolator;
-            [this.polygon.colorInterPolator] = colorInterPolators;
+            this.polygon.colorInterPolator = shapes.polygon.colorInterPolator;
 
             this.$emit('polygon-update');
         },

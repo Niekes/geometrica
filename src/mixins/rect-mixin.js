@@ -2,6 +2,10 @@ import {
     color,
 } from 'd3';
 
+import config from '@/config';
+
+const { colorInterPolators } = config;
+
 export default {
     methods: {
         drawRect() {
@@ -12,6 +16,8 @@ export default {
                 amount,
                 calcOpacity,
                 calcStrokeWidth,
+                colorInterPolator,
+                flipColorInterpolator,
             } = this.rect;
 
             const radians = (this.rect.rotation * this.PI / 180);
@@ -25,6 +31,8 @@ export default {
 
             const cx = this.canvasHalfWidth + this.rect.cx;
             const cy = this.canvasHalfHeight + this.rect.cy * -1;
+
+            const colorIp = colorInterPolators.find(c => colorInterPolator === c.name).fn;
 
             for (let i = 0; i < this.rect.amount; i += 1) {
                 if (this.rect.width - (i * this.rect.distance) < 0) return;
@@ -41,10 +49,7 @@ export default {
                 const brTr = this.rect.borderRadius.tr * Math.min(width, height) / 2;
                 const brBl = this.rect.borderRadius.bl * Math.min(width, height) / 2;
                 const brBr = this.rect.borderRadius.br * Math.min(width, height) / 2;
-
-                const c = color(this.rect.flipColorInterpolator
-                    ? this.rect.colorInterPolator.fn(flippedK)
-                    : this.rect.colorInterPolator.fn(k));
+                const c = color(flipColorInterpolator ? colorIp(flippedK) : colorIp(k));
 
                 if (interpolateOpacity) {
                     c.opacity = k;

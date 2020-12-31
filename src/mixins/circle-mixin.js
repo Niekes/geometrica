@@ -2,6 +2,10 @@ import {
     color,
 } from 'd3';
 
+import config from '@/config';
+
+const { colorInterPolators } = config;
+
 export default {
     methods: {
         drawCircle() {
@@ -12,6 +16,8 @@ export default {
                 amount,
                 calcOpacity,
                 calcStrokeWidth,
+                colorInterPolator,
+                flipColorInterpolator,
             } = this.circle;
 
             const radians = (this.circle.rotation * this.PI / 180);
@@ -25,6 +31,8 @@ export default {
 
             const cx = this.canvasHalfWidth + this.circle.cx;
             const cy = this.canvasHalfHeight + this.circle.cy * -1;
+
+            const colorIp = colorInterPolators.find(c => colorInterPolator === c.name).fn;
 
             for (let i = 0; i < amount; i += 1) {
                 if (this.circle.radiusX - (i * this.circle.distance) < 0) return;
@@ -40,9 +48,7 @@ export default {
 
                 const flippedK = Math.abs(k - 1);
 
-                const c = color(this.circle.flipColorInterpolator
-                    ? this.circle.colorInterPolator.fn(flippedK)
-                    : this.circle.colorInterPolator.fn(k));
+                const c = color(flipColorInterpolator ? colorIp(flippedK) : colorIp(k));
 
                 if (interpolateOpacity) {
                     c.opacity = k;

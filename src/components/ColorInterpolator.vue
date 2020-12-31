@@ -15,7 +15,7 @@ export default {
 
     props: {
         active: {
-            type: Object,
+            type: String,
             required: true,
         },
     },
@@ -42,7 +42,7 @@ export default {
             const canvas = create('canvas')
                 .attr('class', 'color-interpolator__canvas')
                 .attr(this.scopeId, '')
-                .classed('color-interpolator__canvas--active', this.active.name === color.name);
+                .classed('color-interpolator__canvas--active', this.active === color.name);
 
             canvas.datum(color);
 

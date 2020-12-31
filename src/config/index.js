@@ -63,7 +63,7 @@ export default {
             borderRadius: {
                 tl: 0, tr: 0, bl: 0, br: 0,
             },
-            colorInterPolator: null,
+            colorInterPolator: 'interpolateBrBG',
             cx: (isRect && +q.get('cx')) || 0,
             cy: (isRect && +q.get('cy')) || 0,
             distance: (isRect && +q.get('distance')) || 16,
@@ -118,7 +118,7 @@ export default {
         circle: {
             amount: (isCircle && +q.get('amount')) || 16,
             bgColor: '#000000',
-            colorInterPolator: null,
+            colorInterPolator: 'interpolateBrBG',
             cx: 0,
             cy: 0,
             distance: 16,
@@ -172,7 +172,7 @@ export default {
             amount: (isPolygon && +q.get('amount')) || 16,
             bgColor: '#000000',
             borderRadius: 0,
-            colorInterPolator: null,
+            colorInterPolator: 'interpolateBrBG',
             cx: 0,
             cy: 0,
             distance: (isPolygon && +q.get('distance')) || 16,
@@ -225,9 +225,90 @@ export default {
     icons: [
         /* eslint-disable global-require */
         {
-            src: require('@/assets/img/icon-0.jpg'),
+            src: require('@/assets/img/icon-0.png'),
+            shape: 'circle',
+            parameters: {
+                amount: 24,
+                distance: 5.6,
+                radiusX: 400,
+                radiusY: 265,
+                rotation: 1000,
+                strokeWidth: 30,
+                calcOpacity: ['interpolate', 'flip'],
+                colorInterPolator: 'interpolatePlasma',
+                radiusIsLocked: false,
+            },
+        },
+        {
+            src: require('@/assets/img/icon-1.png'),
+            shape: 'rect',
             parameters: {
                 amount: 22,
+                bgColor: '#000000',
+                borderRadius: {
+                    tl: 0.1, tr: 0.1, bl: 0.5, br: 0.5,
+                },
+                rotation: 100,
+            },
+        },
+        {
+            src: require('@/assets/img/icon-0.png'),
+            shape: 'rect',
+            parameters: {
+                amount: 22,
+                bgColor: '#000000',
+                borderRadius: {
+                    tl: 0.1, tr: 0.1, bl: 0.5, br: 0.5,
+                },
+                rotation: 100,
+            },
+        },
+        {
+            src: require('@/assets/img/icon-0.png'),
+            shape: 'rect',
+            parameters: {
+                amount: 22,
+                bgColor: '#000000',
+                borderRadius: {
+                    tl: 0.1, tr: 0.1, bl: 0.5, br: 0.5,
+                },
+                rotation: 100,
+            },
+        },
+        {
+            src: require('@/assets/img/icon-0.png'),
+            shape: 'rect',
+            parameters: {
+                amount: 22,
+                bgColor: '#000000',
+                borderRadius: {
+                    tl: 0.1, tr: 0.1, bl: 0.5, br: 0.5,
+                },
+                rotation: 100,
+            },
+        },
+        {
+            src: require('@/assets/img/icon-0.png'),
+            shape: 'rect',
+            parameters: {
+                amount: 22,
+                bgColor: '#000000',
+                borderRadius: {
+                    tl: 0.1, tr: 0.1, bl: 0.5, br: 0.5,
+                },
+                rotation: 100,
+            },
+        },
+        {
+            src: require('@/assets/img/icon-0.png'),
+            shape: 'rect',
+            parameters: {
+                amount: 22,
+                bgColor: '#000000',
+                borderRadius: {
+                    tl: 0.1, tr: 0.1, bl: 0.5, br: 0.5,
+                },
+                rotation: 100,
             },
         },
         /* eslint-enable global-require */

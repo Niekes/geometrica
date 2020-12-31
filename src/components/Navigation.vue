@@ -27,7 +27,7 @@
         </div>
 
         <download-dialogue v-if="downloadIsOpen" />
-        <image-gallery v-if="galleryIsOpen" />
+        <icon-gallery v-if="galleryIsOpen" />
         <cookies-banner v-if="showCookieBanner" />
         <navigation-menu v-if="navigationMenuIsOpen" />
 
@@ -41,7 +41,7 @@
 import BeerButton from '@/components/BeerButton';
 import CookiesBanner from '@/components/CookiesBanner';
 import DownloadDialogue from '@/components/DownloadDialogue';
-import ImageGallery from '@/components/ImageGallery';
+import IconGallery from '@/components/IconGallery';
 import NavigationMenu from '@/components/NavigationMenu';
 import SvgIcon from '@/components/SvgIcon';
 
@@ -52,7 +52,7 @@ export default {
         BeerButton,
         CookiesBanner,
         DownloadDialogue,
-        ImageGallery,
+        IconGallery,
         NavigationMenu,
         SvgIcon,
     },

@@ -381,12 +381,11 @@ export default {
 
     created() {
         this.f = f;
-        this.rect.colorInterPolator = this.rect.colorInterPolator || colorInterPolators[0];
     },
 
     methods: {
-        setColorInterPolator(inter) {
-            this.rect.colorInterPolator = inter;
+        setColorInterPolator(interpolator) {
+            this.rect.colorInterPolator = interpolator.name;
 
             this.$emit('rect-update');
         },
@@ -471,7 +470,7 @@ export default {
         resetColor() {
             this.rect.calcOpacity = shapes.rect.calcOpacity;
             this.rect.flipColorInterpolator = shapes.rect.flipColorInterpolator;
-            [this.rect.colorInterPolator] = colorInterPolators;
+            this.rect.colorInterPolator = shapes.rect.colorInterPolator;
 
             this.$emit('rect-update');
         },
@@ -612,11 +611,11 @@ export default {
     .size__lock,
     .border-radius__lock {
         background: transparent;
-        border-bottom: $border-width solid $black-50;
+        border-bottom: $border-width solid $white-70;
         border-left: 0;
         border-radius: 0 $border-radius $border-radius 0;
-        border-right: $border-width solid $black-50;
-        border-top: $border-width solid $black-50;
+        border-right: $border-width solid $white-70;
+        border-top: $border-width solid $white-70;
         color: $white;
         cursor: pointer;
         margin: $margin-y * 3.4 0 $margin-y 0;
@@ -633,7 +632,7 @@ export default {
         }
 
         &:hover {
-            background: $black-10;
+            background: $white-10;
         }
     }
 }
