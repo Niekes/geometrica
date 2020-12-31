@@ -54,7 +54,7 @@ export default {
     &__icons {
         display: grid;
         gap: $margin-y * 4 $margin-x * 4;
-        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
         grid-template-rows: 1fr;
         margin-bottom: $margin-y * 4;
 

@@ -415,6 +415,7 @@ export default {
             src: require('@/assets/img/icon-12.png'),
             shape: 'rect',
             parameters: {
+                borderRadiusIsLocked: false,
                 borderRadius: {
                     tl: 0, tr: 1, bl: 0, br: 1,
                 },
@@ -425,6 +426,44 @@ export default {
                 height: 350,
                 flipColorInterpolator: true,
                 colorInterPolator: 'interpolateSinebow',
+            },
+        },
+        {
+            src: require('@/assets/img/icon-13.png'),
+            shape: 'rect',
+            parameters: {
+                borderRadiusIsLocked: false,
+                borderRadius: {
+                    tl: 0.5, tr: 0.5, bl: 0.5, br: 0.5,
+                },
+                amount: 25,
+                rotation: 90,
+                distance: 10,
+                strokeWidth: 20,
+                width: 250,
+                height: 350,
+                flipColorInterpolator: true,
+                sizeIsLocked: false,
+                calcOpacity: ['interpolate', 'flip'],
+                calcStrokeWidth: ['interpolate', 'flip'],
+                colorInterPolator: 'interpolateYlOrBr',
+            },
+        },
+        {
+            src: require('@/assets/img/icon-14.png'),
+            shape: 'polygon',
+            parameters: {
+                borderRadius: 0.5,
+                amount: 32,
+                distance: 9,
+                rotation: 120,
+                strokeWidth: 12,
+                size: 512,
+                sides: 3,
+                cy: -20,
+                calcOpacity: ['interpolate'],
+                calcStrokeWidth: ['interpolate', 'flip'],
+                colorInterPolator: 'interpolateYlGnBu',
             },
         },
         /* eslint-enable global-require */
