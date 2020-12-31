@@ -41,9 +41,11 @@ import {
 
 import i18n from '@/i18n';
 
-const urlParams = new URLSearchParams(window.location.search);
-
-console.log(+urlParams.get('amount') || 16);
+const q = new URLSearchParams(window.location.search);
+const shape = q.get('shape');
+const isRect = shape === 'rect';
+const isCircle = shape === 'circle';
+const isPolygon = shape === 'polygon';
 
 export default {
     base: process.env.VUE_APP_BASE,
@@ -54,18 +56,18 @@ export default {
         buymeacoffee: 'https://www.buymeacoffee.com/niekes',
     },
     shapes: {
-        selected: urlParams.get('shape') || 'rectangle',
+        selected: shape || 'rect',
         rect: {
-            amount: +urlParams.get('amount') || 16,
+            amount: (isRect && +q.get('amount')) || 16,
             bgColor: '#000000',
             borderRadius: {
                 tl: 0, tr: 0, bl: 0, br: 0,
             },
             colorInterPolator: null,
-            cx: 0,
-            cy: 0,
-            distance: 16,
-            height: 256,
+            cx: (isRect && +q.get('cx')) || 0,
+            cy: (isRect && +q.get('cy')) || 0,
+            distance: (isRect && +q.get('distance')) || 16,
+            height: (isRect && +q.get('height')) || 256,
             calcOpacity: [],
             calcOpacityOptions: [
                 {
@@ -77,15 +79,15 @@ export default {
                     text: i18n.t('home.flip'),
                 },
             ],
-            flipColorInterpolator: false,
+            flipColorInterpolator: (isRect && JSON.parse(q.get('flipColorInterpolator'))) || false,
             flipColorInterpolatorOptions: [
                 {
                     value: true,
                     text: i18n.t('home.flipColorScheme'),
                 },
             ],
-            rotation: 0,
-            stroke: true,
+            rotation: (isRect && +q.get('rotation')) || 0,
+            stroke: (isRect && JSON.parse(q.get('stroke'))) || true,
             strokeOptions: [
                 {
                     value: true,
@@ -96,7 +98,7 @@ export default {
                     text: i18n.t('home.fill'),
                 },
             ],
-            strokeWidth: 1,
+            strokeWidth: (isRect && +q.get('strokeWidth')) || 1,
             calcStrokeWidth: [],
             calcStrokeWidthOptions: [
                 {
@@ -108,13 +110,13 @@ export default {
                     text: i18n.t('home.flip'),
                 },
             ],
-            width: 256,
-            borderRadiusIsLocked: true,
-            sizeIsLocked: true,
+            width: (isRect && +q.get('width')) || 256,
+            borderRadiusIsLocked: (isRect && JSON.parse(q.get('borderRadiusIsLocked'))) || true,
+            sizeIsLocked: (isRect && JSON.parse(q.get('sizeIsLocked'))) || true,
 
         },
         circle: {
-            amount: +urlParams.get('amount') || 16,
+            amount: (isCircle && +q.get('amount')) || 16,
             bgColor: '#000000',
             colorInterPolator: null,
             cx: 0,
@@ -152,7 +154,7 @@ export default {
             ],
             radiusX: 256,
             radiusY: 256,
-            rotation: 0,
+            rotation: (isCircle && +q.get('rotation')) || 0,
             stroke: true,
             strokeOptions: [
                 {
@@ -164,18 +166,16 @@ export default {
                     text: i18n.t('home.fill'),
                 },
             ],
-            startAngle: 0,
-            endAngle: 360,
             radiusIsLocked: true,
         },
         polygon: {
-            amount: 16,
+            amount: (isPolygon && +q.get('amount')) || 16,
             bgColor: '#000000',
             borderRadius: 0,
             colorInterPolator: null,
             cx: 0,
             cy: 0,
-            distance: 16,
+            distance: (isPolygon && +q.get('distance')) || 16,
             flipColorInterpolator: false,
             flipColorInterpolatorOptions: [
                 {
@@ -222,6 +222,16 @@ export default {
             ],
         },
     },
+    icons: [
+        /* eslint-disable global-require */
+        {
+            src: require('@/assets/img/icon-0.jpg'),
+            parameters: {
+                amount: 22,
+            },
+        },
+        /* eslint-enable global-require */
+    ],
     format: {
         float: '.2~f',
         standard: '.4~s',

@@ -10,8 +10,6 @@ export default {
 
             const {
                 amount,
-                startAngle,
-                endAngle,
                 calcOpacity,
                 calcStrokeWidth,
             } = this.circle;
@@ -77,13 +75,11 @@ export default {
                     radiusX / 2,
                     radiusY / 2,
                     angle,
-                    startAngle * this.PI / 180,
-                    endAngle * this.PI / 180,
+                    0,
+                    this.TAU,
                 );
 
-                if (Math.abs(this.circle.startAngle - this.circle.endAngle) === 360) {
-                    this.ctx.closePath();
-                }
+                this.ctx.closePath();
 
                 if (this.circle.stroke) {
                     this.ctx.strokeStyle = c.toString();

@@ -60,45 +60,6 @@
             </div>
         </div>
 
-        <div class="circle-control__angle">
-            <div
-                class="position__caption"
-                @click="toggle"
-                v-text="$t('home.angle')"
-            />
-
-            <div class="position__content hidden">
-                <input-range
-                    v-model.number="circle.startAngle"
-                    class="sliders__input"
-                    :min="0"
-                    :max="360"
-                    :step="1"
-                    :label="$tc('home.startAngle', circle.startAngle)"
-                    @input.native="$emit('circle-update')"
-                    @add="(step) => { circle.startAngle += step; $emit('circle-update')}"
-                    @subtract="(step) => { circle.startAngle -= step; $emit('circle-update')}"
-                />
-
-                <input-range
-                    v-model.number="circle.endAngle"
-                    class="sliders__input"
-                    :min="0"
-                    :max="360"
-                    :step="1"
-                    :label="$tc('home.endAngle', circle.endAngle)"
-                    @input.native="$emit('circle-update')"
-                    @add="(step) => { circle.endAngle += step; $emit('circle-update')}"
-                    @subtract="(step) => { circle.endAngle -= step; $emit('circle-update')}"
-                />
-
-                <base-button
-                    :text="$t('home.reset')"
-                    @click.native="resetAngle"
-                />
-            </div>
-        </div>
-
         <div class="circle-control__stroke-width">
             <div
                 class="stroke-width__caption"
@@ -349,12 +310,6 @@ export default {
             this.circle.distance = shapes.circle.distance;
             this.circle.rotation = shapes.circle.rotation;
             this.circle.stroke = shapes.circle.stroke;
-
-            this.$emit('circle-update');
-        },
-        resetAngle() {
-            this.circle.startAngle = shapes.circle.startAngle;
-            this.circle.endAngle = shapes.circle.endAngle;
 
             this.$emit('circle-update');
         },

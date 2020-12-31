@@ -88,6 +88,7 @@ export default {
             letter-spacing: 0.5px;
             padding-left: $font-size * 0.7 + $padding-x;
             position: relative;
+            text-shadow: 1px 1px 2px $black-30, -1px -1px 2px $black-30;
             user-select: none;
             white-space: nowrap;
             z-index: 1;

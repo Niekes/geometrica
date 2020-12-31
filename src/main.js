@@ -21,7 +21,7 @@ import '@/assets/svg/minus.svg?sprite';
 import '@/assets/svg/pattern.svg?sprite';
 import '@/assets/svg/plus.svg?sprite';
 import '@/assets/svg/polygon.svg?sprite';
-import '@/assets/svg/rectangle.svg?sprite';
+import '@/assets/svg/rect.svg?sprite';
 /* eslint-enable import/extensions */
 
 /*
@@ -32,7 +32,7 @@ Vue.use(VueGtag, {
         id: 'G-XXXXXX', // TODO Add new property in google analytics
     },
     appName: process.env.VUE_APP_TITLE,
-    enabled: process.env.NODE_ENV === 'production' && process.env.VUE_APP_URL === 'https://polyfy.niekes.com',
+    enabled: process.env.NODE_ENV === 'production' && process.env.VUE_APP_URL === 'https://geometrica.niekes.com',
 }, router);
 
 Vue.config.productionTip = false;

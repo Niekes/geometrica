@@ -24,7 +24,7 @@
             </div>
             <div class="control__shapes">
                 <rect-control
-                    v-if="selectedShape === 'rectangle'"
+                    v-if="selectedShape === 'rect'"
                     class="shapes__rectangle"
                     :rect="rect"
                     @rect-update="draw"
@@ -46,7 +46,7 @@
 
                 <div class="shapes__actions">
                     <base-button
-                        :text="$t('home.openGallery')"
+                        :text="$t('home.openGallery').toUpperCase()"
                         @click.native="$store.dispatch('modal/openGallery')"
                     />
                     <base-button
@@ -111,12 +111,13 @@ export default {
             polygon: Object.assign({}, config.shapes.polygon),
             selectedShape: config.shapes.selected,
             shapes: [
-                { name: 'rectangle' },
+                { name: 'rect' },
                 { name: 'circle' },
                 { name: 'polygon' },
             ],
         };
     },
+
     created() {
         this.PI = Math.PI;
         this.HALF_PI = this.PI / 2;
@@ -150,7 +151,7 @@ export default {
             await this.$nextTick();
 
             switch (this.selectedShape) {
-            case 'rectangle':
+            case 'rect':
                 this.drawRect();
                 break;
 
