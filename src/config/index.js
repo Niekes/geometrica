@@ -41,6 +41,10 @@ import {
 
 import i18n from '@/i18n';
 
+const urlParams = new URLSearchParams(window.location.search);
+
+console.log(+urlParams.get('amount') || 16);
+
 export default {
     base: process.env.VUE_APP_BASE,
     title: process.env.VUE_APP_TITLE,
@@ -50,8 +54,9 @@ export default {
         buymeacoffee: 'https://www.buymeacoffee.com/niekes',
     },
     shapes: {
+        selected: urlParams.get('shape') || 'rectangle',
         rect: {
-            amount: 16,
+            amount: +urlParams.get('amount') || 16,
             bgColor: '#000000',
             borderRadius: {
                 tl: 0, tr: 0, bl: 0, br: 0,
@@ -109,7 +114,7 @@ export default {
 
         },
         circle: {
-            amount: 16,
+            amount: +urlParams.get('amount') || 16,
             bgColor: '#000000',
             colorInterPolator: null,
             cx: 0,

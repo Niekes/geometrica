@@ -43,6 +43,18 @@
                     :polygon="polygon"
                     @polygon-update="draw"
                 />
+
+                <div class="shapes__actions">
+                    <base-button
+                        :text="$t('home.openGallery')"
+                        @click.native="$store.dispatch('modal/openGallery')"
+                    />
+                    <base-button
+                        :variant="2"
+                        :text="$t('home.download')"
+                        @click.native="$store.dispatch('modal/openDownload')"
+                    />
+                </div>
             </div>
         </div>
 
@@ -62,6 +74,7 @@ import {
 } from 'd3';
 
 import SvgIcon from '@/components/SvgIcon';
+import BaseButton from '@/components/BaseButton';
 import RectControl from '@/components/RectControl';
 import CircleControl from '@/components/CircleControl';
 import PolygonControl from '@/components/PolygonControl';
@@ -75,6 +88,7 @@ export default {
     name: 'Home',
 
     components: {
+        BaseButton,
         SvgIcon,
         CircleControl,
         RectControl,
@@ -95,7 +109,7 @@ export default {
             },
             circle: Object.assign({}, config.shapes.circle),
             polygon: Object.assign({}, config.shapes.polygon),
-            selectedShape: 'rectangle',
+            selectedShape: config.shapes.selected,
             shapes: [
                 { name: 'rectangle' },
                 { name: 'circle' },
@@ -220,11 +234,26 @@ export default {
 
     &__shapes {
         display: flex;
+        flex-direction: column;
+        height: 100%;
+        justify-content: space-between;
 
         .shapes__rectangle,
         .shapes__circle,
         .shapes__polygon {
             width: 100%;
+        }
+
+        .shapes__actions {
+            width: 100%;
+
+            button {
+                width: 100%;
+
+                &:not(:last-child) {
+                    margin-bottom: $margin-y;
+                }
+            }
         }
     }
 }

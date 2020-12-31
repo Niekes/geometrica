@@ -184,16 +184,14 @@ export default {
     .range {
         &__subtract,
         &__add {
-            color: green;
-
             svg {
-                height: 0.7rem;
-                width: 0.7rem;
+                height: 0.8rem;
+                width: 0.8rem;
             }
         }
 
         &__input {
-            @include input-type-range($white, 1rem, 1rem, 100%, 0.5rem);
+            @include input-type-range($white, 1.75rem, 1.75rem, 100%, 0.75rem);
         }
     }
 }

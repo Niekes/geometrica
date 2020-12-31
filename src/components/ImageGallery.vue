@@ -1,19 +1,7 @@
 <template>
     <modal>
-        <div class="image-gallery">
-            <div
-                class="image-gallery__images"
-            >
-                <div
-                    v-for="(image, index) in referenceImages"
-                    :key="index"
-                >
-                    <img
-                        :src="image[1].src"
-                        @click="chooseImage(index)"
-                    >
-                </div>
-            </div>
+        <div class="icon-gallery">
+            1
         </div>
     </modal>
 </template>
@@ -21,8 +9,6 @@
 <script>
 import Modal from '@/components/Modal';
 import ModalMixin from '@/mixins/modal-mixin';
-
-import config from '@/config';
 
 export default {
     name: 'ImageGallery',
@@ -33,15 +19,12 @@ export default {
 
     mixins: [ModalMixin],
 
-    computed: {
-        referenceImages() {
-            return Array.from(config.images);
-        },
-    },
 
     methods: {
         chooseImage(index) {
-            this.$root.$emit('change-image', index);
+            // WORKS
+
+            console.log(index);
             this.closeModal();
         },
     },
@@ -49,13 +32,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.image-gallery {
+.icon-gallery {
     align-content: center;
     display: flex;
     flex-direction: column;
 }
 
-.image-gallery__images {
+.icon-gallery__images {
     display: grid;
     gap: $margin-y * 4 $margin-x * 4;
     grid-auto-rows: 200px;
@@ -84,7 +67,7 @@ export default {
 }
 
 @media (max-width: $breakpoint-sm) {
-    .image-gallery__images {
+    .icon-gallery__images {
         grid-template-columns: repeat(1, 1fr);
     }
 }

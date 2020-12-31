@@ -11,6 +11,8 @@ export default {
     home: {
         amountN: 'Amount: {n}',
         angle: 'Angle',
+        download: 'Download',
+        openGallery: 'Open gallery',
         borderRadius: 'Border radius',
         borderRadiusN: 'Border radius: {n}',
         bottomLeftN: 'Bottom left: {n}',
@@ -55,6 +57,12 @@ export default {
         text: 'Our website uses cookies to improve your experience. We\'ll assume you\'re ok with this, but you can opt-out if you wish.',
         accept: 'Accept',
         learnMore: 'Learn more',
+    },
+    downloadDialogue: {
+        thanksForUsing: 'Thanks for using Geometrica!',
+        pleaseEnterEmail: 'Please enter you email address',
+        hint: 'We will send you a .png file. We will not store your email address or share it with anyone.',
+        sendIcon: 'Send icon',
     },
     faq: {
         what: 'What is geometrica?',

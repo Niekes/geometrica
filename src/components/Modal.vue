@@ -117,7 +117,7 @@ export default {
 .modal__close {
     align-content: center;
     background: transparent;
-    border: $border-width solid darken($tertiary, 20%);
+    border: $border-width solid $black;
     border-radius: $border-radius;
     color: $black-50;
     cursor: pointer;
