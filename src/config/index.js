@@ -515,6 +515,43 @@ export default {
                 flipColorInterpolator: true,
             },
         },
+        {
+            src: require('@/assets/img/icon-18.png'),
+            shape: 'polygon',
+            parameters: {
+                borderRadius: 0.05,
+                amount: 80,
+                distance: 0,
+                rotation: 145,
+                strokeWidth: 30,
+                size: 400,
+                sides: 3,
+                calcOpacity: ['interpolate', 'flip'],
+                calcStrokeWidth: ['interpolate', 'flip'],
+                flipColorInterpolator: true,
+                colorInterPolator: 'interpolateRdYlBu',
+            },
+        },
+        {
+            src: require('@/assets/img/icon-19.png'),
+            shape: 'rect',
+            parameters: {
+                borderRadius: {
+                    tl: 0.8, tr: 0.8, bl: 0.8, br: 0.8,
+                },
+                amount: 60,
+                rotation: 90,
+                distance: 0.1,
+                strokeWidth: 3,
+                width: 150,
+                height: 425,
+                flipColorInterpolator: true,
+                sizeIsLocked: false,
+                calcOpacity: ['interpolate', 'flip'],
+                calcStrokeWidth: ['interpolate', 'flip'],
+                colorInterPolator: 'interpolateTurbo',
+            },
+        },
         /* eslint-enable global-require */
     ],
     format: {
