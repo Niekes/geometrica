@@ -41,6 +41,7 @@ export default {
         this.colorInterPolators.forEach((color) => {
             const canvas = create('canvas')
                 .attr('class', 'color-interpolator__canvas')
+                .attr('title', color.name)
                 .attr(this.scopeId, '')
                 .classed('color-interpolator__canvas--active', this.active === color.name);
 

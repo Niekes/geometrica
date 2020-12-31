@@ -69,10 +69,10 @@ export default {
             height: auto;
             justify-content: center;
             max-width: 100%;
-            transition: box-shadow $transition-duration $transition-timing-function;
+            transition: box-shadow $transition-duration / 2 $transition-timing-function;
 
             &:hover {
-                box-shadow: 0 0 1rem $black-75;
+                box-shadow: 0 0 1rem 0.5rem $black-50;
             }
 
             &::before {

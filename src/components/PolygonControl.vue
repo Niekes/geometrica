@@ -274,7 +274,6 @@ import ColorInterpolator from '@/components/ColorInterpolator';
 import config from '@/config';
 
 const {
-    colorInterPolators,
     format: f,
     shapes,
 } = config;

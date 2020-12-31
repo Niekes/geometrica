@@ -355,7 +355,6 @@ import SvgIcon from '@/components/SvgIcon';
 import config from '@/config';
 
 const {
-    colorInterPolators,
     format: f,
     shapes,
 } = config;
