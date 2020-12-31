@@ -332,6 +332,52 @@ export default {
                 colorInterPolator: 'interpolateRdBu',
             },
         },
+        {
+            src: require('@/assets/img/icon-7.png'),
+            shape: 'rect',
+            parameters: {
+                amount: 12,
+                distance: 30,
+                strokeWidth: 10,
+                width: 410,
+                height: 410,
+                borderRadius: {
+                    tl: 1, tr: 1, bl: 0, br: 1,
+                },
+                borderRadiusIsLocked: false,
+                calcStrokeWidth: ['interpolate'],
+                colorInterPolator: 'interpolateCividis',
+            },
+        },
+        {
+            src: require('@/assets/img/icon-8.png'),
+            shape: 'polygon',
+            parameters: {
+                amount: 178,
+                distance: -7.3,
+                rotation: 54,
+                strokeWidth: 11.5,
+                sides: 3,
+                size: 122,
+                calcOpacity: ['interpolate'],
+                colorInterPolator: 'interpolateOranges',
+            },
+        },
+        {
+            src: require('@/assets/img/icon-9.png'),
+            shape: 'circle',
+            parameters: {
+                amount: 272,
+                distance: -4.2,
+                rotation: -126,
+                strokeWidth: 6.5,
+                radiusX: 220,
+                radiusY: 1,
+                radiusIsLocked: false,
+                calcOpacity: ['interpolate'],
+                colorInterPolator: 'interpolateViridis',
+            },
+        },
         /* eslint-enable global-require */
     ],
     format: {
