@@ -1,6 +1,8 @@
 export default {
     general: {
+        error: 'An erro occured',
         buymeabeer: 'Buy me a beer',
+        textWasCopiedToClipboard: 'Link was copied to your clipboard',
     },
     navigation: {
         cookies: 'Cookies',
@@ -11,8 +13,6 @@ export default {
     home: {
         amountN: 'Amount: {n}',
         angle: 'Angle',
-        download: 'Download',
-        openGallery: 'Open gallery',
         borderRadius: 'Border radius',
         borderRadiusN: 'Border radius: {n}',
         bottomLeftN: 'Bottom left: {n}',
@@ -21,7 +21,9 @@ export default {
         centerY: 'Center Y: {n}px',
         circles: 'Circles',
         color: 'Color',
+        copyLink: 'Copy link to this icon',
         distance: 'Distance: {n}',
+        download: 'Download',
         endAngle: 'End angle: {n}°',
         fill: 'Fill',
         flip: 'Flip',
@@ -34,12 +36,17 @@ export default {
         interpolateStrokeWidth: 'Interpolate stroke width',
         offsetRotation: 'Offset rotation: {n}°',
         opacity: 'Opacity',
+        openGallery: 'Open gallery',
         polygons: 'Polygons',
         position: 'Position',
         radius: 'Radius',
         radiusX: 'Radius X: {n}px',
         radiusY: 'Radius Y: {n}px',
         rectangles: 'Rectangles',
+        reset: 'Reset',
+        resetCircle: 'Reset circle',
+        resetPolygon: 'Reset polygon',
+        resetRectangle: 'Reset rectangle',
         sides: 'Sides',
         sidesN: 'Sides: {n}',
         size: 'Size',
@@ -51,7 +58,6 @@ export default {
         topLeftN: 'Top left: {n}',
         topRightN: 'Top right: {n}',
         width: 'Width: {n}px',
-        reset: 'Reset',
     },
     cookiesBanner: {
         text: 'Our website uses cookies to improve your experience. We\'ll assume you\'re ok with this, but you can opt-out if you wish.',

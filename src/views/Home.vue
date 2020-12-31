@@ -46,8 +46,23 @@
 
                 <div class="shapes__actions">
                     <base-button
-                        :text="$t('home.reset').toUpperCase()"
+                        v-if="selectedShape === 'rect'"
+                        :text="$t('home.resetRectangle').toUpperCase()"
                         @click.native="reset"
+                    />
+                    <base-button
+                        v-if="selectedShape === 'circle'"
+                        :text="$t('home.resetCircle').toUpperCase()"
+                        @click.native="reset"
+                    />
+                    <base-button
+                        v-if="selectedShape === 'polygon'"
+                        :text="$t('home.resetPolygon').toUpperCase()"
+                        @click.native="reset"
+                    />
+                    <base-button
+                        :text="$t('home.copyLink').toUpperCase()"
+                        @click.native="copyLink"
                     />
                     <base-button
                         :text="$t('home.openGallery').toUpperCase()"
@@ -77,6 +92,10 @@ import {
     select,
 } from 'd3';
 
+import {
+    stringify,
+} from 'qs';
+
 import SvgIcon from '@/components/SvgIcon';
 import BaseButton from '@/components/BaseButton';
 import RectControl from '@/components/RectControl';
@@ -85,6 +104,7 @@ import PolygonControl from '@/components/PolygonControl';
 import rectMixin from '@/mixins/rect-mixin';
 import circleMixin from '@/mixins/circle-mixin';
 import polygonMixin from '@/mixins/polygon-mixin';
+import clipboardMixin from '@/mixins/clipboard-mixin';
 
 import config from '@/config';
 
@@ -103,6 +123,7 @@ export default {
         rectMixin,
         circleMixin,
         polygonMixin,
+        clipboardMixin,
     ],
 
     data() {
@@ -150,6 +171,11 @@ export default {
         this.draw();
 
         this.$root.$on('apply-icon', this.apply);
+
+        // this.$router.replace({
+        //     ...this.$router.currentRoute,
+        //     query: null,
+        // });
     },
 
     methods: {
@@ -223,6 +249,52 @@ export default {
             }
 
             this.draw();
+        },
+        copyLink() {
+            if (this.selectedShape === 'rect') {
+                const rect = Object.assign({}, this.rect);
+
+                delete rect.calcOpacityOptions;
+                delete rect.calcStrokeWidthOptions;
+                delete rect.strokeOptions;
+                delete rect.flipColorInterpolatorOptions;
+
+                const link = stringify({ shape: 'rect', ...rect }, { arrayFormat: 'comma' });
+
+                this.copyToClipboard({
+                    text: `${config.url}?${link}`,
+                });
+            }
+
+            if (this.selectedShape === 'circle') {
+                const circle = Object.assign({}, this.circle);
+
+                delete circle.calcOpacityOptions;
+                delete circle.calcStrokeWidthOptions;
+                delete circle.strokeOptions;
+                delete circle.flipColorInterpolatorOptions;
+
+                const link = stringify({ shape: 'circle', ...circle }, { arrayFormat: 'comma' });
+
+                this.copyToClipboard({
+                    text: `${config.url}?${link}`,
+                });
+            }
+
+            if (this.selectedShape === 'polygon') {
+                const polygon = Object.assign({}, this.polygon);
+
+                delete polygon.calcOpacityOptions;
+                delete polygon.calcStrokeWidthOptions;
+                delete polygon.strokeOptions;
+                delete polygon.flipColorInterpolatorOptions;
+
+                const link = stringify({ shape: 'polygon', ...polygon }, { arrayFormat: 'comma' });
+
+                this.copyToClipboard({
+                    text: `${config.url}?${link}`,
+                });
+            }
         },
     },
 };
