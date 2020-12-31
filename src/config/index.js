@@ -378,6 +378,55 @@ export default {
                 colorInterPolator: 'interpolateViridis',
             },
         },
+        {
+            src: require('@/assets/img/icon-10.png'),
+            shape: 'rect',
+            parameters: {
+                borderRadius: {
+                    tl: 0, tr: 0, bl: 0, br: 0,
+                },
+                amount: 84,
+                distance: -6.5,
+                strokeWidth: 30,
+                rotation: 90,
+                width: 15,
+                height: 15,
+                calcOpacity: ['interpolate'],
+                colorInterPolator: 'interpolatePuRd',
+            },
+        },
+        {
+            src: require('@/assets/img/icon-11.png'),
+            shape: 'polygon',
+            parameters: {
+                borderRadius: 0.8,
+                amount: 16,
+                distance: 24,
+                rotation: 110,
+                stroke: false,
+                size: 450,
+                sides: 6,
+                calcOpacity: ['interpolate', 'flip'],
+                colorInterPolator: 'interpolateYlOrRd',
+                flipColorInterpolator: true,
+            },
+        },
+        {
+            src: require('@/assets/img/icon-12.png'),
+            shape: 'rect',
+            parameters: {
+                borderRadius: {
+                    tl: 0, tr: 1, bl: 0, br: 1,
+                },
+                amount: 16,
+                distance: 24,
+                strokeWidth: 4.5,
+                width: 350,
+                height: 350,
+                flipColorInterpolator: true,
+                colorInterPolator: 'interpolateSinebow',
+            },
+        },
         /* eslint-enable global-require */
     ],
     format: {

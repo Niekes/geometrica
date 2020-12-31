@@ -46,6 +46,10 @@
 
                 <div class="shapes__actions">
                     <base-button
+                        :text="$t('home.reset').toUpperCase()"
+                        @click.native="reset"
+                    />
+                    <base-button
                         :text="$t('home.openGallery').toUpperCase()"
                         @click.native="$store.dispatch('modal/openGallery')"
                     />
@@ -193,6 +197,28 @@ export default {
                 this.polygon = {
                     ...Object.assign({}, config.shapes.polygon),
                     ...icon.parameters,
+                };
+            }
+
+            this.draw();
+        },
+        reset() {
+            if (this.selectedShape === 'rect') {
+                this.rect = {
+                    ...Object.assign({}, config.shapes.rect),
+                    borderRadius: Object.assign({}, config.shapes.rect.borderRadius),
+                };
+            }
+
+            if (this.selectedShape === 'circle') {
+                this.circle = {
+                    ...Object.assign({}, config.shapes.circle),
+                };
+            }
+
+            if (this.selectedShape === 'polygon') {
+                this.polygon = {
+                    ...Object.assign({}, config.shapes.polygon),
                 };
             }
 

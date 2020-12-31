@@ -43,6 +43,10 @@ import SvgIcon from '@/components/SvgIcon';
 // eslint-disable-next-line import/extensions
 import localstyles from 'localstyles';
 
+/*
+    TODO disable
+*/
+
 export default {
     name: 'InputRange',
 
