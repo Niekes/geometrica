@@ -573,10 +573,26 @@ export default {
                 strokeWidth: 1,
                 width: 350,
                 height: 350,
-                sizeIsLocked: false,
                 calcOpacity: ['interpolate', 'flip'],
                 calcStrokeWidth: ['interpolate'],
-                colorInterPolator: 'interpolateWarm',
+                colorInterPolator: 'interpolateGreens',
+            },
+        },
+        {
+            src: require('@/assets/img/icon-21.png'),
+            shape: 'rect',
+            parameters: {
+                borderRadius: {
+                    tl: 0.5, tr: 0.5, bl: 0.5, br: 0.5,
+                },
+                amount: 33,
+                rotation: 1440,
+                distance: 13.5,
+                strokeWidth: 7.5,
+                width: 450,
+                height: 450,
+                calcOpacity: ['interpolate'],
+                colorInterPolator: 'interpolateInferno',
             },
         },
         /* eslint-enable global-require */
