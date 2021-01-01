@@ -9,7 +9,6 @@ const { colorInterPolators } = config;
 export default {
     methods: {
         drawRect() {
-            // this.ctx.fillStyle = this.rect.bgColor;
             this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
             const {

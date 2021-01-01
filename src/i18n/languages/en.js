@@ -18,6 +18,7 @@ export default {
         borderRadiusN: 'Border radius: {n}',
         bottomLeftN: 'Bottom left: {n}',
         bottomRightN: 'Bottom right: {n}',
+        bgHint: 'The background will not be visible in the final render. This is just for illustration purposes. The background will be transparent in the final render.',
         centerX: 'Center X: {n}px',
         centerY: 'Center Y: {n}px',
         circles: 'Circles',

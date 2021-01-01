@@ -9,7 +9,6 @@ const { colorInterPolators } = config;
 export default {
     methods: {
         drawCircle() {
-            // this.ctx.fillStyle = this.circle.bgColor;
             this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
             const {

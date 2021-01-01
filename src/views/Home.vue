@@ -82,6 +82,9 @@
         >
             <canvas
                 class="context__canvas"
+                :style="{
+                    'background-color': canvasBackgroundColor,
+                }"
             />
         </div>
     </div>
@@ -128,6 +131,7 @@ export default {
 
     data() {
         return {
+            canvasBackgroundColor: '#000',
             rect: {
                 ...Object.assign({}, config.shapes.rect),
                 borderRadius: Object.assign({}, config.shapes.rect.borderRadius),
@@ -172,10 +176,10 @@ export default {
 
         this.$root.$on('apply-icon', this.apply);
 
-        // this.$router.replace({
-        //     ...this.$router.currentRoute,
-        //     query: null,
-        // });
+        this.$router.replace({
+            ...this.$router.currentRoute,
+            query: null,
+        }).catch(() => {});
     },
 
     methods: {
@@ -184,17 +188,21 @@ export default {
 
             switch (this.selectedShape) {
             case 'rect':
+                this.canvasBackgroundColor = this.rect.bgColor;
                 this.drawRect();
                 break;
 
             case 'circle':
+                this.canvasBackgroundColor = this.circle.bgColor;
                 this.drawCircle();
                 break;
 
             case 'polygon':
+                this.canvasBackgroundColor = this.polygon.bgColor;
                 this.drawPolygon();
                 break;
             default:
+                this.canvasBackgroundColor = this.rect.bgColor;
                 this.drawRect();
                 break;
             }
@@ -388,7 +396,6 @@ export default {
     justify-content: center;
 
     &__canvas {
-        background: $black;
         border: $border-width solid $black-50;
         border-radius: 10%;
         box-shadow: $box-shadow;

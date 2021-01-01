@@ -120,7 +120,7 @@ export default {
         "label label label label"
         "subtract input input add";
     grid-template-columns: min-content 1fr 1fr min-content;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: min-content 1fr;
 
     &__subtract,
     &__add,

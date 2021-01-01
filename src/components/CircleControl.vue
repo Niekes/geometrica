@@ -239,6 +239,7 @@
                     name="bg-color"
                     @input="$emit('circle-update')"
                 >
+                <span v-text="$t('home.bgHint')" />
             </div>
         </div>
     </div>
@@ -398,6 +399,8 @@ export default {
                     rgba(lighten($tertiary, 10%), 0.5),
                 );
             cursor: pointer;
+            display: flex;
+            flex-direction: column;
             padding: $padding-y $padding-x;
 
             .sliders__input,
@@ -407,6 +410,14 @@ export default {
                     margin-bottom: $margin-y;
                 }
             }
+        }
+    }
+
+    &__background-color {
+        span {
+            color: $white-75;
+            font-size: $font-size * 0.75;
+            padding-top: $padding-y / 2;
         }
     }
 

@@ -44,7 +44,6 @@ export default {
             return `${p}z`;
         },
         drawPolygon() {
-            // this.ctx.fillStyle = this.polygon.bgColor;
             this.ctx.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
 
             const {
