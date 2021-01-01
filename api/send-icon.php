@@ -67,7 +67,7 @@ file_put_contents($filePng, base64_decode($img));
 $email = new PHPMailer();
 $email->SetFrom('geometrica@niekes.com');
 $email->Subject = 'Your icon from geometrica.niekes.com';
-$email->Body = "Hi,\r\n\r\nThank you for using geometrica.niekes.com\r\n\r\nPlease find your images attached.\r\n\r\n\r\n\r\nYour geometrica team";
+$email->Body = "Hi,\r\n\r\nThank you for using geometrica.niekes.com\r\n\r\nPlease find your icon attached.\r\n\r\n\r\n\r\nYour geometrica team";
 $email->AddAddress($data["recipient"]);
 $email->AddAttachment($filePng, $filenamePng);
 
