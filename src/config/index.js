@@ -579,7 +579,7 @@ export default {
             },
         },
         {
-            src: require('@/assets/img/icon-22.png'),
+            src: require('@/assets/img/icon-21.png'),
             shape: 'rect',
             parameters: {
                 borderRadius: {
@@ -596,7 +596,7 @@ export default {
             },
         },
         {
-            src: require('@/assets/img/icon-23.png'),
+            src: require('@/assets/img/icon-22.png'),
             shape: 'circle',
             parameters: {
                 amount: 35,
@@ -611,15 +611,15 @@ export default {
             },
         },
         {
-            src: require('@/assets/img/icon-20.png'),
+            src: require('@/assets/img/icon-23.png'),
             shape: 'rect',
             parameters: {
                 borderRadius: {
                     tl: 0.5, tr: 0.5, bl: 0.5, br: 0.5,
                 },
-                amount: 710,
+                amount: 175,
                 rotation: 180,
-                distance: 0.5,
+                distance: 2,
                 strokeWidth: 1,
                 width: 350,
                 height: 350,
