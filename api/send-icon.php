@@ -48,24 +48,18 @@ $uniqid = uniqid();
     Add filenames
 */
 $filenamePng = 'geometrica-' . $uniqid . '.'. 'png';
+$filePng = UPLOAD_DIR . $filenamePng;
 
 /*
-    Add filenames
+    Convert base64 to to png
 */
-$filePng = UPLOAD_DIR . $filenamePng;
+$img = str_replace('data:image/png;base64,', '', $data['image']);
+$img = str_replace(' ', '+', $img);
 
 /*
     Write png file to server
 */
-file_put_contents($fileSvg, $data['image']);
-
-/*
-    Convert svg to png
-*/
-$imagick = new Imagick();
-$imagick->readImageBlob(file_get_contents($fileSvg));
-$imagick->setImageFormat("png24");
-$imagick->writeImage($filePng);
+file_put_contents($filePng, base64_decode($img));
 
 /*
     Prepare e-mail
@@ -92,7 +86,6 @@ if ($send) {
     $response->recipient = $data["recipient"];
     $response_json = json_encode($response);
 
-    unlink($fileSvg);
     unlink($filePng);
 
     $imagick->clear();

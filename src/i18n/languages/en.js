@@ -69,6 +69,8 @@ export default {
     downloadDialogue: {
         thanksForUsing: 'Thanks for using Geometrica!',
         pleaseEnterEmail: 'Please enter you email address',
+        imageSendSuccess: 'Images were sent successfully to:\r\n\r\n"{recipient}"\r\n\r\nPlease check your mails',
+        imageSendError: 'Error. Please try again later',
         hint: 'We will send you a .png file with transparent background. We will not store your email address or share it with anyone.',
         sendIcon: 'Send icon',
     },
