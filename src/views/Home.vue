@@ -252,13 +252,7 @@ export default {
         },
         copyLink() {
             if (this.selectedShape === 'rect') {
-                const rect = Object.assign({}, this.rect);
-
-                delete rect.calcOpacityOptions;
-                delete rect.calcStrokeWidthOptions;
-                delete rect.strokeOptions;
-                delete rect.flipColorInterpolatorOptions;
-
+                const rect = this.removeOptions(this.rect);
                 const link = stringify({ shape: 'rect', ...rect }, { arrayFormat: 'comma' });
 
                 this.copyToClipboard({
@@ -267,13 +261,7 @@ export default {
             }
 
             if (this.selectedShape === 'circle') {
-                const circle = Object.assign({}, this.circle);
-
-                delete circle.calcOpacityOptions;
-                delete circle.calcStrokeWidthOptions;
-                delete circle.strokeOptions;
-                delete circle.flipColorInterpolatorOptions;
-
+                const circle = this.removeOptions(this.circle);
                 const link = stringify({ shape: 'circle', ...circle }, { arrayFormat: 'comma' });
 
                 this.copyToClipboard({
@@ -282,19 +270,24 @@ export default {
             }
 
             if (this.selectedShape === 'polygon') {
-                const polygon = Object.assign({}, this.polygon);
-
-                delete polygon.calcOpacityOptions;
-                delete polygon.calcStrokeWidthOptions;
-                delete polygon.strokeOptions;
-                delete polygon.flipColorInterpolatorOptions;
-
+                const polygon = this.removeOptions(this.polygon);
                 const link = stringify({ shape: 'polygon', ...polygon }, { arrayFormat: 'comma' });
 
                 this.copyToClipboard({
                     text: `${config.url}?${link}`,
                 });
             }
+        },
+
+        removeOptions(obj) {
+            const object = Object.assign({}, obj);
+
+            delete object.calcOpacityOptions;
+            delete object.calcStrokeWidthOptions;
+            delete object.strokeOptions;
+            delete object.flipColorInterpolatorOptions;
+
+            return object;
         },
     },
 };

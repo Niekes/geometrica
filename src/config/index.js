@@ -126,7 +126,7 @@ export default {
         circle: {
             amount: (isCircle && +query.amount) || 16,
             bgColor: (isCircle && query.bgColor) || '#000000',
-            colorInterPolator: (isCircle && query.colorInterPolator),
+            colorInterPolator: (isCircle && query.colorInterPolator) || 'interpolateBrBG',
             cx: (isCircle && +query.cx) || 0,
             cy: (isCircle && +query.cy) || 0,
             distance: (isCircle && +query.distance) || 16,
@@ -137,7 +137,7 @@ export default {
                     text: i18n.t('home.flipColorScheme'),
                 },
             ],
-            strokeWidth: (isCircle && +query.strokeWidth) || 16,
+            strokeWidth: (isCircle && +query.strokeWidth) || 1,
             calcStrokeWidth: (isCircle && query.calcStrokeWidth.split(',')) || [],
             calcStrokeWidthOptions: [
                 {
@@ -215,8 +215,8 @@ export default {
                 },
             ],
             rotation: (isPolygon && +query.rotation) || 0,
-            sides: (isPolygon && +query.sides) || 0,
-            size: (isPolygon && +query.size) || 0,
+            sides: (isPolygon && +query.sides) || 5,
+            size: (isPolygon && +query.size) || 256,
             stroke: isPolygon ? JSON.parse(query.stroke) : true,
             strokeOptions: [
                 {
@@ -558,6 +558,25 @@ export default {
                 calcOpacity: ['interpolate', 'flip'],
                 calcStrokeWidth: ['interpolate', 'flip'],
                 colorInterPolator: 'interpolateTurbo',
+            },
+        },
+        {
+            src: require('@/assets/img/icon-20.png'),
+            shape: 'rect',
+            parameters: {
+                borderRadius: {
+                    tl: 0.5, tr: 0.5, bl: 0.5, br: 0.5,
+                },
+                amount: 710,
+                rotation: 180,
+                distance: 0.5,
+                strokeWidth: 1,
+                width: 350,
+                height: 350,
+                sizeIsLocked: false,
+                calcOpacity: ['interpolate', 'flip'],
+                calcStrokeWidth: ['interpolate'],
+                colorInterPolator: 'interpolateWarm',
             },
         },
         /* eslint-enable global-require */

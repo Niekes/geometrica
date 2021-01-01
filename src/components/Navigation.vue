@@ -111,9 +111,9 @@ export default {
     display: flex;
     filter: drop-shadow(3px 3px 4px $black-30);
     grid-area: logo;
-    height: 2rem;
+    height: 3rem;
     user-select: none;
-    width: 20rem;
+    width: 22rem;
     z-index: 2;
 }
 
@@ -144,6 +144,7 @@ export default {
 
         svg {
             color: $white;
+            filter: drop-shadow(1px 1px 3px $black);
             height: 1.5rem;
             width: 1.5rem;
         }

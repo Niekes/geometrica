@@ -44,8 +44,6 @@ import BaseButton from '@/components/BaseButton';
 import BeerButton from '@/components/BeerButton';
 import FlashMessageMixin from '@/mixins/flash-message-mixin';
 
-import config from '@/config';
-
 export default {
     name: 'DownloadDialogue',
 
