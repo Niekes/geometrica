@@ -398,8 +398,8 @@ export default {
         border: $border-width solid $black-50;
         border-radius: 10%;
         box-shadow: $box-shadow;
-        max-height: 50%;
-        max-width: 50%;
+        max-height: 75%;
+        max-width: 75%;
     }
 }
 
@@ -418,7 +418,6 @@ export default {
         &__canvas {
             height: auto !important;
             max-height: 100%;
-            max-width: 100%;
             width: auto !important;
         }
     }
