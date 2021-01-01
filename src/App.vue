@@ -95,7 +95,7 @@ body {
     min-height: calc(100% - 70px);
 }
 
-@media (max-width: $breakpoint-sm) {
+@media (max-width: $breakpoint-md) {
     #nav {
         height: 50px;
         max-height: 50px;
