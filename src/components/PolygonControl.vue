@@ -416,8 +416,6 @@ export default {
                     rgba(lighten($tertiary, 10%), 0.5),
                 );
             cursor: pointer;
-            display: flex;
-            flex-direction: column;
             padding: $padding-y $padding-x;
 
             .sliders__input,
@@ -431,6 +429,11 @@ export default {
     }
 
     &__background-color {
+        div[class$="__content"] {
+            display: flex;
+            flex-direction: column;
+        }
+
         span {
             color: $white-75;
             font-size: $font-size * 0.75;

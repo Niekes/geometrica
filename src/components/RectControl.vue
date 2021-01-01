@@ -549,8 +549,6 @@ export default {
                     rgba(lighten($tertiary, 10%), 0.5),
                 );
             cursor: pointer;
-            display: flex;
-            flex-direction: column;
             padding: $padding-y $padding-x;
 
             .sliders__input,
@@ -564,6 +562,11 @@ export default {
     }
 
     &__background-color {
+        div[class$="__content"] {
+            display: flex;
+            flex-direction: column;
+        }
+
         span {
             color: $white-75;
             font-size: $font-size * 0.75;
@@ -645,7 +648,7 @@ export default {
         border-top: $border-width solid $white-70;
         color: $white;
         cursor: pointer;
-        margin: $margin-y * 3.4 0 $margin-y 0;
+        margin: $margin-y * 1.6 0 $margin-y 0;
         padding: 0 $padding-x / 4;
         transition: background $transition-duration / 2 $transition-timing-function;
 

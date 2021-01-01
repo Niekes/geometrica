@@ -85,6 +85,7 @@
                 :style="{
                     'background-color': canvasBackgroundColor,
                 }"
+                @contextmenu.prevent.stop
             />
         </div>
     </div>
@@ -314,6 +315,7 @@ export default {
     background-color: $primary;
     display: flex;
     flex-direction: column;
+    grid-area: control;
     overflow: auto;
     padding: $padding-y $padding-x;
 
@@ -393,12 +395,35 @@ export default {
     align-items: center;
     background-color: $white;
     display: flex;
+    grid-area: context;
     justify-content: center;
+    padding: $padding-y * 2 $padding-x * 2;
 
     &__canvas {
         border: $border-width solid $black-50;
         border-radius: 10%;
         box-shadow: $box-shadow;
+    }
+}
+
+@media (max-width: $breakpoint-sm) {
+    .home {
+        display: grid;
+        grid-template-areas: "context" "control";
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(0, 1.5fr) minmax(0, 3fr);
+    }
+
+    .context {
+        border-bottom: $border-width solid $black-50;
+        border-radius: 0;
+
+        &__canvas {
+            height: auto !important;
+            max-height: 100%;
+            max-width: 100%;
+            width: auto !important;
+        }
     }
 }
 </style>
