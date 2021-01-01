@@ -627,6 +627,22 @@ export default {
                 colorInterPolator: 'interpolateSpectral',
             },
         },
+        {
+            src: require('@/assets/img/icon-24.png'),
+            shape: 'polygon',
+            parameters: {
+                borderRadius: 0.3,
+                amount: 111,
+                distance: 0.5,
+                rotation: 60,
+                strokeWidth: 1,
+                size: 480,
+                sides: 3,
+                calcStrokeWidth: ['interpolate'],
+                flipColorInterpolator: true,
+                colorInterPolator: 'interpolateCubehelixDefault',
+            },
+        },
         /* eslint-enable global-require */
     ],
     format: {
