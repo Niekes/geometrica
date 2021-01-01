@@ -47,7 +47,7 @@ export default {
 <style lang="scss" scoped>
 .modal__mask {
     align-items: center;
-    animation: fade-in $transition-duration $transition-timing-function forwards;
+    animation: fade-in $transition-duration / 2 $transition-timing-function forwards;
     backdrop-filter: blur(20px);
     background: $black-50;
     bottom: 0;
@@ -62,7 +62,7 @@ export default {
     z-index: $z-index-modal-backdrop;
 
     &--fading-out {
-        animation: fade-out $transition-duration $transition-timing-function forwards;
+        animation: fade-out $transition-duration / 2 $transition-timing-function forwards;
     }
 }
 

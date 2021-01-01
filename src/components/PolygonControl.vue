@@ -84,7 +84,12 @@
             </div>
         </div>
 
-        <div class="polygon-control__stroke-width">
+        <div
+            class="polygon-control__stroke-width"
+            :class="{
+                'polygon-control__stroke-width--disabled': !polygon.stroke,
+            }"
+        >
             <div
                 class="stroke-width__caption"
                 @click="toggle"
@@ -141,19 +146,6 @@
                     :label="$t('home.flipColorScheme')"
                     @change.native="$emit('polygon-update')"
                 />
-
-                <!--         <div>
-                    <label>
-                        Bg
-                    </label>
-                    <input
-                        id="bg-color"
-                        v-model="polygon.bgColor"
-                        type="color"
-                        name="bg-color"
-                        @input="$emit('polygon-update')"
-                    >
-                </div> -->
 
                 <color-interpolator
                     :active="polygon.colorInterPolator"
@@ -254,6 +246,23 @@
                     :text="$t('home.reset')"
                     @click.native="resetPosition"
                 />
+            </div>
+        </div>
+        <div class="polygon-control__background-color">
+            <div
+                class="background-color__caption"
+                @click="toggle"
+                v-text="$t('home.backgroundColor')"
+            />
+
+            <div class="background-color__content hidden">
+                <input
+                    id="bg-color"
+                    v-model="polygon.bgColor"
+                    type="color"
+                    name="bg-color"
+                    @input="$emit('polygon-update')"
+                >
             </div>
         </div>
     </div>
@@ -369,6 +378,7 @@ export default {
     &__color,
     &__sides,
     &__size,
+    &__background-color,
     &__position {
         border: $border-width solid $tertiary;
         border-radius: $border-radius;
@@ -376,6 +386,12 @@ export default {
         flex-direction: column;
         margin-bottom: $margin-y;
         overflow: hidden;
+
+        &--disabled {
+            cursor: not-allowed;
+            opacity: 0.75;
+            pointer-events: none;
+        }
 
         div[class$="__caption"] {
             background: $tertiary;

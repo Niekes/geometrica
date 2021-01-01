@@ -167,7 +167,12 @@
             </div>
         </div>
 
-        <div class="rect-control__stroke-width">
+        <div
+            class="rect-control__stroke-width"
+            :class="{
+                'rect-control__stroke-width--disabled': !rect.stroke,
+            }"
+        >
             <div
                 class="stroke-width__caption"
                 @click="toggle"
@@ -226,19 +231,6 @@
                     :label="$t('home.flipColorScheme')"
                     @change.native="$emit('rect-update')"
                 />
-
-                <!--         <div>
-                    <label>
-                        Bg
-                    </label>
-                    <input
-                        id="bg-color"
-                        v-model="rect.bgColor"
-                        type="color"
-                        name="bg-color"
-                        @input="$emit('rect-update')"
-                    >
-                </div> -->
 
                 <color-interpolator
                     :active="rect.colorInterPolator"
@@ -334,6 +326,24 @@
                     :text="$t('home.reset')"
                     @click.native="resetPosition"
                 />
+            </div>
+        </div>
+
+        <div class="rect-control__background-color">
+            <div
+                class="background-color__caption"
+                @click="toggle"
+                v-text="$t('home.backgroundColor')"
+            />
+
+            <div class="background-color__content hidden">
+                <input
+                    id="bg-color"
+                    v-model="rect.bgColor"
+                    type="color"
+                    name="bg-color"
+                    @input="$emit('rect-update')"
+                >
             </div>
         </div>
     </div>
@@ -501,6 +511,7 @@ export default {
     &__stroke-width,
     &__color,
     &__size,
+    &__background-color,
     &__position {
         border: $border-width solid $tertiary;
         border-radius: $border-radius;
@@ -508,6 +519,12 @@ export default {
         flex-direction: column;
         margin-bottom: $margin-y;
         overflow: hidden;
+
+        &--disabled {
+            cursor: not-allowed;
+            opacity: 0.75;
+            pointer-events: none;
+        }
 
         div[class$="__caption"] {
             background: $tertiary;

@@ -13,6 +13,7 @@ export default {
     home: {
         amountN: 'Amount: {n}',
         angle: 'Angle',
+        backgroundColor: 'Background color',
         borderRadius: 'Border radius',
         borderRadiusN: 'Border radius: {n}',
         bottomLeftN: 'Bottom left: {n}',
@@ -67,7 +68,7 @@ export default {
     downloadDialogue: {
         thanksForUsing: 'Thanks for using Geometrica!',
         pleaseEnterEmail: 'Please enter you email address',
-        hint: 'We will send you a .png file. We will not store your email address or share it with anyone.',
+        hint: 'We will send you a .png file with transparent background. We will not store your email address or share it with anyone.',
         sendIcon: 'Send icon',
     },
     faq: {
