@@ -88,9 +88,6 @@ if ($send) {
 
     unlink($filePng);
 
-    $imagick->clear();
-    $imagick->destroy();
-
     echo $response_json;
 } else {
     http_response_code(400);

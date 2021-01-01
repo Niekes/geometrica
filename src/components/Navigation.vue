@@ -151,7 +151,7 @@ export default {
     }
 }
 
-@media (max-width: $breakpoint-sm) {
+@media (max-width: $breakpoint-md) {
     .navigation__logo {
         height: 2rem;
         width: 15rem;
