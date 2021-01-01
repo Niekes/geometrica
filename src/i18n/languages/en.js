@@ -71,7 +71,7 @@ export default {
         pleaseEnterEmail: 'Please enter you email address',
         imageSendSuccess: 'Images were sent successfully to:\r\n\r\n"{recipient}"\r\n\r\nPlease check your mails',
         imageSendError: 'Error. Please try again later',
-        hint: 'We will send you a .png file with transparent background. We will not store your email address or share it with anyone.',
+        hint: 'We will send you a 1024x1024 .png file with transparent background. We will not store your email address or share it with anyone.',
         sendIcon: 'Send icon',
     },
     faq: {

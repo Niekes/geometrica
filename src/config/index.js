@@ -106,7 +106,7 @@ export default {
                     text: i18n.t('home.fill'),
                 },
             ],
-            strokeWidth: (isRect && +query.strokeWidth) || 1,
+            strokeWidth: (isRect && +query.strokeWidth) || 3,
             calcStrokeWidth: (isRect && query.calcStrokeWidth.split(',')) || [],
             calcStrokeWidthOptions: [
                 {
@@ -137,7 +137,7 @@ export default {
                     text: i18n.t('home.flipColorScheme'),
                 },
             ],
-            strokeWidth: (isCircle && +query.strokeWidth) || 1,
+            strokeWidth: (isCircle && +query.strokeWidth) || 3,
             calcStrokeWidth: (isCircle && query.calcStrokeWidth.split(',')) || [],
             calcStrokeWidthOptions: [
                 {
@@ -191,7 +191,7 @@ export default {
                     text: i18n.t('home.flipColorScheme'),
                 },
             ],
-            strokeWidth: (isPolygon && +query.strokeWidth) || 1,
+            strokeWidth: (isPolygon && +query.strokeWidth) || 3,
             calcStrokeWidth: (isPolygon && query.calcStrokeWidth.split(',')) || [],
             calcStrokeWidthOptions: [
                 {

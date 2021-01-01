@@ -150,7 +150,7 @@ export default {
         "recipient recipient"
         "sponsor send";
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 3fr min-content min-content min-content;
+    grid-template-rows: 1fr min-content min-content min-content;
     margin: 0 auto;
     max-width: $breakpoint-lg / 2;
     padding-bottom: $padding-y * 6;
