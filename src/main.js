@@ -29,7 +29,7 @@ import '@/assets/svg/rect.svg?sprite';
 */
 Vue.use(VueGtag, {
     config: {
-        id: 'G-XXXXXX', // TODO Add new property in google analytics
+        id: 'G-D0S3E29YB5',
     },
     appName: process.env.VUE_APP_TITLE,
     enabled: process.env.NODE_ENV === 'production' && process.env.VUE_APP_URL === 'https://geometrica.niekes.com',
