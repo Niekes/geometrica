@@ -19,6 +19,7 @@
                 name="email"
                 :placeholder="$t('downloadDialogue.pleaseEnterEmail')"
                 @focus="scrollToBottom"
+                @keyup.enter="sendIcon"
             >
 
             <beer-button
@@ -30,7 +31,7 @@
                 :disabled="!isEmailValid || isLoading"
                 :variant="2"
                 :text="isLoading ? '...' : $t('downloadDialogue.sendIcon')"
-                @click.native="sendImages"
+                @click.native="sendIcon"
             />
         </div>
     </modal>
@@ -62,7 +63,7 @@ export default {
     data() {
         return {
             recipient: '',
-            sendImagesResponse: null,
+            sendIconResponse: null,
             isLoading: false,
         };
     },
@@ -77,12 +78,12 @@ export default {
     },
 
     methods: {
-        async sendImages() {
+        async sendIcon() {
             if (this.isEmailValid) {
                 this.isLoading = true;
 
                 try {
-                    this.sendImagesResponse = await axios({
+                    this.sendIconResponse = await axios({
                         method: 'POST',
                         url: 'api/send-icon.php',
                         data: {
@@ -91,13 +92,13 @@ export default {
                         },
                     });
                 } catch (error) {
-                    this.sendImagesResponse = error.response;
+                    this.sendIconResponse = error.response;
                 } finally {
-                    if (this.sendImagesResponse
-                        && this.sendImagesResponse.status === 201) {
+                    if (this.sendIconResponse
+                        && this.sendIconResponse.status === 201) {
                         this.recipient = '';
                         this.sendFlashMessage({
-                            text: this.$t('downloadDialogue.imageSendSuccess', { recipient: this.sendImagesResponse.data.recipient }),
+                            text: this.$t('downloadDialogue.imageSendSuccess', { recipient: this.sendIconResponse.data.recipient }),
                         });
 
                         this.$gtag.event('download', {
@@ -107,8 +108,8 @@ export default {
                         });
                     }
 
-                    if (!this.sendImagesResponse
-                        || ((this.sendImagesResponse && this.sendImagesResponse.status) !== 201)) {
+                    if (!this.sendIconResponse
+                        || ((this.sendIconResponse && this.sendIconResponse.status) !== 201)) {
                         this.sendFlashMessage({
                             text: this.$t('downloadDialogue.imageSendError'),
                         });
@@ -183,6 +184,7 @@ export default {
         border: $border-width * 2 solid rgba($primary, 0.5);
         border-radius: $border-radius;
         grid-area: recipient;
+        line-height: 1.5;
         padding: $padding-y * 3 $padding-x * 2;
         transition: border $transition-duration $transition-timing-function;
 

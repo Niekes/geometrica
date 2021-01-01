@@ -43,37 +43,36 @@
                     :polygon="polygon"
                     @polygon-update="draw"
                 />
-
-                <div class="shapes__actions">
-                    <base-button
-                        v-if="selectedShape === 'rect'"
-                        :text="$t('home.resetRectangle').toUpperCase()"
-                        @click.native="reset"
-                    />
-                    <base-button
-                        v-if="selectedShape === 'circle'"
-                        :text="$t('home.resetCircle').toUpperCase()"
-                        @click.native="reset"
-                    />
-                    <base-button
-                        v-if="selectedShape === 'polygon'"
-                        :text="$t('home.resetPolygon').toUpperCase()"
-                        @click.native="reset"
-                    />
-                    <base-button
-                        :text="$t('home.copyLink').toUpperCase()"
-                        @click.native="copyLink"
-                    />
-                    <base-button
-                        :text="$t('home.openGallery').toUpperCase()"
-                        @click.native="$store.dispatch('modal/openGallery')"
-                    />
-                    <base-button
-                        :variant="2"
-                        :text="$t('home.download')"
-                        @click.native="$store.dispatch('modal/openDownload')"
-                    />
-                </div>
+            </div>
+            <div class="control__actions">
+                <base-button
+                    v-if="selectedShape === 'rect'"
+                    :text="$t('home.resetRectangle').toUpperCase()"
+                    @click.native="reset"
+                />
+                <base-button
+                    v-if="selectedShape === 'circle'"
+                    :text="$t('home.resetCircle').toUpperCase()"
+                    @click.native="reset"
+                />
+                <base-button
+                    v-if="selectedShape === 'polygon'"
+                    :text="$t('home.resetPolygon').toUpperCase()"
+                    @click.native="reset"
+                />
+                <base-button
+                    :text="$t('home.copyLink').toUpperCase()"
+                    @click.native="copyLink"
+                />
+                <base-button
+                    :text="$t('home.openGallery').toUpperCase()"
+                    @click.native="$store.dispatch('modal/openGallery')"
+                />
+                <base-button
+                    :variant="2"
+                    :text="$t('home.download')"
+                    @click.native="$store.dispatch('modal/openDownload')"
+                />
             </div>
         </div>
 
@@ -164,9 +163,6 @@ export default {
         this.canvasHeight = canvasSelection.node().height / 2;
         this.canvasHalfWidth = this.canvasWidth / 2;
         this.canvasHalfHeight = this.canvasHeight / 2;
-
-        canvasSelection.style('width', `${this.canvasWidth}px`);
-        canvasSelection.style('height', `${this.canvasHeight}px`);
 
         this.ctx = canvasSelection.node().getContext('2d');
 
@@ -306,16 +302,18 @@ export default {
 .home {
     display: grid;
     grid-template-areas: "control context";
-    grid-template-columns: minmax(0, 21rem) 1fr;
+    grid-template-columns: minmax(0, 24rem) 1fr;
     grid-template-rows: minmax(0, 1fr);
-    height: 100%;
 }
 
 .control {
     background-color: $primary;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    gap: 0;
     grid-area: control;
+    grid-template-areas: "radio" "shapes" "actions";
+    grid-template-columns: 1fr;
+    grid-template-rows: min-content 1fr min-content;
     overflow: auto;
     padding: $padding-y $padding-x;
 
@@ -323,7 +321,7 @@ export default {
         border: $border-width solid $tertiary;
         border-radius: $border-radius;
         display: flex;
-        flex-shrink: 0;
+        grid-area: radio;
         margin-bottom: $margin-y;
         overflow: hidden;
 
@@ -366,26 +364,23 @@ export default {
     }
 
     &__shapes {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        justify-content: space-between;
+        grid-area: shapes;
 
         .shapes__rectangle,
         .shapes__circle,
         .shapes__polygon {
             width: 100%;
         }
+    }
 
-        .shapes__actions {
+    &__actions {
+        grid-area: actions;
+
+        button {
             width: 100%;
 
-            button {
-                width: 100%;
-
-                &:not(:last-child) {
-                    margin-bottom: $margin-y;
-                }
+            &:not(:last-child) {
+                margin-bottom: $margin-y;
             }
         }
     }
@@ -403,10 +398,12 @@ export default {
         border: $border-width solid $black-50;
         border-radius: 10%;
         box-shadow: $box-shadow;
+        max-height: 50%;
+        max-width: 50%;
     }
 }
 
-@media (max-width: $breakpoint-sm) {
+@media (max-width: $breakpoint-md) {
     .home {
         display: grid;
         grid-template-areas: "context" "control";

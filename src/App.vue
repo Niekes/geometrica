@@ -94,4 +94,18 @@ body {
     max-height: calc(100% - 70px);
     min-height: calc(100% - 70px);
 }
+
+@media (max-width: $breakpoint-sm) {
+    #nav {
+        height: 50px;
+        max-height: 50px;
+        min-height: 50px;
+    }
+
+    #content {
+        height: calc(100% - 50px);
+        max-height: calc(100% - 50px);
+        min-height: calc(100% - 50px);
+    }
+}
 </style>

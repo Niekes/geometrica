@@ -518,6 +518,7 @@ export default {
         border-radius: $border-radius;
         display: flex;
         flex-direction: column;
+        flex-shrink: 0;
         margin-bottom: $margin-y;
         overflow: hidden;
 
