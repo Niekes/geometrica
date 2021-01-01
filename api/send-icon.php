@@ -47,17 +47,15 @@ $uniqid = uniqid();
 /*
     Add filenames
 */
-$filenameSvg = 'geometrica-' . $uniqid . '.'. 'svg';
 $filenamePng = 'geometrica-' . $uniqid . '.'. 'png';
 
 /*
     Add filenames
 */
-$fileSvg = UPLOAD_DIR . $filenameSvg;
 $filePng = UPLOAD_DIR . $filenamePng;
 
 /*
-    Write svg file to server
+    Write png file to server
 */
 file_put_contents($fileSvg, $data['image']);
 
@@ -77,7 +75,6 @@ $email->SetFrom('geometrica@niekes.com');
 $email->Subject = 'Your image from geometrica.niekes.com';
 $email->Body = "Hi,\r\n\r\nThank you for using geometrica.niekes.com\r\n\r\nPlease find your images attached.\r\n\r\n\r\n\r\nYour geometrica team";
 $email->AddAddress($data["recipient"]);
-$email->AddAttachment($fileSvg, $filenameSvg);
 $email->AddAttachment($filePng, $filenamePng);
 
 /*

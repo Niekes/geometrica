@@ -39,6 +39,10 @@
 <script>
 import axios from 'axios';
 
+import {
+    select,
+} from 'd3';
+
 import Modal from '@/components/Modal';
 import BaseButton from '@/components/BaseButton';
 import BeerButton from '@/components/BeerButton';
@@ -80,9 +84,9 @@ export default {
                 try {
                     this.sendImagesResponse = await axios({
                         method: 'POST',
-                        url: 'api/send-images.php',
+                        url: 'api/send-icon.php',
                         data: {
-                            image: null,
+                            image: select('.context__canvas').node().toDataURL(),
                             recipient: this.recipient,
                         },
                     });
