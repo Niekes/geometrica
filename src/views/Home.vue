@@ -392,7 +392,6 @@ export default {
     display: flex;
     grid-area: context;
     justify-content: center;
-    padding: $padding-y * 2 $padding-x * 2;
 
     &__canvas {
         border: $border-width solid $black-50;
@@ -417,7 +416,7 @@ export default {
 
         &__canvas {
             height: auto !important;
-            max-height: 100%;
+            max-height: 90%;
             width: auto !important;
         }
     }
