@@ -83,6 +83,7 @@
                 class="context__canvas"
                 :style="{
                     'background-color': canvasBackgroundColor,
+                    'border-radius': `${canvasBorderRadius}%`,
                 }"
                 @contextmenu.prevent.stop
             />
@@ -132,6 +133,7 @@ export default {
     data() {
         return {
             canvasBackgroundColor: '#000',
+            canvasBorderRadius: 10,
             rect: {
                 ...Object.assign({}, config.shapes.rect),
                 borderRadius: Object.assign({}, config.shapes.rect.borderRadius),
@@ -184,22 +186,21 @@ export default {
             await this.$nextTick();
 
             switch (this.selectedShape) {
-            case 'rect':
-                this.canvasBackgroundColor = this.rect.bgColor;
-                this.drawRect();
-                break;
-
             case 'circle':
                 this.canvasBackgroundColor = this.circle.bgColor;
+                this.canvasBorderRadius = this.circle.bgBorderRadius;
                 this.drawCircle();
                 break;
 
             case 'polygon':
                 this.canvasBackgroundColor = this.polygon.bgColor;
+                this.canvasBorderRadius = this.polygon.bgBorderRadius;
                 this.drawPolygon();
                 break;
+
             default:
                 this.canvasBackgroundColor = this.rect.bgColor;
+                this.canvasBorderRadius = this.rect.bgBorderRadius;
                 this.drawRect();
                 break;
             }
@@ -395,7 +396,6 @@ export default {
 
     &__canvas {
         border: $border-width solid $black-50;
-        border-radius: 10%;
         box-shadow: $box-shadow;
         max-height: 75%;
         max-width: 75%;

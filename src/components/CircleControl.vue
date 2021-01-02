@@ -224,14 +224,14 @@
                 />
             </div>
         </div>
-        <div class="circle-control__background-color">
+        <div class="circle-control__background">
             <div
-                class="background-color__caption"
+                class="background__caption"
                 @click="toggle"
-                v-text="$t('home.backgroundColor')"
+                v-text="$t('home.background')"
             />
 
-            <div class="background-color__content hidden">
+            <div class="background__content hidden">
                 <input
                     id="bg-color"
                     v-model="circle.bgColor"
@@ -239,6 +239,22 @@
                     name="bg-color"
                     @input="$emit('circle-update')"
                 >
+
+                <input-range
+                    v-model.number="circle.bgBorderRadius"
+                    class="sliders__input"
+                    :min="0"
+                    :max="50"
+                    :step="1"
+                    :label="$tc(
+                        'home.borderRadiusN',
+                        format(f.percent)(circle.bgBorderRadius / 100),
+                    )"
+                    @input.native="$emit('circle-update')"
+                    @add="(step) => { circle.bgBorderRadius += step; $emit('circle-update')}"
+                    @subtract="(step) => { circle.bgBorderRadius -= step; $emit('circle-update')}"
+                />
+
                 <span v-text="$t('home.bgHint')" />
             </div>
         </div>
@@ -362,7 +378,7 @@ export default {
     &__stroke-width,
     &__color,
     &__angle,
-    &__background-color,
+    &__background,
     &__position {
         border: $border-width solid $tertiary;
         border-radius: $border-radius;
@@ -412,7 +428,7 @@ export default {
         }
     }
 
-    &__background-color {
+    &__background {
         div[class$="__content"] {
             display: flex;
             flex-direction: column;
@@ -422,6 +438,7 @@ export default {
             color: $white-75;
             font-size: $font-size * 0.75;
             padding-top: $padding-y / 2;
+            text-align: center;
         }
     }
 

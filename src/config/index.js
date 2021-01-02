@@ -65,6 +65,7 @@ export default {
         rect: {
             amount: (isRect && +query.amount) || 16,
             bgColor: (isRect && query.bgColor) || '#000000',
+            bgBorderRadius: (isRect && +query.bgBorderRadius) || 10,
             borderRadius: {
                 tl: (isRect && +query.borderRadius.tl) || 0,
                 tr: (isRect && +query.borderRadius.tr) || 0,
@@ -126,6 +127,7 @@ export default {
         circle: {
             amount: (isCircle && +query.amount) || 16,
             bgColor: (isCircle && query.bgColor) || '#000000',
+            bgBorderRadius: (isCircle && +query.bgBorderRadius) || 10,
             colorInterPolator: (isCircle && query.colorInterPolator) || 'interpolateBrBG',
             cx: (isCircle && +query.cx) || 0,
             cy: (isCircle && +query.cy) || 0,
@@ -179,6 +181,7 @@ export default {
         polygon: {
             amount: (isPolygon && +query.amount) || 16,
             bgColor: (isPolygon && query.bgColor) || '#000000',
+            bgBorderRadius: (isPolygon && +query.bgBorderRadius) || 10,
             borderRadius: (isPolygon && +query.borderRadius) || 0,
             colorInterPolator: (isPolygon && query.colorInterPolator) || 'interpolateBrBG',
             cx: (isPolygon && +query.cx) || 0,
