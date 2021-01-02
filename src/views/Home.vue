@@ -85,7 +85,6 @@
                     'background-color': canvasBackgroundColor,
                     'border-radius': `${canvasBorderRadius}%`,
                 }"
-                @contextmenu.prevent.stop
             />
         </div>
     </div>
@@ -292,6 +291,7 @@ export default {
             delete object.calcStrokeWidthOptions;
             delete object.strokeOptions;
             delete object.flipColorInterpolatorOptions;
+            delete object.applyColorSchemeToEachShapeOptions;
 
             return object;
         },
@@ -395,7 +395,7 @@ export default {
     justify-content: center;
 
     &__canvas {
-        border: $border-width solid $black-50;
+        border: $border-width solid $black-10;
         box-shadow: $box-shadow;
         max-height: 75%;
         max-width: 75%;

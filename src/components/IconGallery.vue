@@ -61,7 +61,7 @@ export default {
         img {
             align-content: center;
             background: $black;
-            border: $border-width solid $black-70;
+            border: $border-width solid $black-10;
             border-radius: 10%;
             box-shadow: $box-shadow;
             cursor: pointer;

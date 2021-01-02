@@ -55,6 +55,7 @@ export default {
                 calcStrokeWidth,
                 colorInterPolator,
                 flipColorInterpolator,
+                applyColorSchemeToEachShape,
             } = this.polygon;
 
             const radians = (this.polygon.rotation * this.PI / 180);
@@ -79,6 +80,29 @@ export default {
                 const flippedK = Math.abs(k - 1);
                 const angle = radians / (adjustedAmount) * i;
                 const c = color(flipColorInterpolator ? colorIp(flippedK) : colorIp(k));
+                let gradient = null;
+
+                if (applyColorSchemeToEachShape) {
+                    gradient = this.ctx.createLinearGradient(0, -s, 0, s);
+
+                    for (let j = 0; j < 1; j += 0.1) {
+                        const gc = color(
+                            flipColorInterpolator
+                                ? colorIp(Math.abs(j - 1))
+                                : colorIp(j),
+                        );
+
+                        if (interpolateOpacity) {
+                            gc.opacity = k;
+                        }
+
+                        if (interpolateOpacity && flipOpacity) {
+                            gc.opacity = flippedK;
+                        }
+
+                        gradient.addColorStop(j, gc);
+                    }
+                }
 
                 if (interpolateOpacity) {
                     c.opacity = k;
@@ -110,12 +134,17 @@ export default {
                 this.ctx.closePath();
 
                 if (this.polygon.stroke) {
-                    this.ctx.strokeStyle = c.toString();
+                    this.ctx.strokeStyle = applyColorSchemeToEachShape
+                        ? gradient
+                        : c.toString();
+
                     this.ctx.stroke(path);
                 }
 
                 if (!this.polygon.stroke) {
-                    this.ctx.fillStyle = c.toString();
+                    this.ctx.fillStyle = applyColorSchemeToEachShape
+                        ? gradient
+                        : c.toString();
                     this.ctx.fill(path);
                 }
 

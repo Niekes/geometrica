@@ -17,6 +17,7 @@ export default {
                 calcStrokeWidth,
                 colorInterPolator,
                 flipColorInterpolator,
+                applyColorSchemeToEachShape,
             } = this.circle;
 
             const radians = (this.circle.rotation * this.PI / 180);
@@ -41,13 +42,38 @@ export default {
                 const radiusY = this.circle.radiusY - (i * this.circle.distance);
                 const k = i / adjustedAmount;
                 const angle = radians / adjustedAmount * i;
-
                 const x = -radiusX + this.circle.radiusX - (i * this.circle.distance);
                 const y = -radiusY + this.circle.radiusY - (i * this.circle.distance);
-
                 const flippedK = Math.abs(k - 1);
-
                 const c = color(flipColorInterpolator ? colorIp(flippedK) : colorIp(k));
+                let gradient = null;
+
+                if (applyColorSchemeToEachShape) {
+                    gradient = this.ctx.createLinearGradient(
+                        x - radiusX / 2,
+                        0,
+                        x + radiusX / 2,
+                        0,
+                    );
+
+                    for (let j = 0; j < 1; j += 0.1) {
+                        const gc = color(
+                            flipColorInterpolator
+                                ? colorIp(Math.abs(j - 1))
+                                : colorIp(j),
+                        );
+
+                        if (interpolateOpacity) {
+                            gc.opacity = k;
+                        }
+
+                        if (interpolateOpacity && flipOpacity) {
+                            gc.opacity = flippedK;
+                        }
+
+                        gradient.addColorStop(j, gc);
+                    }
+                }
 
                 if (interpolateOpacity) {
                     c.opacity = k;
@@ -87,12 +113,18 @@ export default {
                 this.ctx.closePath();
 
                 if (this.circle.stroke) {
-                    this.ctx.strokeStyle = c.toString();
+                    this.ctx.strokeStyle = applyColorSchemeToEachShape
+                        ? gradient
+                        : c.toString();
+
                     this.ctx.stroke();
                 }
 
                 if (!this.circle.stroke) {
-                    this.ctx.fillStyle = c.toString();
+                    this.ctx.fillStyle = applyColorSchemeToEachShape
+                        ? gradient
+                        : c.toString();
+
                     this.ctx.fill();
                 }
 

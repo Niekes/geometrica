@@ -31,10 +31,6 @@ export default {
         event: 'change',
     },
     props: {
-        label: {
-            type: String,
-            required: true,
-        },
         options: {
             type: Array,
             default: () => [],

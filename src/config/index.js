@@ -73,6 +73,15 @@ export default {
                 br: (isRect && +query.borderRadius.br) || 0,
             },
             colorInterPolator: (isRect && query.colorInterPolator) || 'interpolateBrBG',
+            applyColorSchemeToEachShape: isRect
+                ? JSON.parse(query.applyColorSchemeToEachShape)
+                : false,
+            applyColorSchemeToEachShapeOptions: [
+                {
+                    value: true,
+                    text: i18n.t('home.applyColorSchemeToEachRect'),
+                },
+            ],
             cx: (isRect && +query.cx) || 0,
             cy: (isRect && +query.cy) || 0,
             distance: (isRect && +query.distance) || 16,
@@ -129,10 +138,20 @@ export default {
             bgColor: (isCircle && query.bgColor) || '#000000',
             bgBorderRadius: (isCircle && +query.bgBorderRadius) || 10,
             colorInterPolator: (isCircle && query.colorInterPolator) || 'interpolateBrBG',
+            applyColorSchemeToEachShape: isCircle
+                ? JSON.parse(query.applyColorSchemeToEachShape)
+                : false,
+            applyColorSchemeToEachShapeOptions: [
+                {
+                    value: true,
+                    text: i18n.t('home.applyColorSchemeToEachCircle'),
+                },
+            ],
             cx: (isCircle && +query.cx) || 0,
             cy: (isCircle && +query.cy) || 0,
             distance: (isCircle && +query.distance) || 16,
             flipColorInterpolator: isCircle ? JSON.parse(query.flipColorInterpolator) : false,
+
             flipColorInterpolatorOptions: [
                 {
                     value: true,
@@ -184,6 +203,15 @@ export default {
             bgBorderRadius: (isPolygon && +query.bgBorderRadius) || 10,
             borderRadius: (isPolygon && +query.borderRadius) || 0,
             colorInterPolator: (isPolygon && query.colorInterPolator) || 'interpolateBrBG',
+            applyColorSchemeToEachShape: isPolygon
+                ? JSON.parse(query.applyColorSchemeToEachShape)
+                : false,
+            applyColorSchemeToEachShapeOptions: [
+                {
+                    value: true,
+                    text: i18n.t('home.applyColorSchemeToEachPolygon'),
+                },
+            ],
             cx: (isPolygon && +query.cx) || 0,
             cy: (isPolygon && +query.cy) || 0,
             distance: (isPolygon && +query.distance) || 16,
@@ -608,7 +636,7 @@ export default {
                 strokeWidth: 10,
                 radiusX: 160,
                 radiusY: 384,
-                borderRadiusIsLocked: false,
+                radiusIsLocked: false,
                 calcOpacity: ['interpolate'],
                 colorInterPolator: 'interpolateViridis',
             },
@@ -644,6 +672,37 @@ export default {
                 calcStrokeWidth: ['interpolate'],
                 flipColorInterpolator: true,
                 colorInterPolator: 'interpolateCubehelixDefault',
+            },
+        },
+        {
+            src: require('@/assets/img/icon-25.png'),
+            shape: 'polygon',
+            parameters: {
+                borderRadius: 0.3,
+                amount: 45,
+                distance: 5.5,
+                rotation: 135,
+                strokeWidth: 1,
+                size: 450,
+                sides: 8,
+                applyColorSchemeToEachShape: true,
+                colorInterPolator: 'interpolatePiYG',
+            },
+        },
+        {
+            src: require('@/assets/img/icon-26.png'),
+            shape: 'circle',
+            parameters: {
+                amount: 25,
+                rotation: -1440,
+                distance: 10,
+                stroke: false,
+                strokeWidth: 10,
+                radiusX: 272,
+                radiusY: 428,
+                radiusIsLocked: false,
+                applyColorSchemeToEachShape: true,
+                colorInterPolator: 'interpolateBrBG',
             },
         },
         /* eslint-enable global-require */

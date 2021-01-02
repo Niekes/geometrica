@@ -89,7 +89,6 @@
                     v-model="circle.calcStrokeWidth"
                     class="checkbox__input"
                     :options="circle.calcStrokeWidthOptions"
-                    :label="$t('home.strokeWidth')"
                     @change.native="$emit('circle-update')"
                 />
 
@@ -112,7 +111,14 @@
                     v-model="circle.calcOpacity"
                     class="checkbox__input"
                     :options="circle.calcOpacityOptions"
-                    :label="$t('home.opacity')"
+                    @change.native="$emit('circle-update')"
+                />
+
+                <input-checkbox
+                    :id="'apple-color-scheme-to-each-shape'"
+                    v-model="circle.applyColorSchemeToEachShape"
+                    class="radio__input"
+                    :options="circle.applyColorSchemeToEachShapeOptions"
                     @change.native="$emit('circle-update')"
                 />
 
@@ -121,7 +127,6 @@
                     v-model="circle.flipColorInterpolator"
                     class="radio__input"
                     :options="circle.flipColorInterpolatorOptions"
-                    :label="$t('home.flipColorScheme')"
                     @change.native="$emit('circle-update')"
                 />
 

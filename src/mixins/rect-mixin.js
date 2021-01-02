@@ -17,6 +17,7 @@ export default {
                 calcStrokeWidth,
                 colorInterPolator,
                 flipColorInterpolator,
+                applyColorSchemeToEachShape,
             } = this.rect;
 
             const radians = (this.rect.rotation * this.PI / 180);
@@ -49,6 +50,29 @@ export default {
                 const brBl = this.rect.borderRadius.bl * Math.min(width, height) / 2;
                 const brBr = this.rect.borderRadius.br * Math.min(width, height) / 2;
                 const c = color(flipColorInterpolator ? colorIp(flippedK) : colorIp(k));
+                let gradient = null;
+
+                if (applyColorSchemeToEachShape) {
+                    gradient = this.ctx.createLinearGradient(x, 0, x + width, 0);
+
+                    for (let j = 0; j < 1; j += 0.1) {
+                        const gc = color(
+                            flipColorInterpolator
+                                ? colorIp(Math.abs(j - 1))
+                                : colorIp(j),
+                        );
+
+                        if (interpolateOpacity) {
+                            gc.opacity = k;
+                        }
+
+                        if (interpolateOpacity && flipOpacity) {
+                            gc.opacity = flippedK;
+                        }
+
+                        gradient.addColorStop(j, gc);
+                    }
+                }
 
                 if (interpolateOpacity) {
                     c.opacity = k;
@@ -87,14 +111,21 @@ export default {
                 this.ctx.closePath();
 
                 if (this.rect.stroke) {
-                    this.ctx.strokeStyle = c.toString();
+                    this.ctx.strokeStyle = applyColorSchemeToEachShape
+                        ? gradient
+                        : c.toString();
+
                     this.ctx.stroke();
                 }
 
                 if (!this.rect.stroke) {
-                    this.ctx.fillStyle = c.toString();
+                    this.ctx.fillStyle = applyColorSchemeToEachShape
+                        ? gradient
+                        : c.toString();
+
                     this.ctx.fill();
                 }
+
                 this.ctx.restore();
             }
         },

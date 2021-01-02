@@ -112,7 +112,6 @@
                     v-model="polygon.calcStrokeWidth"
                     class="checkbox__input"
                     :options="polygon.calcStrokeWidthOptions"
-                    :label="$t('home.strokeWidth')"
                     @change.native="$emit('polygon-update')"
                 />
                 <base-button
@@ -134,7 +133,14 @@
                     v-model="polygon.calcOpacity"
                     class="checkbox__input"
                     :options="polygon.calcOpacityOptions"
-                    :label="$t('home.opacity')"
+                    @change.native="$emit('polygon-update')"
+                />
+
+                <input-checkbox
+                    :id="'apple-color-scheme-to-each-shape'"
+                    v-model="polygon.applyColorSchemeToEachShape"
+                    class="radio__input"
+                    :options="polygon.applyColorSchemeToEachShapeOptions"
                     @change.native="$emit('polygon-update')"
                 />
 
@@ -143,7 +149,6 @@
                     v-model="polygon.flipColorInterpolator"
                     class="radio__input"
                     :options="polygon.flipColorInterpolatorOptions"
-                    :label="$t('home.flipColorScheme')"
                     @change.native="$emit('polygon-update')"
                 />
 
