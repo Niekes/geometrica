@@ -85,6 +85,7 @@
                     'background-color': canvasBackgroundColor,
                     'border-radius': `${canvasBorderRadius}%`,
                 }"
+                @contextmenu.prevent.stop
             />
         </div>
     </div>
