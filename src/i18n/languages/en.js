@@ -83,6 +83,6 @@ export default {
         copyright: 'Who owns the copyright?',
         copyrightParagraph: 'You own the copyright to any image that you created using geometrica.niekes.com.',
         about: 'About',
-        aboutParagraph: 'My name is Stefan Nieke, I am a Front-end Engineer and a UI/UX Designer based in Berlin, Germany. If you want we can connect on social media. Please see: <ul><li><a style="color:#000" target="_blank" href="https://www.instagram.com/geometrica.niekes">Instagram</a></li><li><a style="color:#000" target="_blank" href="https://www.pinterest.de/niekest">Pinterest</a></li><li><a style="color:#000" target="_blank" href="https://dribbble.com/niekes">Dribbble</a></li></ul>.',
+        aboutParagraph: 'My name is Stefan Nieke, I am a Front-end Engineer and a UI/UX Designer based in Berlin, Germany. If you want we can connect on social media. Please see: <ul><li><a style="color:#000" target="_blank" href="https://www.instagram.com/geometrica.niekes">Instagram</a></li><li><a style="color:#000" target="_blank" href="https://www.pinterest.de/niekest">Pinterest</a></li><li><a style="color:#000" target="_blank" href="https://dribbble.com/niekes">Dribbble</a></li></ul>',
     },
 };
