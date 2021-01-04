@@ -46,18 +46,9 @@
             </div>
             <div class="control__actions">
                 <base-button
-                    v-if="selectedShape === 'rect'"
-                    :text="$t('home.resetRectangle').toUpperCase()"
-                    @click.native="reset"
-                />
-                <base-button
-                    v-if="selectedShape === 'circle'"
-                    :text="$t('home.resetCircle').toUpperCase()"
-                    @click.native="reset"
-                />
-                <base-button
-                    v-if="selectedShape === 'polygon'"
-                    :text="$t('home.resetPolygon').toUpperCase()"
+                    :text="$t('home.resetShape', {
+                        shape: shapeMap.get(selectedShape)
+                    }).toUpperCase()"
                     @click.native="reset"
                 />
                 <base-button
@@ -141,6 +132,11 @@ export default {
             circle: Object.assign({}, config.shapes.circle),
             polygon: Object.assign({}, config.shapes.polygon),
             selectedShape: config.shapes.selected,
+            shapeMap: new Map([
+                ['rect', 'rectangle'],
+                ['circle', 'circle'],
+                ['polygon', 'polygon'],
+            ]),
             shapes: [
                 { name: 'rect' },
                 { name: 'circle' },
