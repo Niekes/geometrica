@@ -101,7 +101,7 @@ import circleMixin from '@/mixins/circle-mixin';
 import polygonMixin from '@/mixins/polygon-mixin';
 import clipboardMixin from '@/mixins/clipboard-mixin';
 
-import config from '@/config';
+import config, { DEFAULTS } from '@/config';
 
 export default {
     name: 'Home',
@@ -149,6 +149,7 @@ export default {
         this.PI = Math.PI;
         this.HALF_PI = this.PI / 2;
         this.TAU = this.PI * 2;
+        this.DEFAULTS = DEFAULTS;
     },
 
     mounted() {

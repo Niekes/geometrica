@@ -27,6 +27,12 @@ export default {
         },
     },
 
+    watch: {
+        active() {
+            // Set 'color-interpolator__canvas--active' class when active
+        },
+    },
+
     created() {
         this.colorInterPolators = config.colorInterPolators;
     },
@@ -49,7 +55,6 @@ export default {
 
             select(this.$el).node().appendChild(canvas.node());
 
-            // canvas.node().width = Number.parseInt(select(this.$el).style('width'), 10);
             canvas.node().width = 32;
             canvas.node().height = 1;
 

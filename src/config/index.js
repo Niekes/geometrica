@@ -37,7 +37,9 @@ import {
     interpolateYlOrRd,
     interpolateRainbow,
     interpolateSinebow,
+    interpolateLab,
 } from 'd3';
+
 
 import {
     parse,
@@ -52,6 +54,37 @@ const isRect = shape === 'rect';
 const isCircle = shape === 'circle';
 const isPolygon = shape === 'polygon';
 
+const interpolateBlueToPink = interpolateLab('#00adf6', '#e701e6');
+
+export const DEFAULTS = {
+    amount: 16,
+    applyColorSchemeToEachShape: false,
+    bgBorderRadius: 10,
+    bgColor: '#000000',
+    borderRadius: {
+        tl: 0, tr: 0, bl: 0, br: 0,
+    },
+    borderRadiusIsLocked: true,
+    calcOpacity: [],
+    calcStrokeWidth: [],
+    colorInterPolator: 'interpolateBrBG',
+    cx: 0,
+    cy: 0,
+    distance: 16,
+    flipColorInterpolator: false,
+    height: 256,
+    radiusX: 256,
+    radiusY: 256,
+    rotation: 0,
+    shape: 'rect',
+    sides: 5,
+    size: 256,
+    sizeIsLocked: true,
+    stroke: true,
+    strokeWidth: 3,
+    width: 256,
+};
+
 export default {
     base: process.env.VUE_APP_BASE,
     title: process.env.VUE_APP_TITLE,
@@ -61,32 +94,32 @@ export default {
         buymeacoffee: 'https://www.buymeacoffee.com/niekes',
     },
     shapes: {
-        selected: shape || 'rect',
+        selected: shape || DEFAULTS.shape,
         rect: {
-            amount: (isRect && +query.amount) || 16,
-            bgColor: (isRect && query.bgColor) || '#000000',
-            bgBorderRadius: (isRect && +query.bgBorderRadius) || 10,
+            amount: (isRect && +query.amount) || DEFAULTS.amount,
+            bgColor: (isRect && query.bgColor) || DEFAULTS.bgColor,
+            bgBorderRadius: (isRect && +query.bgBorderRadius) || DEFAULTS.bgBorderRadius,
             borderRadius: {
-                tl: (isRect && +query.borderRadius.tl) || 0,
-                tr: (isRect && +query.borderRadius.tr) || 0,
-                bl: (isRect && +query.borderRadius.bl) || 0,
-                br: (isRect && +query.borderRadius.br) || 0,
+                tl: (isRect && +query.borderRadius.tl) || DEFAULTS.borderRadius.tl,
+                tr: (isRect && +query.borderRadius.tr) || DEFAULTS.borderRadius.tr,
+                bl: (isRect && +query.borderRadius.bl) || DEFAULTS.borderRadius.bl,
+                br: (isRect && +query.borderRadius.br) || DEFAULTS.borderRadius.br,
             },
-            colorInterPolator: (isRect && query.colorInterPolator) || 'interpolateBrBG',
+            colorInterPolator: (isRect && query.colorInterPolator) || DEFAULTS.colorInterPolator,
             applyColorSchemeToEachShape: isRect
                 ? JSON.parse(query.applyColorSchemeToEachShape)
-                : false,
+                : DEFAULTS.applyColorSchemeToEachShape,
             applyColorSchemeToEachShapeOptions: [
                 {
                     value: true,
                     text: i18n.t('home.applyColorSchemeToEachRect'),
                 },
             ],
-            cx: (isRect && +query.cx) || 0,
-            cy: (isRect && +query.cy) || 0,
-            distance: (isRect && +query.distance) || 16,
-            height: (isRect && +query.height) || 256,
-            calcOpacity: (isRect && query.calcOpacity.split(',')) || [],
+            cx: (isRect && +query.cx) || DEFAULTS.cx,
+            cy: (isRect && +query.cy) || DEFAULTS.cy,
+            distance: (isRect && +query.distance) || DEFAULTS.distance,
+            height: (isRect && +query.height) || DEFAULTS.height,
+            calcOpacity: (isRect && query.calcOpacity.split(',')) || DEFAULTS.calcOpacity,
             calcOpacityOptions: [
                 {
                     value: 'interpolate',
@@ -97,15 +130,17 @@ export default {
                     text: i18n.t('home.flip'),
                 },
             ],
-            flipColorInterpolator: isRect ? JSON.parse(query.flipColorInterpolator) : false,
+            flipColorInterpolator: isRect
+                ? JSON.parse(query.flipColorInterpolator)
+                : DEFAULTS.flipColorInterpolator,
             flipColorInterpolatorOptions: [
                 {
                     value: true,
                     text: i18n.t('home.flipColorScheme'),
                 },
             ],
-            rotation: (isRect && +query.rotation) || 0,
-            stroke: isRect ? JSON.parse(query.stroke) : true,
+            rotation: (isRect && +query.rotation) || DEFAULTS.rotation,
+            stroke: isRect ? JSON.parse(query.stroke) : DEFAULTS.stroke,
             strokeOptions: [
                 {
                     value: true,
@@ -116,8 +151,8 @@ export default {
                     text: i18n.t('home.fill'),
                 },
             ],
-            strokeWidth: (isRect && +query.strokeWidth) || 3,
-            calcStrokeWidth: (isRect && query.calcStrokeWidth.split(',')) || [],
+            strokeWidth: (isRect && +query.strokeWidth) || DEFAULTS.strokeWidth,
+            calcStrokeWidth: (isRect && query.calcStrokeWidth.split(',')) || DEFAULTS.calcStrokeWidth,
             calcStrokeWidthOptions: [
                 {
                     value: 'interpolate',
@@ -128,38 +163,43 @@ export default {
                     text: i18n.t('home.flip'),
                 },
             ],
-            width: (isRect && +query.width) || 256,
-            borderRadiusIsLocked: isRect ? JSON.parse(query.borderRadiusIsLocked) : true,
-            sizeIsLocked: isRect ? JSON.parse(query.sizeIsLocked) : true,
+            width: (isRect && +query.width) || DEFAULTS.width,
+            borderRadiusIsLocked: isRect
+                ? JSON.parse(query.borderRadiusIsLocked)
+                : DEFAULTS.borderRadiusIsLocked,
+            sizeIsLocked: isRect
+                ? JSON.parse(query.sizeIsLocked)
+                : DEFAULTS.sizeIsLocked,
 
         },
         circle: {
-            amount: (isCircle && +query.amount) || 16,
-            bgColor: (isCircle && query.bgColor) || '#000000',
-            bgBorderRadius: (isCircle && +query.bgBorderRadius) || 10,
-            colorInterPolator: (isCircle && query.colorInterPolator) || 'interpolateBrBG',
+            amount: (isCircle && +query.amount) || DEFAULTS.amount,
+            bgColor: (isCircle && query.bgColor) || DEFAULTS.bgColor,
+            bgBorderRadius: (isCircle && +query.bgBorderRadius) || DEFAULTS.bgBorderRadius,
+            colorInterPolator: (isCircle && query.colorInterPolator) || DEFAULTS.colorInterPolator,
             applyColorSchemeToEachShape: isCircle
                 ? JSON.parse(query.applyColorSchemeToEachShape)
-                : false,
+                : DEFAULTS.applyColorSchemeToEachShape,
             applyColorSchemeToEachShapeOptions: [
                 {
                     value: true,
                     text: i18n.t('home.applyColorSchemeToEachCircle'),
                 },
             ],
-            cx: (isCircle && +query.cx) || 0,
-            cy: (isCircle && +query.cy) || 0,
-            distance: (isCircle && +query.distance) || 16,
-            flipColorInterpolator: isCircle ? JSON.parse(query.flipColorInterpolator) : false,
-
+            cx: (isCircle && +query.cx) || DEFAULTS.cx,
+            cy: (isCircle && +query.cy) || DEFAULTS.cy,
+            distance: (isCircle && +query.distance) || DEFAULTS.distance,
+            flipColorInterpolator: isCircle
+                ? JSON.parse(query.flipColorInterpolator)
+                : DEFAULTS.flipColorInterpolator,
             flipColorInterpolatorOptions: [
                 {
                     value: true,
                     text: i18n.t('home.flipColorScheme'),
                 },
             ],
-            strokeWidth: (isCircle && +query.strokeWidth) || 3,
-            calcStrokeWidth: (isCircle && query.calcStrokeWidth.split(',')) || [],
+            strokeWidth: (isCircle && +query.strokeWidth) || DEFAULTS.strokeWidth,
+            calcStrokeWidth: (isCircle && query.calcStrokeWidth.split(',')) || DEFAULTS.calcStrokeWidth,
             calcStrokeWidthOptions: [
                 {
                     value: 'interpolate',
@@ -170,7 +210,7 @@ export default {
                     text: i18n.t('home.flip'),
                 },
             ],
-            calcOpacity: (isCircle && query.calcOpacity.split(',')) || [],
+            calcOpacity: (isCircle && query.calcOpacity.split(',')) || DEFAULTS.calcOpacity,
             calcOpacityOptions: [
                 {
                     value: 'interpolate',
@@ -181,10 +221,10 @@ export default {
                     text: i18n.t('home.flip'),
                 },
             ],
-            radiusX: (isCircle && +query.radiusX) || 256,
-            radiusY: (isCircle && +query.radiusY) || 256,
-            rotation: (isCircle && +query.rotation) || 0,
-            stroke: isCircle ? JSON.parse(query.stroke) : true,
+            radiusX: (isCircle && +query.radiusX) || DEFAULTS.radiusX,
+            radiusY: (isCircle && +query.radiusY) || DEFAULTS.radiusY,
+            rotation: (isCircle && +query.rotation) || DEFAULTS.rotation,
+            stroke: isCircle ? JSON.parse(query.stroke) : DEFAULTS.stroke,
             strokeOptions: [
                 {
                     value: true,
@@ -195,35 +235,37 @@ export default {
                     text: i18n.t('home.fill'),
                 },
             ],
-            radiusIsLocked: isCircle ? JSON.parse(query.radiusIsLocked) : true,
+            radiusIsLocked: isCircle ? JSON.parse(query.radiusIsLocked) : DEFAULTS.radiusIsLocked,
         },
         polygon: {
-            amount: (isPolygon && +query.amount) || 16,
-            bgColor: (isPolygon && query.bgColor) || '#000000',
-            bgBorderRadius: (isPolygon && +query.bgBorderRadius) || 10,
-            borderRadius: (isPolygon && +query.borderRadius) || 0,
+            amount: (isPolygon && +query.amount) || DEFAULTS.amount,
+            bgColor: (isPolygon && query.bgColor) || DEFAULTS.bgColor,
+            bgBorderRadius: (isPolygon && +query.bgBorderRadius) || DEFAULTS.bgBorderRadius,
+            borderRadius: (isPolygon && +query.borderRadius) || DEFAULTS.borderRadius.tl,
             colorInterPolator: (isPolygon && query.colorInterPolator) || 'interpolateBrBG',
             applyColorSchemeToEachShape: isPolygon
                 ? JSON.parse(query.applyColorSchemeToEachShape)
-                : false,
+                : DEFAULTS.applyColorSchemeToEachShape,
             applyColorSchemeToEachShapeOptions: [
                 {
                     value: true,
                     text: i18n.t('home.applyColorSchemeToEachPolygon'),
                 },
             ],
-            cx: (isPolygon && +query.cx) || 0,
-            cy: (isPolygon && +query.cy) || 0,
-            distance: (isPolygon && +query.distance) || 16,
-            flipColorInterpolator: isPolygon ? JSON.parse(query.flipColorInterpolator) : false,
+            cx: (isPolygon && +query.cx) || DEFAULTS.cx,
+            cy: (isPolygon && +query.cy) || DEFAULTS.cy,
+            distance: (isPolygon && +query.distance) || DEFAULTS.distance,
+            flipColorInterpolator: isPolygon
+                ? JSON.parse(query.flipColorInterpolator)
+                : DEFAULTS.flipColorInterpolator,
             flipColorInterpolatorOptions: [
                 {
                     value: true,
                     text: i18n.t('home.flipColorScheme'),
                 },
             ],
-            strokeWidth: (isPolygon && +query.strokeWidth) || 3,
-            calcStrokeWidth: (isPolygon && query.calcStrokeWidth.split(',')) || [],
+            strokeWidth: (isPolygon && +query.strokeWidth) || DEFAULTS.strokeWidth,
+            calcStrokeWidth: (isPolygon && query.calcStrokeWidth.split(',')) || DEFAULTS.calcStrokeWidth,
             calcStrokeWidthOptions: [
                 {
                     value: 'interpolate',
@@ -234,7 +276,7 @@ export default {
                     text: i18n.t('home.flip'),
                 },
             ],
-            calcOpacity: (isPolygon && query.calcOpacity.split(',')) || [],
+            calcOpacity: (isPolygon && query.calcOpacity.split(',')) || DEFAULTS.calcOpacity,
             calcOpacityOptions: [
                 {
                     value: 'interpolate',
@@ -245,10 +287,10 @@ export default {
                     text: i18n.t('home.flip'),
                 },
             ],
-            rotation: (isPolygon && +query.rotation) || 0,
-            sides: (isPolygon && +query.sides) || 5,
-            size: (isPolygon && +query.size) || 256,
-            stroke: isPolygon ? JSON.parse(query.stroke) : true,
+            rotation: (isPolygon && +query.rotation) || DEFAULTS.rotation,
+            sides: (isPolygon && +query.sides) || DEFAULTS.sides,
+            size: (isPolygon && +query.size) || DEFAULTS.size,
+            stroke: isPolygon ? JSON.parse(query.stroke) : DEFAULTS.stroke,
             strokeOptions: [
                 {
                     value: true,
@@ -720,6 +762,22 @@ export default {
                 calcOpacity: ['interpolate', 'flip'],
             },
         },
+        {
+            src: require('@/assets/img/icon-28.png'),
+            shape: 'circle',
+            parameters: {
+                amount: 46,
+                rotation: -77,
+                distance: 5.8,
+                radiusX: 310,
+                radiusY: 360,
+                strokeWidth: 1,
+                radiusIsLocked: false,
+                applyColorSchemeToEachShape: true,
+                colorInterPolator: 'interpolateBlueToPink',
+            },
+            qs: 'shape=circle&amount=46&bgColor=%23000000&bgBorderRadius=10&colorInterPolator=interpolateBlueToPink&applyColorSchemeToEachShape=true&cx=0&cy=0&distance=5.8&flipColorInterpolator=false&strokeWidth=1&calcStrokeWidth=&calcOpacity=&radiusX=310&radiusY=360&rotation=-77&stroke=true&radiusIsLocked=false',
+        },
         /* eslint-enable global-require */
     ],
     format: {
@@ -738,6 +796,7 @@ export default {
         { name: 'interpolateRdYlBu', fn: interpolateRdYlBu },
         { name: 'interpolateRdYlGn', fn: interpolateRdYlGn },
         { name: 'interpolateSpectral', fn: interpolateSpectral },
+        { name: 'interpolateBlueToPink', fn: interpolateBlueToPink },
         { name: 'interpolateBlues', fn: interpolateBlues },
         { name: 'interpolateGreens', fn: interpolateGreens },
         { name: 'interpolateGreys', fn: interpolateGreys },
