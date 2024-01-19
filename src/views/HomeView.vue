@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import config from '../components/config';
+import RectControl from '@/components/RectControl.vue';
 
 const shapes: { name: string }[] = [{ name: 'rect' }, { name: 'circle' }, { name: 'polygon' }];
 const selectedShape = ref<string>(config.DEFAULTS.shape);
@@ -26,7 +27,9 @@ function draw() {
                     <label :for="shape.name" v-text="shape.name" />
                 </div>
             </div>
-            <div class="control__shapes">control__shapes</div>
+            <div class="control__shapes">
+                <RectControl></RectControl>
+            </div>
             <div class="control__actions">control__actions</div>
         </div>
         <div class="context">
