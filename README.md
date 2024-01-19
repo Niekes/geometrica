@@ -1,55 +1,52 @@
-# Vue app template
+# geometrica
 
-Configured with:
+This template should help get you started developing with Vue 3 in Vite.
 
-* [Vue router](https://router.vuejs.org/)
-* [Vuex](https://vuex.vuejs.org/)
-* [Vue I18n](https://kazupon.github.io/vue-i18n/)
-* [Eslint](https://eslint.org/) (AirBnB Config)
-* [Stylelint](https://github.com/stylelint/stylelint)
-* Vue api router (See: `src/api`)
-* Progressive Web App (PWA) Support
-* [Axios](https://github.com/axios/axios)
-* [SVG Sprite](https://github.com/sam3d/vue-svg)
-* [Scss](https://sass-lang.com/)
-* [Normalize CSS](https://necolas.github.io/normalize.css/)
-* [Unit Tests](https://vue-test-utils.vuejs.org/) (JEST)
+## Recommended IDE Setup
 
-## Project setup
-```bash
-$ npm install
-$ echo -e "VUE_APP_TITLE=Template\nVUE_APP_BASE=/\nVUE_APP_URL=http://localhost:8080\nVUE_APP_API_URL=http://example.com" > .env.development.local
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+
+## Type Support for `.vue` Imports in TS
+
+TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+
+If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+
+1. Disable the built-in TypeScript Extension
+    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
+    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
+2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+
+## Customize configuration
+
+See [Vite Configuration Reference](https://vitejs.dev/config/).
+
+## Project Setup
+
+```sh
+npm install
 ```
 
-### Compiles for development
-```bash
-$ npm start
-```
-OR
+### Compile and Hot-Reload for Development
 
-```bash
-$ npm run serve
+```sh
+npm run dev
 ```
 
-### Compiles and minifies for production
-```bash
-$ npm run build
+### Type-Check, Compile and Minify for Production
+
+```sh
+npm run build
 ```
 
-### Run your tests
-```bash
-$ npm run test
+### Run Unit Tests with [Vitest](https://vitest.dev/)
+
+```sh
+npm run test:unit
 ```
 
-### Lints and fixes files
-```bash
-$ npm run lint
-```
+### Lint with [ESLint](https://eslint.org/)
 
-### Reset
-```bash
-$ npm run reset
+```sh
+npm run lint
 ```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

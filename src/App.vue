@@ -1,111 +1,19 @@
-<template>
-    <div
-        id="app"
-    >
-        <navigation id="nav" />
-        <router-view id="content" />
-    </div>
-</template>
+<script setup lang="ts">
+import { RouterView } from 'vue-router';
+import { NiekesFooter, NiekesNavbar, NiekesIconGeometricaLogo, NiekesScrollToTop } from '@niekes/lib';
 
-<script>
-import axios from 'axios';
-import Navigation from '@/components/Navigation';
+import '@niekes/lib/dist/styles.css';
 
-export default {
-    name: 'Main',
-
-    components: {
-        Navigation,
-    },
-
-    data() {
-        return {
-            isMobileReponse: null,
-            showDropItOverlay: false,
-        };
-    },
-
-    async created() {
-        if (process.env.NODE_ENV === 'production') {
-            try {
-                this.isMobileReponse = await axios({
-                    url: 'api/is-mobile.php',
-                });
-            } catch (error) {
-                throw new Error(error);
-            } finally {
-                if (this.isMobileReponse !== null && this.isMobileReponse.status === 200) {
-                    this.$store.commit('mobile/set', this.isMobileReponse.data);
-                }
-            }
-        }
-    },
-};
+const appName: string = import.meta.env.VITE_APP_NAME;
+const appDescription: string = import.meta.env.VITE_APP_DESCRIPTION;
 </script>
 
-<style lang="scss">
-@import './scss/main';
-
-* {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-html,
-body,
-#app {
-    height: 100%;
-    max-height: 100%;
-    min-height: 100%;
-}
-
-body {
-    font-family:
-        BeVietnam,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        Roboto,
-        Helvetica,
-        Arial,
-        sans-serif,
-        "Apple Color Emoji",
-        "Segoe UI Emoji",
-        "Segoe UI Symbol";
-    position: relative;
-}
-
-#app {
-    height: 100%;
-    max-height: 100%;
-    min-height: 100%;
-    padding: 0;
-    position: relative;
-}
-
-#nav {
-    height: 70px;
-    max-height: 70px;
-    min-height: 70px;
-}
-
-#content {
-    height: calc(100% - 70px);
-    max-height: calc(100% - 70px);
-    min-height: calc(100% - 70px);
-}
-
-@media (max-width: $breakpoint-md) {
-    #nav {
-        height: 50px;
-        max-height: 50px;
-        min-height: 50px;
-    }
-
-    #content {
-        height: calc(100% - 50px);
-        max-height: calc(100% - 50px);
-        min-height: calc(100% - 50px);
-    }
-}
-</style>
+<template>
+    <niekes-navbar :name="appName" :description="appDescription">
+        <!-- eslint-disable-next-line vue/no-deprecated-slot-attribute -->
+        <niekes-icon-geometrica-logo slot="logo"></niekes-icon-geometrica-logo>
+    </niekes-navbar>
+    <RouterView />
+    <niekes-footer></niekes-footer>
+    <niekes-scroll-to-top></niekes-scroll-to-top>
+</template>
