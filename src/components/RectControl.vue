@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { NiekesInputRange, NiekesInputRadio, NiekesInputCheckbox } from '@niekes/lib';
-import { type Rect } from '../interfaces/rect';
-import { defineProps, defineEmits } from 'vue';
+import { type Rect } from '../types/Rect';
+import { defineProps, defineEmits, ref } from 'vue';
+import ColorInterpolator from '../components/ColorInterpolator.vue';
+import type { ColorInterPolator } from '@/types/ColorInterPolators';
 
 const emits = defineEmits(['rect-update']);
 
 const props = defineProps<{
     rect: Rect;
 }>();
+
+const activeColor = ref(props.rect.colorInterPolator);
 
 const generalControls = [
     { value: props.rect.amount, min: 2, max: 1000, step: 1, label: 'Amount' },
@@ -36,6 +40,39 @@ const calcStrokeWidthOptions = [
     { value: 'flip', label: 'Flip' }
 ];
 
+const calcOpacityOptions = [
+    { value: 'interpolate', label: 'Interpolate' },
+    { value: 'flip', label: 'Flip' }
+];
+
+const applyColorSchemeToEachShapeOptions = [
+    {
+        value: true,
+        label: 'applyColorSchemeToEachRectangle'
+    },
+    {
+        value: false,
+        label: 'interpolateColorScheme'
+    }
+];
+
+const flipColorInterpolatorOptions = [
+    {
+        value: true,
+        label: 'flipColorInterpolatorOptions'
+    },
+    {
+        value: false,
+        label: 'dontflipColorInterpolatorOptions'
+    }
+];
+
+function setColorInterPolator(interpolator: any) {
+    triggerUpdate({
+        detail: { name: 'colorInterPolator', value: interpolator.name }
+    } as CustomEvent);
+}
+
 function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
     emits('rect-update', { detail: event.detail });
 }
@@ -61,7 +98,7 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
                 :name="'stroke'"
                 :options="strokeOptions"
                 @change="triggerUpdate"
-            ></niekes-input-radio>
+            />
         </div>
         <div class="border-radius-control">
             <niekes-input-range
@@ -89,11 +126,42 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
                 @change="triggerUpdate"
             />
 
+            <span>Calc Stroke</span>
+
             <niekes-input-checkbox
                 :options="calcStrokeWidthOptions"
                 :name="'calcStrokeWidth'"
                 :value="props.rect.calcStrokeWidth"
                 @change="triggerUpdate"
+            />
+        </div>
+        <div class="color-control">
+            <span>Calc Opacity</span>
+
+            <niekes-input-checkbox
+                :options="calcOpacityOptions"
+                :name="'calcOpacity'"
+                :value="props.rect.calcOpacity"
+                @change="triggerUpdate"
+            />
+
+            <niekes-input-radio
+                :options="applyColorSchemeToEachShapeOptions"
+                :name="'applyColorSchemeToEachShape'"
+                :value="props.rect.applyColorSchemeToEachShape"
+                @change="triggerUpdate"
+            />
+
+            <niekes-input-radio
+                :options="flipColorInterpolatorOptions"
+                :name="'flipColorInterpolator'"
+                :value="props.rect.flipColorInterpolator"
+                @change="triggerUpdate"
+            />
+
+            <ColorInterpolator
+                :active="props.rect.colorInterPolator"
+                @update-color-interpolator="setColorInterPolator"
             />
         </div>
     </div>
@@ -103,5 +171,7 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
 .rect-control {
     display: flex;
     flex-direction: column;
+    padding: var(--niekes-spacing-md);
 }
 </style>
+../interfaces/Rect ../types/rect

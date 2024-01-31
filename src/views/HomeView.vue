@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue';
 import config from '../components/config';
-import RectControl from '@/components/RectControl.vue';
-import { type Rect } from '../interfaces/rect';
-import useRectDrawing from '@/composables/rect';
+import RectControl from '../components/RectControl.vue';
+import { type Rect } from '../types/Rect';
+import useRectDrawing from '../composables/rect';
 
 const PI: number = Math.PI;
 const HALF_PI: number = PI / 2;
@@ -16,14 +16,14 @@ const ctx = ref<CanvasRenderingContext2D | null>(null);
 const shapes: { name: string }[] = [{ name: 'rect' }, { name: 'circle' }, { name: 'polygon' }];
 const rect: Rect = {
     amount: 16,
-    applyColorSchemeToEachShape: true,
+    applyColorSchemeToEachShape: false,
     bgBorderRadius: 10,
     bgColor: '#000',
     borderRadiusBl: 0,
     borderRadiusBr: 0,
     borderRadiusTl: 0,
     borderRadiusTr: 0,
-    calcOpacity: ['interpolate', 'flip'],
+    calcOpacity: [],
     calcStrokeWidth: [],
     colorInterPolator: 'interpolateBrBG',
     cx: 0,
@@ -259,3 +259,4 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     }
 } */
 </style>
+../interfaces/Rect ../types/rect

@@ -1,52 +1,10 @@
-import {
-    interpolateBrBG,
-    interpolatePRGn,
-    interpolatePiYG,
-    interpolatePuOr,
-    interpolateRdBu,
-    interpolateRdGy,
-    interpolateRdYlBu,
-    interpolateRdYlGn,
-    interpolateSpectral,
-    interpolateBlues,
-    interpolateGreens,
-    interpolateGreys,
-    interpolateOranges,
-    interpolatePurples,
-    interpolateReds,
-    interpolateTurbo,
-    interpolateViridis,
-    interpolateInferno,
-    interpolateMagma,
-    interpolatePlasma,
-    interpolateCividis,
-    interpolateWarm,
-    interpolateCool,
-    interpolateCubehelixDefault,
-    interpolateBuGn,
-    interpolateBuPu,
-    interpolateGnBu,
-    interpolateOrRd,
-    interpolatePuBuGn,
-    interpolatePuBu,
-    interpolatePuRd,
-    interpolateRdPu,
-    interpolateYlGnBu,
-    interpolateYlGn,
-    interpolateYlOrBr,
-    interpolateYlOrRd,
-    interpolateRainbow,
-    interpolateSinebow,
-    interpolateLab
-} from 'd3';
-
 import { parse } from 'qs';
 
-import { type QueryParameters } from '../interfaces/rect';
+import { type QueryParameters } from '../types/QueryParameters';
 
 const defaults: QueryParameters = Object.freeze({
-    amount: '16',
-    applyColorSchemeToEachShape: 'false',
+    amount: 16,
+    applyColorSchemeToEachShape: false,
     bgBorderRadius: 10,
     bgColor: '#000000',
     borderRadius: {
@@ -81,10 +39,8 @@ const query: QueryParameters = qs;
 
 const { shape } = query;
 const isRect = shape === 'rect';
-// const isCircle = shape === 'circle';
-// const isPolygon = shape === 'polygon';
-
-const interpolateBlueToPink = interpolateLab('#00adf6', '#e701e6');
+const isCircle = shape === 'circle';
+const isPolygon = shape === 'polygon';
 
 const shapes = {
     selected: shape || defaults.shape,
@@ -164,46 +120,4 @@ const shapes = {
     }
 };
 
-const colorInterPolators: { name: string; fn: Function }[] = [
-    { name: 'interpolateBrBG', fn: interpolateBrBG },
-    { name: 'interpolatePRGn', fn: interpolatePRGn },
-    { name: 'interpolatePiYG', fn: interpolatePiYG },
-    { name: 'interpolatePuOr', fn: interpolatePuOr },
-    { name: 'interpolateRdBu', fn: interpolateRdBu },
-    { name: 'interpolateRdGy', fn: interpolateRdGy },
-    { name: 'interpolateRdYlBu', fn: interpolateRdYlBu },
-    { name: 'interpolateRdYlGn', fn: interpolateRdYlGn },
-    { name: 'interpolateSpectral', fn: interpolateSpectral },
-    { name: 'interpolateBlueToPink', fn: interpolateBlueToPink },
-    { name: 'interpolateBlues', fn: interpolateBlues },
-    { name: 'interpolateGreens', fn: interpolateGreens },
-    { name: 'interpolateGreys', fn: interpolateGreys },
-    { name: 'interpolateOranges', fn: interpolateOranges },
-    { name: 'interpolatePurples', fn: interpolatePurples },
-    { name: 'interpolateReds', fn: interpolateReds },
-    { name: 'interpolateTurbo', fn: interpolateTurbo },
-    { name: 'interpolateViridis', fn: interpolateViridis },
-    { name: 'interpolateInferno', fn: interpolateInferno },
-    { name: 'interpolateMagma', fn: interpolateMagma },
-    { name: 'interpolatePlasma', fn: interpolatePlasma },
-    { name: 'interpolateCividis', fn: interpolateCividis },
-    { name: 'interpolateWarm', fn: interpolateWarm },
-    { name: 'interpolateCool', fn: interpolateCool },
-    { name: 'interpolateCubehelixDefault', fn: interpolateCubehelixDefault },
-    { name: 'interpolateBuGn', fn: interpolateBuGn },
-    { name: 'interpolateBuPu', fn: interpolateBuPu },
-    { name: 'interpolateGnBu', fn: interpolateGnBu },
-    { name: 'interpolateOrRd', fn: interpolateOrRd },
-    { name: 'interpolatePuBuGn', fn: interpolatePuBuGn },
-    { name: 'interpolatePuBu', fn: interpolatePuBu },
-    { name: 'interpolatePuRd', fn: interpolatePuRd },
-    { name: 'interpolateRdPu', fn: interpolateRdPu },
-    { name: 'interpolateYlGnBu', fn: interpolateYlGnBu },
-    { name: 'interpolateYlGn', fn: interpolateYlGn },
-    { name: 'interpolateYlOrBr', fn: interpolateYlOrBr },
-    { name: 'interpolateYlOrRd', fn: interpolateYlOrRd },
-    { name: 'interpolateRainbow', fn: interpolateRainbow },
-    { name: 'interpolateSinebow', fn: interpolateSinebow }
-];
-
-export default { defaults, shapes, colorInterPolators } as const;
+export default { defaults, shapes } as const;
