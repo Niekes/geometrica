@@ -1,13 +1,100 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import config from '../components/config';
 import RectControl from '@/components/RectControl.vue';
+import { type Rect } from '../interfaces/rect';
+import useRectDrawing from '@/composables/rect';
+
+const PI: number = Math.PI;
+const HALF_PI: number = PI / 2;
+const TAU: number = PI * 2;
+const canvas = ref<HTMLCanvasElement | null>(null);
+const canvasHeight = ref<number>(1024);
+const canvasWidth = ref<number>(1024);
+const ctx = ref<CanvasRenderingContext2D | null>(null);
 
 const shapes: { name: string }[] = [{ name: 'rect' }, { name: 'circle' }, { name: 'polygon' }];
-const selectedShape = ref<string>(config.DEFAULTS.shape);
+const rect: Rect = {
+    amount: 16,
+    applyColorSchemeToEachShape: true,
+    bgBorderRadius: 10,
+    bgColor: '#000',
+    borderRadiusBl: 0,
+    borderRadiusBr: 0,
+    borderRadiusTl: 0,
+    borderRadiusTr: 0,
+    calcOpacity: ['interpolate', 'flip'],
+    calcStrokeWidth: [],
+    colorInterPolator: 'interpolateBrBG',
+    cx: 0,
+    cy: 0,
+    distance: 16,
+    flipColorInterpolator: false,
+    height: 256,
+    rotation: 0,
+    stroke: true,
+    strokeWidth: 3,
+    width: 256
+};
 
-function draw() {
-    console.log('DRAW');
+const selectedShape = ref<string>(config.defaults.shape);
+const { drawRect } = useRectDrawing(canvas, rect, canvasWidth.value, canvasHeight.value, PI);
+
+onMounted(() => {
+    if (canvas.value) {
+        const context = canvas.value.getContext('2d');
+
+        canvas.value.width = canvasWidth.value;
+        canvas.value.height = canvasHeight.value;
+
+        if (context) {
+            ctx.value = context;
+
+            ctx.value.scale(2, 2);
+            ctx.value.imageSmoothingEnabled = false;
+
+            draw();
+        } else {
+            console.error('2D context is not supported.');
+        }
+    } else {
+        console.error('Canvas element not found.');
+    }
+});
+
+async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<any> {
+    if (!event) return;
+
+    const e = event;
+
+    if (e && e.detail) {
+        const propertyName = e.detail.name as keyof typeof rect;
+
+        rect[propertyName] = e.detail.value;
+    }
+
+    await nextTick();
+
+    switch (selectedShape.value) {
+        case 'circle':
+            // this.canvasBackgroundColor = this.circle.bgColor;
+            // this.canvasBorderRadius = this.circle.bgBorderRadius;
+            // this.drawCircle();
+            break;
+
+        case 'polygon':
+            // this.canvasBackgroundColor = this.polygon.bgColor;
+            // this.canvasBorderRadius = this.polygon.bgBorderRadius;
+            // this.drawPolygon();
+            break;
+
+        default:
+            // this.canvasBackgroundColor = this.rect.bgColor;
+            // this.canvasBorderRadius = this.rect.bgBorderRadius;
+            drawRect();
+
+            break;
+    }
 }
 </script>
 
@@ -22,19 +109,20 @@ function draw() {
                         name="shape"
                         type="radio"
                         :value="shape.name"
-                        @change="draw"
+                        @change="(event) => draw(event as CustomEvent)"
                     />
                     <label :for="shape.name" v-text="shape.name" />
                 </div>
             </div>
             <div class="control__shapes">
-                <RectControl></RectControl>
+                <RectControl v-if="selectedShape === 'rect'" :rect="rect" @rect-update="draw" />
             </div>
             <div class="control__actions">control__actions</div>
         </div>
         <div class="context">
             <canvas
                 class="context__canvas"
+                ref="canvas"
                 :style="{
                     'background-color': '#000',
                     'border-radius': '10%'
@@ -49,7 +137,7 @@ function draw() {
 .home {
     display: grid;
     margin-top: 5rem;
-    min-height: calc(100vh - 13rem);
+    height: calc(100vh - 13rem);
     grid-template-areas: 'control context';
     grid-template-columns: minmax(0, 24rem) 1fr;
     grid-template-rows: minmax(0, 1fr);
@@ -146,8 +234,8 @@ function draw() {
 .context__canvas {
     border: 1px solid var(--niekes-black-10);
     box-shadow: var(--niekes-box-shadow);
-    max-height: 90%;
-    max-width: 90%;
+    max-height: 75%;
+    max-width: 75%;
     aspect-ratio: 1;
 }
 /*

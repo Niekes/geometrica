@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router';
-import { NiekesFooter, NiekesNavbar, NiekesIconGeometricaLogo, NiekesScrollToTop } from '@niekes/lib';
+import {
+    NiekesFooter,
+    NiekesNavbar,
+    NiekesIconGeometricaLogo,
+    NiekesScrollToTop
+} from '@niekes/lib';
 
 import '@niekes/lib/dist/styles.css';
 
