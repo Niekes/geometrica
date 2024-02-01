@@ -1,17 +1,14 @@
 <script setup lang="ts">
 import { NiekesInputRange, NiekesInputRadio, NiekesInputCheckbox } from '@niekes/lib';
 import { type Rect } from '../types/Rect';
-import { defineProps, defineEmits, ref } from 'vue';
+import { defineProps, defineEmits } from 'vue';
 import ColorInterpolator from '../components/ColorInterpolator.vue';
-import type { ColorInterPolator } from '@/types/ColorInterPolators';
 
 const emits = defineEmits(['rect-update']);
 
 const props = defineProps<{
     rect: Rect;
 }>();
-
-const activeColor = ref(props.rect.colorInterPolator);
 
 const generalControls = [
     { value: props.rect.amount, min: 2, max: 1000, step: 1, label: 'Amount' },
@@ -65,6 +62,16 @@ const flipColorInterpolatorOptions = [
         value: false,
         label: 'dontflipColorInterpolatorOptions'
     }
+];
+
+const sizeControls = [
+    { value: props.rect.width, min: 1, max: 512, step: 1, label: 'Width' },
+    { value: props.rect.height, min: 1, max: 512, step: 1, label: 'Height' }
+];
+
+const positionControls = [
+    { value: props.rect.cx, min: -256, max: 256, step: 1, label: 'Cx' },
+    { value: props.rect.cy, min: -256, max: 256, step: 1, label: 'Cy' }
 ];
 
 function setColorInterPolator(interpolator: any) {
@@ -162,6 +169,36 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
             <ColorInterpolator
                 :active="props.rect.colorInterPolator"
                 @update-color-interpolator="setColorInterPolator"
+            />
+        </div>
+        <div class="size-control">
+            <span>Size</span>
+
+            <niekes-input-range
+                v-for="sizeControl in sizeControls"
+                :key="sizeControl.label"
+                :min="sizeControl.min"
+                :max="sizeControl.max"
+                :label="sizeControl.label"
+                :name="sizeControl.label.toLowerCase()"
+                :value="sizeControl.value"
+                :step="sizeControl.step"
+                @change="triggerUpdate"
+            />
+        </div>
+        <div class="position-control">
+            <span>Position</span>
+
+            <niekes-input-range
+                v-for="positionControl in positionControls"
+                :key="positionControl.label"
+                :min="positionControl.min"
+                :max="positionControl.max"
+                :label="positionControl.label"
+                :name="positionControl.label.toLowerCase()"
+                :value="positionControl.value"
+                :step="positionControl.step"
+                @change="triggerUpdate"
             />
         </div>
     </div>
