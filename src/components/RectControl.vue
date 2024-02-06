@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import { NiekesInputRange, NiekesInputRadio, NiekesInputCheckbox, NiekesToggle } from '@niekes/lib';
+import {
+    NiekesInputRange,
+    NiekesInputRadio,
+    NiekesInputCheckbox,
+    NiekesToggle,
+    NiekesButton
+} from '@niekes/lib';
 import { type Rect } from '../types/Rect';
-import { defineEmits } from 'vue';
 import ColorInterpolator from '../components/ColorInterpolator.vue';
 
 const emits = defineEmits(['rect-update']);
 
 const props = defineProps<{
     rect: Rect;
+    initRect: Rect;
 }>();
 
 const generalControls = [
@@ -73,21 +79,6 @@ function setColorInterPolator(interpolator: any) {
     triggerUpdate({
         detail: { name: 'colorInterPolator', value: interpolator.name }
     } as CustomEvent);
-}
-
-function toggle(e: any) {
-    if (e && e.target) {
-        const wrapper: HTMLDivElement = e?.target.nextSibling;
-        const isClosed: Boolean = wrapper.classList.contains('closed');
-
-        if (isClosed) {
-            wrapper.classList.remove('closed');
-        }
-
-        if (!isClosed) {
-            wrapper.classList.add('closed');
-        }
-    }
 }
 
 function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {

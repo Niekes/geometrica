@@ -24,7 +24,6 @@ body {
 *::after {
     box-sizing: border-box;
     margin: 0;
-    font-weight: normal;
 }
 
 /* semantic color variables for this project */

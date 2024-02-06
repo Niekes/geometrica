@@ -37,6 +37,8 @@ const rect: Rect = {
     width: 256
 };
 
+const initRect = Object.assign({}, rect);
+
 const selectedShape = ref<string>(config.defaults.shape);
 const { drawRect } = useRectDrawing(canvas, rect, canvasWidth.value, canvasHeight.value, PI);
 
@@ -125,7 +127,12 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
                 </div>
             </div>
             <div class="control__shapes">
-                <RectControl v-if="selectedShape === 'rect'" :rect="rect" @rect-update="draw" />
+                <RectControl
+                    v-if="selectedShape === 'rect'"
+                    :rect="rect"
+                    :init-rect="initRect"
+                    @rect-update="draw"
+                />
             </div>
             <div class="control__actions">
                 <niekes-button text="DOWNLOAD" @click="download"></niekes-button>
