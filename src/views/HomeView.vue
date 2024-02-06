@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue';
-import config from '../components/config';
 import RectControl from '../components/RectControl.vue';
 import { type Rect } from '../types/Rect';
 import useRectDrawing from '../composables/rect';
@@ -39,7 +38,7 @@ const rect: Rect = {
 
 const initRect = Object.assign({}, rect);
 
-const selectedShape = ref<string>(config.defaults.shape);
+const selectedShape = ref<string>('rect'); // config.defaults.shape
 const { drawRect } = useRectDrawing(canvas, rect, canvasWidth.value, canvasHeight.value, PI);
 
 onMounted(() => {
@@ -82,7 +81,7 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     if (e && e.detail) {
         const propertyName = e.detail.name as keyof typeof rect;
 
-        rect[propertyName] = e.detail.value;
+        rect[propertyName] = e.detail.value as never;
     }
 
     await nextTick();
