@@ -18,7 +18,6 @@ export type Rect = {
     flipColorInterpolator: boolean;
     height: number;
     rotation: number;
-    stroke: boolean;
     strokeWidth: number;
     width: number;
-}
+};

@@ -4,6 +4,7 @@ import config from '../components/config';
 import RectControl from '../components/RectControl.vue';
 import { type Rect } from '../types/Rect';
 import useRectDrawing from '../composables/rect';
+import { NiekesButton } from '@niekes/lib';
 
 const PI: number = Math.PI;
 const HALF_PI: number = PI / 2;
@@ -32,7 +33,6 @@ const rect: Rect = {
     flipColorInterpolator: false,
     height: 256,
     rotation: 0,
-    stroke: true,
     strokeWidth: 3,
     width: 256
 };
@@ -61,6 +61,16 @@ onMounted(() => {
         console.error('Canvas element not found.');
     }
 });
+
+function download() {
+    if (canvas.value) {
+        const link: HTMLAnchorElement = document.createElement('a');
+
+        link.download = 'geometrica.png';
+        link.href = canvas.value.toDataURL();
+        link.click();
+    }
+}
 
 async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<any> {
     if (!event) return;
@@ -117,7 +127,9 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
             <div class="control__shapes">
                 <RectControl v-if="selectedShape === 'rect'" :rect="rect" @rect-update="draw" />
             </div>
-            <div class="control__actions">control__actions</div>
+            <div class="control__actions">
+                <niekes-button text="DOWNLOAD" @click="download"></niekes-button>
+            </div>
         </div>
         <div class="context">
             <canvas
@@ -152,7 +164,7 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     grid-template-columns: 1fr;
     grid-template-rows: min-content 1fr min-content;
     overflow: auto;
-    padding: var(--niekes-padding);
+    padding: var(--niekes-spacing-md);
 }
 
 .control__shapes {
@@ -172,7 +184,7 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
         width: 100%;
 
         &:not(:last-child) {
-            margin-bottom: var(--niekes-margin-y);
+            margin-bottom: var(--niekes-spacing-md);
         }
     }
 }
@@ -182,7 +194,6 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     border-radius: var(--niekes-border-radius-xs);
     display: flex;
     grid-area: radio;
-    margin-bottom: var(--niekes-margin-y);
     overflow: hidden;
 }
 
@@ -207,7 +218,7 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
 
             &:hover {
                 background: var(--niekes-primary);
-                color: var(--niekes-tertiary);
+                color: var(--niekes-black);
             }
 
             svg {

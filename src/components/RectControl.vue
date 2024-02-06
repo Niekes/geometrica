@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { NiekesInputRange, NiekesInputRadio, NiekesInputCheckbox } from '@niekes/lib';
+import { NiekesInputRange, NiekesInputRadio, NiekesInputCheckbox, NiekesToggle } from '@niekes/lib';
 import { type Rect } from '../types/Rect';
-import { defineProps, defineEmits } from 'vue';
+import { defineEmits } from 'vue';
 import ColorInterpolator from '../components/ColorInterpolator.vue';
 
 const emits = defineEmits(['rect-update']);
@@ -11,7 +11,7 @@ const props = defineProps<{
 }>();
 
 const generalControls = [
-    { value: props.rect.amount, min: 2, max: 1000, step: 1, label: 'Amount' },
+    { value: props.rect.amount, min: 1, max: 1000, step: 1, label: 'Amount' },
     { value: props.rect.distance, min: -64, max: 64, step: 0.1, label: 'Distance' },
     { value: props.rect.rotation, min: -1440, max: 1440, step: 1, label: 'Rotation' }
 ];
@@ -23,13 +23,8 @@ const borderRadiusControls = [
     { value: props.rect.borderRadiusBr, min: 0, max: 1, step: 0.01, label: 'borderRadiusBr' }
 ];
 
-const strokeOptions = [
-    { value: true, label: 'Stroke' },
-    { value: false, label: 'Fill' }
-];
-
 const strokeControls = [
-    { value: props.rect.strokeWidth, min: 1, max: 30, step: 0.1, label: 'strokeWidth' }
+    { value: props.rect.strokeWidth, min: 1, max: 256, step: 0.1, label: 'strokeWidth' }
 ];
 
 const calcStrokeWidthOptions = [
@@ -80,6 +75,21 @@ function setColorInterPolator(interpolator: any) {
     } as CustomEvent);
 }
 
+function toggle(e: any) {
+    if (e && e.target) {
+        const wrapper: HTMLDivElement = e?.target.nextSibling;
+        const isClosed: Boolean = wrapper.classList.contains('closed');
+
+        if (isClosed) {
+            wrapper.classList.remove('closed');
+        }
+
+        if (!isClosed) {
+            wrapper.classList.add('closed');
+        }
+    }
+}
+
 function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
     emits('rect-update', { detail: event.detail });
 }
@@ -88,118 +98,133 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
 <template>
     <div class="rect-control">
         <div class="general-control">
-            <niekes-input-range
-                v-for="generalControl in generalControls"
-                :key="generalControl.label"
-                :min="generalControl.min"
-                :max="generalControl.max"
-                :label="generalControl.label"
-                :name="generalControl.label.toLowerCase()"
-                :value="generalControl.value"
-                :step="generalControl.step"
-                @change="triggerUpdate"
-            />
-
-            <niekes-input-radio
-                :value="props.rect.stroke"
-                :name="'stroke'"
-                :options="strokeOptions"
-                @change="triggerUpdate"
-            />
+            <niekes-toggle>
+                <div slot="caption">General</div>
+                <div slot="content">
+                    <niekes-input-range
+                        v-for="generalControl in generalControls"
+                        :key="generalControl.label"
+                        :min="generalControl.min"
+                        :max="generalControl.max"
+                        :label="generalControl.label"
+                        :name="generalControl.label.toLowerCase()"
+                        :value="generalControl.value"
+                        :step="generalControl.step"
+                        @change="triggerUpdate"
+                    />
+                </div>
+            </niekes-toggle>
         </div>
         <div class="border-radius-control">
-            <niekes-input-range
-                v-for="borderRadiusControl in borderRadiusControls"
-                :key="borderRadiusControl.label"
-                :min="borderRadiusControl.min"
-                :max="borderRadiusControl.max"
-                :label="borderRadiusControl.label"
-                :name="borderRadiusControl.label"
-                :value="borderRadiusControl.value"
-                :step="borderRadiusControl.step"
-                @change="triggerUpdate"
-            />
+            <niekes-toggle>
+                <div slot="caption">Border Radius</div>
+                <div slot="content">
+                    <niekes-input-range
+                        v-for="borderRadiusControl in borderRadiusControls"
+                        :key="borderRadiusControl.label"
+                        :min="borderRadiusControl.min"
+                        :max="borderRadiusControl.max"
+                        :label="borderRadiusControl.label"
+                        :name="borderRadiusControl.label"
+                        :value="borderRadiusControl.value"
+                        :step="borderRadiusControl.step"
+                        @change="triggerUpdate"
+                    />
+                </div>
+            </niekes-toggle>
         </div>
         <div class="stroke-control">
-            <niekes-input-range
-                v-for="strokeControl in strokeControls"
-                :key="strokeControl.label"
-                :min="strokeControl.min"
-                :max="strokeControl.max"
-                :label="strokeControl.label"
-                :name="strokeControl.label"
-                :value="strokeControl.value"
-                :step="strokeControl.step"
-                @change="triggerUpdate"
-            />
+            <niekes-toggle>
+                <div slot="caption">Stroke</div>
+                <div slot="content">
+                    <niekes-input-range
+                        v-for="strokeControl in strokeControls"
+                        :key="strokeControl.label"
+                        :min="strokeControl.min"
+                        :max="strokeControl.max"
+                        :label="strokeControl.label"
+                        :name="strokeControl.label"
+                        :value="strokeControl.value"
+                        :step="strokeControl.step"
+                        @change="triggerUpdate"
+                    />
 
-            <span>Calc Stroke</span>
-
-            <niekes-input-checkbox
-                :options="calcStrokeWidthOptions"
-                :name="'calcStrokeWidth'"
-                :value="props.rect.calcStrokeWidth"
-                @change="triggerUpdate"
-            />
+                    <niekes-input-checkbox
+                        :options="calcStrokeWidthOptions"
+                        :name="'calcStrokeWidth'"
+                        :value="props.rect.calcStrokeWidth"
+                        @change="triggerUpdate"
+                    />
+                </div>
+            </niekes-toggle>
         </div>
         <div class="color-control">
-            <span>Calc Opacity</span>
+            <niekes-toggle>
+                <div slot="caption">Color</div>
+                <div slot="content">
+                    <niekes-input-checkbox
+                        :options="calcOpacityOptions"
+                        :name="'calcOpacity'"
+                        :value="props.rect.calcOpacity"
+                        @change="triggerUpdate"
+                    />
 
-            <niekes-input-checkbox
-                :options="calcOpacityOptions"
-                :name="'calcOpacity'"
-                :value="props.rect.calcOpacity"
-                @change="triggerUpdate"
-            />
+                    <niekes-input-radio
+                        :options="applyColorSchemeToEachShapeOptions"
+                        :name="'applyColorSchemeToEachShape'"
+                        :value="props.rect.applyColorSchemeToEachShape"
+                        @change="triggerUpdate"
+                    />
 
-            <niekes-input-radio
-                :options="applyColorSchemeToEachShapeOptions"
-                :name="'applyColorSchemeToEachShape'"
-                :value="props.rect.applyColorSchemeToEachShape"
-                @change="triggerUpdate"
-            />
+                    <niekes-input-radio
+                        :options="flipColorInterpolatorOptions"
+                        :name="'flipColorInterpolator'"
+                        :value="props.rect.flipColorInterpolator"
+                        @change="triggerUpdate"
+                    />
 
-            <niekes-input-radio
-                :options="flipColorInterpolatorOptions"
-                :name="'flipColorInterpolator'"
-                :value="props.rect.flipColorInterpolator"
-                @change="triggerUpdate"
-            />
-
-            <ColorInterpolator
-                :active="props.rect.colorInterPolator"
-                @update-color-interpolator="setColorInterPolator"
-            />
+                    <ColorInterpolator
+                        :active="props.rect.colorInterPolator"
+                        @update-color-interpolator="setColorInterPolator"
+                    />
+                </div>
+            </niekes-toggle>
         </div>
         <div class="size-control">
-            <span>Size</span>
-
-            <niekes-input-range
-                v-for="sizeControl in sizeControls"
-                :key="sizeControl.label"
-                :min="sizeControl.min"
-                :max="sizeControl.max"
-                :label="sizeControl.label"
-                :name="sizeControl.label.toLowerCase()"
-                :value="sizeControl.value"
-                :step="sizeControl.step"
-                @change="triggerUpdate"
-            />
+            <niekes-toggle>
+                <div slot="caption">Size</div>
+                <div slot="content">
+                    <niekes-input-range
+                        v-for="sizeControl in sizeControls"
+                        :key="sizeControl.label"
+                        :min="sizeControl.min"
+                        :max="sizeControl.max"
+                        :label="sizeControl.label"
+                        :name="sizeControl.label.toLowerCase()"
+                        :value="sizeControl.value"
+                        :step="sizeControl.step"
+                        @change="triggerUpdate"
+                    />
+                </div>
+            </niekes-toggle>
         </div>
         <div class="position-control">
-            <span>Position</span>
-
-            <niekes-input-range
-                v-for="positionControl in positionControls"
-                :key="positionControl.label"
-                :min="positionControl.min"
-                :max="positionControl.max"
-                :label="positionControl.label"
-                :name="positionControl.label.toLowerCase()"
-                :value="positionControl.value"
-                :step="positionControl.step"
-                @change="triggerUpdate"
-            />
+            <niekes-toggle>
+                <div slot="caption">Position</div>
+                <div slot="content">
+                    <niekes-input-range
+                        v-for="positionControl in positionControls"
+                        :key="positionControl.label"
+                        :min="positionControl.min"
+                        :max="positionControl.max"
+                        :label="positionControl.label"
+                        :name="positionControl.label.toLowerCase()"
+                        :value="positionControl.value"
+                        :step="positionControl.step"
+                        @change="triggerUpdate"
+                    />
+                </div>
+            </niekes-toggle>
         </div>
     </div>
 </template>
@@ -208,7 +233,13 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
 .rect-control {
     display: flex;
     flex-direction: column;
-    padding: var(--niekes-spacing-md);
+}
+
+.rect-control > * {
+    margin-top: var(--niekes-spacing-sm);
+}
+
+.rect-control > *:last-child {
+    margin-bottom: var(--niekes-spacing-sm);
 }
 </style>
-../interfaces/Rect ../types/rect

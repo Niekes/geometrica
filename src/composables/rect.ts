@@ -116,18 +116,11 @@ export default function useRectDrawing(
             ctx.value.quadraticCurveTo(x, y, x + brTl, y);
             ctx.value.closePath();
 
-            if (rect.stroke) {
-                ctx.value.strokeStyle = applyColorSchemeToEachShape ? gradient : c?.toString();
+            ctx.value.strokeStyle = applyColorSchemeToEachShape
+                ? gradient || '#000'
+                : c?.toString() || '#000';
 
-                ctx.value.stroke();
-            }
-
-            if (!rect.stroke) {
-                ctx.value.fillStyle = applyColorSchemeToEachShape ? gradient : c?.toString();
-
-                ctx.value.fill();
-            }
-
+            ctx.value.stroke();
             ctx.value.restore();
         }
     };
