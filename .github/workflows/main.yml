@@ -22,6 +22,8 @@ jobs:
                   VITE_APP_DESCRIPTION: ${{ vars.VITE_APP_DESCRIPTION }}
                   VITE_APP_DESCRIPTION_EXTENDED: ${{ vars.VITE_APP_DESCRIPTION_EXTENDED }}
               run: |
+                  print ${{ secrets.NIEKES_USERNAME }}
+                  print ${{ secrets.NIEKES_PASSWORD }}
                   npm install
                   npm run build
 
