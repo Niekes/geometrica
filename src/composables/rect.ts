@@ -2,7 +2,6 @@ import { ref, onMounted } from 'vue';
 import { color } from 'd3';
 import { type Rect } from '../types/Rect';
 import { colorInterPolators } from '@/config/colorInterPolators';
-import type { ColorInterPolator } from '@/types/ColorInterPolators';
 
 export default function useRectDrawing(
     canvasRef: { value: HTMLCanvasElement | null },

@@ -155,6 +155,7 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
 .home {
     display: grid;
     margin-top: 5rem;
+    height: calc(100dvh - 13rem);
     height: calc(100vh - 13rem);
     grid-template-areas: 'control context';
     grid-template-columns: minmax(0, 24rem) 1fr;
@@ -255,25 +256,22 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     max-width: 75%;
     aspect-ratio: 1;
 }
-/*
+
 @media (max-width: 1024px) {
     .home {
-        display: grid;
         grid-template-areas: 'context' 'control';
         grid-template-columns: 1fr;
-        grid-template-rows: minmax(0, 1.5fr) minmax(0, 3fr);
+        grid-template-rows: minmax(0, 2.5fr) minmax(0, 3fr);
     }
 
     .context {
-        border-bottom: --niekes-border-width solid --niekes-black-50;
-        border-radius: 0;
-
-        &__canvas {
-            height: auto !important;
-            max-height: 90%;
-            width: auto !important;
-        }
+        border-bottom: var(--niekes-border-width) solid var(--niekes-black-50);
     }
-} */
+
+    .context__canvas {
+        max-height: 90%;
+        max-width: 90%;
+    }
+}
 </style>
 ../interfaces/Rect ../types/rect

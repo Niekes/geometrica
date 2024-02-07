@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref, defineEmits } from 'vue';
+import { onMounted, onBeforeUnmount, ref } from 'vue';
 import { colorInterPolators } from '../config/colorInterPolators';
 
 const props = defineProps({
