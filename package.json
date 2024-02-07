@@ -1,6 +1,6 @@
 {
-    "name": "ical-event-generator",
-    "version": "0.0.0",
+    "name": "geometrica",
+    "version": "1.0.0",
     "private": true,
     "scripts": {
         "dev": "vite --host",
