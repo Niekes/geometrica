@@ -269,7 +269,7 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     }
 
     .context__canvas {
-        aspect-ratio: 16/9;
+        aspect-ratio: 1;
         max-height: 90%;
         max-width: 90%;
     }
