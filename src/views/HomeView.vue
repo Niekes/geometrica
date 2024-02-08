@@ -211,7 +211,7 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     input {
         display: none;
 
-        + label {
+        & + label {
             background: var(--niekes-secondary);
             color: var(--niekes-white-50);
             cursor: pointer;
@@ -269,9 +269,9 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     }
 
     .context__canvas {
+        aspect-ratio: 16/9;
         max-height: 90%;
         max-width: 90%;
     }
 }
 </style>
-../interfaces/Rect ../types/rect
