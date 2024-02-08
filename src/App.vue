@@ -8,7 +8,12 @@ const appDescription: string = import.meta.env.VITE_APP_DESCRIPTION;
 
 <template>
     <niekes-navbar :name="appName" :description="appDescription">
-        <img :src="'/android-chrome-512x512.png'" slot="logo" alt="Geometrica Logo" />
+        <img
+            style="border-radius: 5px"
+            :src="'/android-chrome-512x512.png'"
+            slot="logo"
+            alt="Geometrica Logo"
+        />
     </niekes-navbar>
     <RouterView />
     <niekes-footer></niekes-footer>
