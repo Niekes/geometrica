@@ -272,6 +272,7 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
         aspect-ratio: 1;
         max-height: 90%;
         max-width: 90%;
+        height: 90%;
     }
 }
 </style>
