@@ -59,7 +59,7 @@ export default function useRectDrawing(
             const brBl = (rect.borderRadiusBl * Math.min(width, height)) / 2;
             const brBr = (rect.borderRadiusBr * Math.min(width, height)) / 2;
             const c = color(flipColorInterpolator ? colorIp(flippedK) : colorIp(k));
-            let gradient;
+            let gradient: CanvasGradient;
 
             if (applyColorSchemeToEachShape) {
                 gradient = ctx.value.createLinearGradient(x, 0, x + width, 0);

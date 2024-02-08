@@ -9,21 +9,24 @@ jobs:
             - name: 🚚 Get latest code
               uses: actions/checkout@v3
 
-            - name: 💻 Use Node.js 16
+            - name: 💻 Use Node.js 21.6.1
               uses: actions/setup-node@v2
               with:
-                  node-version: '16'
+                  node-version: '21.6.1'
 
             - name: 🔨 Build Project
-              env:
-                  NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-                  VITE_APP_EMAIL: ${{ vars.VITE_APP_EMAIL }}
-                  VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
-                  VITE_APP_DESCRIPTION: ${{ vars.VITE_APP_DESCRIPTION }}
-                  VITE_APP_DESCRIPTION_EXTENDED: ${{ vars.VITE_APP_DESCRIPTION_EXTENDED }}
               run: |
                   npm install
                   npm run build
+
+            - name: Create Dotenv File
+              uses: actually-colab/github-action-create-env-file@v2.3
+              with:
+                 envkey_DEBUG: false
+                 envkey_SOME_API_KEY: '123456abcdef'
+                 envkey_SECRET_KEY: ${{ secrets.NIEKES_USERNAME }}
+
+                file_name: .env
 
             # - name: 📋 Run unit tests
             #   run: npm run test:unit

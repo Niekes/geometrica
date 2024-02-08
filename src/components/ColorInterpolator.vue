@@ -10,6 +10,8 @@ const props = defineProps({
     active: { type: String, required: true }
 });
 
+const selectedStyle: string = '3px solid var(--niekes-status-alert)';
+
 const root = ref<HTMLElement | null>(null);
 
 const emits = defineEmits(['update-color-interpolator']);
@@ -23,7 +25,7 @@ const setColorInterpolator = (e?: MouseEvent, color?: any) => {
         });
     }
 
-    (e?.currentTarget as HTMLCanvasElement).style.border = '1px solid red';
+    (e?.currentTarget as HTMLCanvasElement).style.border = selectedStyle;
 
     emits('update-color-interpolator', color);
 };
@@ -34,7 +36,10 @@ onMounted(() => {
 
         canvas.style.width = '100%;';
         canvas.style.height = '2rem';
-        canvas.style.border = props.active === color.name ? '1px solid red' : '1px solid black';
+        canvas.style.border =
+            props.active === color.name
+                ? selectedStyle
+                : '1px solid var(--niekes-black)';
         canvas.style.cursor = 'pointer';
         canvas.style.display = 'flex';
         canvas.style.borderRadius = '5px';
