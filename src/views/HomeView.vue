@@ -93,7 +93,7 @@ const initRect = Object.assign({}, rect);
 const initCircle = Object.assign({}, circle);
 const initPolygon = Object.assign({}, polygon);
 
-const selectedShape = ref<string>('polygon'); // config.defaults.shape
+const selectedShape = ref<string>('rect'); // config.defaults.shape
 const { drawRect } = useRectDrawing(canvas, rect);
 const { drawCircle } = useCircleDrawing(canvas, circle);
 const { drawPolygon } = usePolygonDrawing(canvas, polygon);
