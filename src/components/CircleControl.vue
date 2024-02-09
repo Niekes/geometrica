@@ -151,7 +151,7 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
                 </div>
             </niekes-toggle>
         </div>
-        <div class="size-control">
+        <div class="radius-control">
             <niekes-toggle>
                 <div slot="caption">Radius</div>
                 <div slot="content">

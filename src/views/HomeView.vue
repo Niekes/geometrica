@@ -2,15 +2,18 @@
 import { nextTick, onMounted, ref } from 'vue';
 import RectControl from '../components/RectControl.vue';
 import CircleControl from '../components/CircleControl.vue';
+import PolygonControl from '../components/PolygonControl.vue';
 import { type Rect } from '../types/Rect';
 import { type Circle } from '../types/Circle';
+import { type Polygon } from '../types/Polygon';
 import useRectDrawing from '../composables/rect';
 import useCircleDrawing from '../composables/circle';
+import usePolygonDrawing from '../composables/polygon';
 import { NiekesButton } from '@niekes/lib';
 import { canvasHeight, canvasWidth } from '../config/canvas';
 
-const PI: number = Math.PI;
-const HALF_PI: number = PI / 2;
+// const PI: number = Math.PI;
+// const HALF_PI: number = PI / 2;
 const canvas = ref<HTMLCanvasElement | null>(null);
 const canvasH = ref<number>(canvasHeight);
 const canvasW = ref<number>(canvasWidth);
@@ -61,17 +64,39 @@ const circle: Circle = {
     strokeWidth: 3
 };
 
+const polygon: Polygon = {
+    amount: 16,
+    applyColorSchemeToEachShape: false,
+    bgBorderRadius: 10,
+    bgColor: '#000',
+    borderRadius: 0,
+    calcOpacity: [],
+    calcStrokeWidth: [],
+    colorInterPolator: 'interpolateBrBG',
+    cx: 0,
+    cy: 0,
+    distance: 32,
+    flipColorInterpolator: false,
+    rotation: 0,
+    sides: 5,
+    size: canvasHeight / 4,
+    strokeWidth: 3
+};
+
 const shapes = {
     rect,
-    circle
+    circle,
+    polygon
 };
 
 const initRect = Object.assign({}, rect);
 const initCircle = Object.assign({}, circle);
+const initPolygon = Object.assign({}, polygon);
 
-const selectedShape = ref<string>('rect'); // config.defaults.shape
+const selectedShape = ref<string>('polygon'); // config.defaults.shape
 const { drawRect } = useRectDrawing(canvas, rect);
 const { drawCircle } = useCircleDrawing(canvas, circle);
+const { drawPolygon } = usePolygonDrawing(canvas, polygon);
 
 onMounted(() => {
     if (canvas.value) {
@@ -130,7 +155,7 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
         case 'polygon':
             // this.canvasBackgroundColor = polygon.bgColor;
             // this.canvasBorderRadius = polygon.bgBorderRadius;
-            // this.drawPolygon();
+            drawPolygon();
             break;
 
         default:
@@ -170,6 +195,12 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
                     :circle="circle"
                     :init-circle="initCircle"
                     @circle-update="draw"
+                />
+                <PolygonControl
+                    v-if="selectedShape === 'polygon'"
+                    :polygon="polygon"
+                    :init-polygon="initPolygon"
+                    @polygon-update="draw"
                 />
             </div>
             <div class="control__actions">
