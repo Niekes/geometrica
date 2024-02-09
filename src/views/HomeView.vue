@@ -306,16 +306,28 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
 
         &:checked + label {
             background-color: var(--niekes-primary);
-            color: var(--niekes-tertiary);
+            color: var(--niekes-black);
+            background: linear-gradient(var(--niekes-tertiary), var(--niekes-secondary));
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
             font-weight: bold;
             position: relative;
-            text-decoration: underline;
 
             &::after {
+                content: '';
                 position: absolute;
-                width: 100%;
-                height: 1px;
-                background-color: lime;
+                bottom: 0;
+                width: 75%;
+                left: 0;
+                right: 0;
+                margin: 0 auto;
+                height: 3px;
+                border-radius: 2px;
+                background: linear-gradient(
+                    111.3deg,
+                    var(--niekes-tertiary),
+                    var(--niekes-secondary)
+                );
             }
         }
     }
