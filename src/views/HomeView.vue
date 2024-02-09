@@ -295,7 +295,7 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
 
             &:hover {
                 background: var(--niekes-primary);
-                color: var(--niekes-black);
+                color: var(--niekes-black-75);
             }
 
             svg {
@@ -307,9 +307,6 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
         &:checked + label {
             background-color: var(--niekes-primary);
             color: var(--niekes-black);
-            background: linear-gradient(var(--niekes-tertiary), var(--niekes-secondary));
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
             font-weight: bold;
             position: relative;
 
@@ -326,7 +323,8 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
                 background: linear-gradient(
                     111.3deg,
                     var(--niekes-tertiary),
-                    var(--niekes-secondary)
+                    var(--niekes-secondary),
+                    var(--niekes-tertiary)
                 );
             }
         }
