@@ -69,7 +69,7 @@ const shapes = {
 const initRect = Object.assign({}, rect);
 const initCircle = Object.assign({}, circle);
 
-const selectedShape = ref<string>('circle'); // config.defaults.shape
+const selectedShape = ref<string>('rect'); // config.defaults.shape
 const { drawRect } = useRectDrawing(canvas, rect);
 const { drawCircle } = useCircleDrawing(canvas, circle);
 
