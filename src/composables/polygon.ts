@@ -139,7 +139,7 @@ export default function usePolygonDrawing(
                 ctx.value.lineWidth = polygon.strokeWidth;
             }
 
-            const path = new Path2D(setPath(polygon.sides, borderRadius * 100, s, i));
+            const path = new Path2D(setPath(polygon.sides, borderRadius * 100, s));
 
             ctx.value.closePath();
 
