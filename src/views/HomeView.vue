@@ -19,10 +19,10 @@ const canvasH = ref<number>(canvasHeight);
 const canvasW = ref<number>(canvasWidth);
 const ctx = ref<CanvasRenderingContext2D | null>(null);
 
-const shapesOptions: { name: string }[] = [
-    { name: 'rect' },
-    { name: 'circle' },
-    { name: 'polygon' }
+const shapesOptions: { name: string; value: string }[] = [
+    { value: 'rect', name: 'Rectangle' },
+    { value: 'circle', name: 'Circle' },
+    { value: 'polygon', name: 'Polygon' }
 ];
 const rect: Rect = {
     amount: 16,
@@ -35,7 +35,7 @@ const rect: Rect = {
     borderRadiusTr: 0,
     calcOpacity: [],
     calcStrokeWidth: [],
-    colorInterPolator: 'interpolateBrBG',
+    colorInterPolator: 'interpolateMagma',
     cx: 0,
     cy: 0,
     distance: 32,
@@ -53,7 +53,7 @@ const circle: Circle = {
     bgColor: '#000',
     calcOpacity: [],
     calcStrokeWidth: [],
-    colorInterPolator: 'interpolateBrBG',
+    colorInterPolator: 'interpolateMagma',
     cx: 0,
     cy: 0,
     distance: 32,
@@ -72,7 +72,7 @@ const polygon: Polygon = {
     borderRadius: 0,
     calcOpacity: [],
     calcStrokeWidth: [],
-    colorInterPolator: 'interpolateBrBG',
+    colorInterPolator: 'interpolateMagma',
     cx: 0,
     cy: 0,
     distance: 32,
@@ -171,16 +171,16 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     <div class="home">
         <div class="control">
             <div class="control__radio">
-                <div v-for="shape in shapesOptions" :key="shape.name" class="radio__wrapper">
+                <div v-for="shape in shapesOptions" :key="shape.value" class="radio__wrapper">
                     <input
-                        :id="shape.name"
+                        :id="shape.value"
                         v-model="selectedShape"
                         name="shape"
                         type="radio"
-                        :value="shape.name"
+                        :value="shape.value"
                         @change="(event) => draw(event as CustomEvent)"
                     />
-                    <label :for="shape.name" v-text="shape.name" />
+                    <label :for="shape.value" v-text="shape.name" />
                 </div>
             </div>
             <div class="control__shapes">
@@ -278,19 +278,19 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     display: flex;
     flex: 1;
 
-    input {
+    & input {
         display: none;
 
         & + label {
-            background: var(--niekes-secondary);
+            background-color: var(--niekes-black-10);
             color: var(--niekes-white-50);
             cursor: pointer;
             display: flex;
             justify-content: center;
             padding: var(--niekes-padding);
             transition:
-                background 50ms ease-in-out,
-                color 50ms ease-in-out;
+                background-color 325ms ease-in-out,
+                color 325ms ease-in-out;
             width: 100%;
 
             &:hover {
@@ -305,8 +305,18 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
         }
 
         &:checked + label {
-            background: var(--niekes-primary);
+            background-color: var(--niekes-primary);
             color: var(--niekes-tertiary);
+            font-weight: bold;
+            position: relative;
+            text-decoration: underline;
+
+            &::after {
+                position: absolute;
+                width: 100%;
+                height: 1px;
+                background-color: lime;
+            }
         }
     }
 }

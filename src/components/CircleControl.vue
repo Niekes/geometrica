@@ -18,7 +18,7 @@ const generalControls = [
 ];
 
 const strokeControls = [
-    { value: props.circle.strokeWidth, min: 1, max: 512, step: 0.1, label: 'strokeWidth' }
+    { value: props.circle.strokeWidth, min: 0.1, max: 512, step: 0.1, label: 'strokeWidth' }
 ];
 
 const calcStrokeWidthOptions = [

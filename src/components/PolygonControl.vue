@@ -36,7 +36,7 @@ const borderRadiusControl = {
 const strokeControls = [
     {
         value: props.polygon.strokeWidth,
-        min: 1,
+        min: 0.1,
         max: canvasWidth / 4,
         step: 0.1,
         label: 'strokeWidth'

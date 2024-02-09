@@ -25,7 +25,7 @@ const borderRadiusControls = [
 ];
 
 const strokeControls = [
-    { value: props.rect.strokeWidth, min: 1, max: canvasWidth / 4, step: 0.1, label: 'strokeWidth' }
+    { value: props.rect.strokeWidth, min: 0.1, max: canvasWidth / 4, step: 0.1, label: 'strokeWidth' }
 ];
 
 const calcStrokeWidthOptions = [

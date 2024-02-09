@@ -37,12 +37,26 @@ import {
     interpolateYlOrRd,
     interpolateRainbow,
     interpolateSinebow,
-    interpolateLab
+    interpolateLab,
+    interpolateRgbBasis
 } from 'd3';
 
 const interpolateBlueToPink = interpolateLab('#00adf6', '#e701e6');
+const interpolateMegatron = interpolateRgbBasis(['#C6FFDD', '#FBD786', '#ec38bc']);
+const interpolateYoda = interpolateLab('#FF0099', '#493240');
+const interpolateArgon = interpolateRgbBasis([
+    '#03001e',
+    '#7303c0',
+    '#000',
+    '#fff',
+    '#ec38bc',
+    '#fdeff9'
+]);
 
 export const colorInterPolators: { name: string; fn: Function }[] = [
+    { name: 'interpolateMagma', fn: interpolateMagma },
+    { name: 'interpolateArgon', fn: interpolateArgon },
+    { name: 'interpolateMegatron', fn: interpolateMegatron },
     { name: 'interpolateBrBG', fn: interpolateBrBG },
     { name: 'interpolatePRGn', fn: interpolatePRGn },
     { name: 'interpolatePiYG', fn: interpolatePiYG },
@@ -60,9 +74,9 @@ export const colorInterPolators: { name: string; fn: Function }[] = [
     { name: 'interpolatePurples', fn: interpolatePurples },
     { name: 'interpolateReds', fn: interpolateReds },
     { name: 'interpolateTurbo', fn: interpolateTurbo },
+    { name: 'interpolateYoda', fn: interpolateYoda },
     { name: 'interpolateViridis', fn: interpolateViridis },
     { name: 'interpolateInferno', fn: interpolateInferno },
-    { name: 'interpolateMagma', fn: interpolateMagma },
     { name: 'interpolatePlasma', fn: interpolatePlasma },
     { name: 'interpolateCividis', fn: interpolateCividis },
     { name: 'interpolateWarm', fn: interpolateWarm },
