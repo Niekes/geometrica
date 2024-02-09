@@ -1,19 +1,26 @@
 <script setup lang="ts">
 import { nextTick, onMounted, ref } from 'vue';
 import RectControl from '../components/RectControl.vue';
+import CircleControl from '../components/CircleControl.vue';
 import { type Rect } from '../types/Rect';
+import { type Circle } from '../types/Circle';
 import useRectDrawing from '../composables/rect';
+import useCircleDrawing from '../composables/circle';
 import { NiekesButton } from '@niekes/lib';
+import { canvasHeight, canvasWidth } from '../config/canvas';
 
 const PI: number = Math.PI;
 const HALF_PI: number = PI / 2;
-const TAU: number = PI * 2;
 const canvas = ref<HTMLCanvasElement | null>(null);
-const canvasHeight = ref<number>(1024);
-const canvasWidth = ref<number>(1024);
+const canvasH = ref<number>(canvasHeight);
+const canvasW = ref<number>(canvasWidth);
 const ctx = ref<CanvasRenderingContext2D | null>(null);
 
-const shapes: { name: string }[] = [{ name: 'rect' }, { name: 'circle' }, { name: 'polygon' }];
+const shapesOptions: { name: string }[] = [
+    { name: 'rect' },
+    { name: 'circle' },
+    { name: 'polygon' }
+];
 const rect: Rect = {
     amount: 16,
     applyColorSchemeToEachShape: false,
@@ -28,25 +35,50 @@ const rect: Rect = {
     colorInterPolator: 'interpolateBrBG',
     cx: 0,
     cy: 0,
-    distance: 16,
+    distance: 32,
     flipColorInterpolator: false,
-    height: 256,
+    height: canvasHeight / 4,
     rotation: 0,
     strokeWidth: 3,
-    width: 256
+    width: canvasWidth / 4
+};
+
+const circle: Circle = {
+    amount: 16,
+    applyColorSchemeToEachShape: false,
+    bgBorderRadius: 10,
+    bgColor: '#000',
+    calcOpacity: [],
+    calcStrokeWidth: [],
+    colorInterPolator: 'interpolateBrBG',
+    cx: 0,
+    cy: 0,
+    distance: 32,
+    flipColorInterpolator: false,
+    radiusX: canvasHeight / 4,
+    radiusY: canvasWidth / 4,
+    rotation: 0,
+    strokeWidth: 3
+};
+
+const shapes = {
+    rect,
+    circle
 };
 
 const initRect = Object.assign({}, rect);
+const initCircle = Object.assign({}, circle);
 
-const selectedShape = ref<string>('rect'); // config.defaults.shape
-const { drawRect } = useRectDrawing(canvas, rect, canvasWidth.value, canvasHeight.value, PI);
+const selectedShape = ref<string>('circle'); // config.defaults.shape
+const { drawRect } = useRectDrawing(canvas, rect);
+const { drawCircle } = useCircleDrawing(canvas, circle);
 
 onMounted(() => {
     if (canvas.value) {
         const context = canvas.value.getContext('2d');
 
-        canvas.value.width = canvasWidth.value;
-        canvas.value.height = canvasHeight.value;
+        canvas.value.width = canvasW.value;
+        canvas.value.height = canvasH.value;
 
         if (context) {
             ctx.value = context;
@@ -66,8 +98,9 @@ onMounted(() => {
 function download() {
     if (canvas.value) {
         const link: HTMLAnchorElement = document.createElement('a');
+        const date: Date = new Date();
 
-        link.download = 'geometrica.png';
+        link.download = `geometrica-${date.toLocaleDateString()}-${date.toLocaleTimeString()}.png`;
         link.href = canvas.value.toDataURL();
         link.click();
     }
@@ -79,31 +112,31 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     const e = event;
 
     if (e && e.detail) {
-        const propertyName = e.detail.name as keyof typeof rect;
+        const propertyName = e.detail.name as never;
+        const s = shapes[selectedShape.value as never];
 
-        rect[propertyName] = e.detail.value as never;
+        s[propertyName] = e.detail.value as never;
     }
 
     await nextTick();
 
     switch (selectedShape.value) {
         case 'circle':
-            // this.canvasBackgroundColor = this.circle.bgColor;
-            // this.canvasBorderRadius = this.circle.bgBorderRadius;
-            // this.drawCircle();
+            // this.canvasBackgroundColor = circle.bgColor;
+            // this.canvasBorderRadius = circle.bgBorderRadius;
+            drawCircle();
             break;
 
         case 'polygon':
-            // this.canvasBackgroundColor = this.polygon.bgColor;
-            // this.canvasBorderRadius = this.polygon.bgBorderRadius;
+            // this.canvasBackgroundColor = polygon.bgColor;
+            // this.canvasBorderRadius = polygon.bgBorderRadius;
             // this.drawPolygon();
             break;
 
         default:
-            // this.canvasBackgroundColor = this.rect.bgColor;
-            // this.canvasBorderRadius = this.rect.bgBorderRadius;
+            // this.canvasBackgroundColor = rect.bgColor;
+            // this.canvasBorderRadius = rect.rect;
             drawRect();
-
             break;
     }
 }
@@ -113,7 +146,7 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     <div class="home">
         <div class="control">
             <div class="control__radio">
-                <div v-for="shape in shapes" :key="shape.name" class="radio__wrapper">
+                <div v-for="shape in shapesOptions" :key="shape.name" class="radio__wrapper">
                     <input
                         :id="shape.name"
                         v-model="selectedShape"
@@ -131,6 +164,12 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
                     :rect="rect"
                     :init-rect="initRect"
                     @rect-update="draw"
+                />
+                <CircleControl
+                    v-if="selectedShape === 'circle'"
+                    :circle="circle"
+                    :init-circle="initCircle"
+                    @circle-update="draw"
                 />
             </div>
             <div class="control__actions">
@@ -155,8 +194,8 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
 .home {
     display: grid;
     margin-top: 5rem;
-    height: calc(100dvh - 13rem);
-    height: calc(100vh - 13rem);
+    height: calc(100dvh - 5rem);
+    height: calc(100vh - 5rem);
     grid-template-areas: 'control context';
     grid-template-columns: minmax(0, 24rem) 1fr;
     grid-template-rows: minmax(0, 1fr);

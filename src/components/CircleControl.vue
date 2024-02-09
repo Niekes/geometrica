@@ -1,31 +1,24 @@
 <script setup lang="ts">
 import { NiekesInputRange, NiekesInputRadio, NiekesInputCheckbox, NiekesToggle } from '@niekes/lib';
-import { type Rect } from '../types/Rect';
+import { type Circle } from '../types/Circle';
 import ColorInterpolator from '../components/ColorInterpolator.vue';
 import { canvasHeight, canvasWidth } from '../config/canvas';
 
-const emits = defineEmits(['rect-update']);
+const emits = defineEmits(['circle-update']);
 
 const props = defineProps<{
-    rect: Rect;
-    initRect: Rect;
+    circle: Circle;
+    initCircle: Circle;
 }>();
 
 const generalControls = [
-    { value: props.rect.amount, min: 1, max: 1000, step: 1, label: 'Amount' },
-    { value: props.rect.distance, min: -64, max: 64, step: 0.1, label: 'Distance' },
-    { value: props.rect.rotation, min: -1440, max: 1440, step: 1, label: 'Rotation' }
-];
-
-const borderRadiusControls = [
-    { value: props.rect.borderRadiusTl, min: 0, max: 1, step: 0.01, label: 'borderRadiusTl' },
-    { value: props.rect.borderRadiusTr, min: 0, max: 1, step: 0.01, label: 'borderRadiusTr' },
-    { value: props.rect.borderRadiusBl, min: 0, max: 1, step: 0.01, label: 'borderRadiusBl' },
-    { value: props.rect.borderRadiusBr, min: 0, max: 1, step: 0.01, label: 'borderRadiusBr' }
+    { value: props.circle.amount, min: 1, max: 1000, step: 1, label: 'Amount' },
+    { value: props.circle.distance, min: -256, max: 256, step: 0.1, label: 'Distance' },
+    { value: props.circle.rotation, min: -1440, max: 1440, step: 1, label: 'Rotation' }
 ];
 
 const strokeControls = [
-    { value: props.rect.strokeWidth, min: 1, max: 256, step: 0.1, label: 'strokeWidth' }
+    { value: props.circle.strokeWidth, min: 1, max: 512, step: 0.1, label: 'strokeWidth' }
 ];
 
 const calcStrokeWidthOptions = [
@@ -60,14 +53,14 @@ const flipColorInterpolatorOptions = [
     }
 ];
 
-const sizeControls = [
-    { value: props.rect.width, min: 1, max: canvasWidth / 2, step: 1, label: 'Width' },
-    { value: props.rect.height, min: 1, max: canvasHeight / 2, step: 1, label: 'Height' }
+const radiusControls = [
+    { value: props.circle.radiusX, min: 1, max: canvasWidth / 2, step: 1, label: 'radiusX' },
+    { value: props.circle.radiusY, min: 1, max: canvasHeight / 2, step: 1, label: 'radiusY' }
 ];
 
 const positionControls = [
-    { value: props.rect.cx, min: -canvasWidth / 4, max: canvasWidth / 4, step: 1, label: 'Cx' },
-    { value: props.rect.cy, min: -canvasHeight / 4, max: canvasHeight / 4, step: 1, label: 'Cy' }
+    { value: props.circle.cx, min: -canvasWidth / 4, max: canvasWidth / 4, step: 1, label: 'Cx' },
+    { value: props.circle.cy, min: -canvasWidth / 4, max: canvasHeight / 4, step: 1, label: 'Cy' }
 ];
 
 function setColorInterPolator(interpolator: any) {
@@ -77,12 +70,12 @@ function setColorInterPolator(interpolator: any) {
 }
 
 function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
-    emits('rect-update', { detail: event.detail });
+    emits('circle-update', { detail: event.detail });
 }
 </script>
 
 <template>
-    <div class="rect-control">
+    <div class="circle-control">
         <div class="general-control">
             <niekes-toggle>
                 <div slot="caption">General</div>
@@ -96,24 +89,6 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
                         :name="generalControl.label.toLowerCase()"
                         :value="generalControl.value"
                         :step="generalControl.step"
-                        @change="triggerUpdate"
-                    />
-                </div>
-            </niekes-toggle>
-        </div>
-        <div class="border-radius-control">
-            <niekes-toggle>
-                <div slot="caption">Border Radius</div>
-                <div slot="content">
-                    <niekes-input-range
-                        v-for="borderRadiusControl in borderRadiusControls"
-                        :key="borderRadiusControl.label"
-                        :min="borderRadiusControl.min"
-                        :max="borderRadiusControl.max"
-                        :label="borderRadiusControl.label"
-                        :name="borderRadiusControl.label"
-                        :value="borderRadiusControl.value"
-                        :step="borderRadiusControl.step"
                         @change="triggerUpdate"
                     />
                 </div>
@@ -138,7 +113,7 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
                     <niekes-input-checkbox
                         :options="calcStrokeWidthOptions"
                         :name="'calcStrokeWidth'"
-                        :value="props.rect.calcStrokeWidth"
+                        :value="props.circle.calcStrokeWidth"
                         @change="triggerUpdate"
                     />
                 </div>
@@ -151,26 +126,26 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
                     <niekes-input-checkbox
                         :options="calcOpacityOptions"
                         :name="'calcOpacity'"
-                        :value="props.rect.calcOpacity"
+                        :value="props.circle.calcOpacity"
                         @change="triggerUpdate"
                     />
 
                     <niekes-input-radio
                         :options="applyColorSchemeToEachShapeOptions"
                         :name="'applyColorSchemeToEachShape'"
-                        :value="props.rect.applyColorSchemeToEachShape"
+                        :value="props.circle.applyColorSchemeToEachShape"
                         @change="triggerUpdate"
                     />
 
                     <niekes-input-radio
                         :options="flipColorInterpolatorOptions"
                         :name="'flipColorInterpolator'"
-                        :value="props.rect.flipColorInterpolator"
+                        :value="props.circle.flipColorInterpolator"
                         @change="triggerUpdate"
                     />
 
                     <ColorInterpolator
-                        :active="props.rect.colorInterPolator"
+                        :active="props.circle.colorInterPolator"
                         @update-color-interpolator="setColorInterPolator"
                     />
                 </div>
@@ -178,17 +153,17 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
         </div>
         <div class="size-control">
             <niekes-toggle>
-                <div slot="caption">Size</div>
+                <div slot="caption">Radius</div>
                 <div slot="content">
                     <niekes-input-range
-                        v-for="sizeControl in sizeControls"
-                        :key="sizeControl.label"
-                        :min="sizeControl.min"
-                        :max="sizeControl.max"
-                        :label="sizeControl.label"
-                        :name="sizeControl.label.toLowerCase()"
-                        :value="sizeControl.value"
-                        :step="sizeControl.step"
+                        v-for="radiusControl in radiusControls"
+                        :key="radiusControl.label"
+                        :min="radiusControl.min"
+                        :max="radiusControl.max"
+                        :label="radiusControl.label"
+                        :name="radiusControl.label"
+                        :value="radiusControl.value"
+                        :step="radiusControl.step"
                         @change="triggerUpdate"
                     />
                 </div>
@@ -216,16 +191,16 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
 </template>
 
 <style scoped>
-.rect-control {
+.circle-control {
     display: flex;
     flex-direction: column;
 }
 
-.rect-control > * {
+.circle-control > * {
     margin-top: var(--niekes-spacing-sm);
 }
 
-.rect-control > *:last-child {
+.circle-control > *:last-child {
     margin-bottom: var(--niekes-spacing-sm);
 }
 </style>
