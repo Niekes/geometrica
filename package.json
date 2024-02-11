@@ -19,7 +19,7 @@
         "qs": "^6.11.2",
         "vue": "^3.3.4",
         "vue-router": "^4.2.4",
-        "@niekes/lib": "0.1.27"
+        "@niekes/lib": "0.1.28"
     },
     "devDependencies": {
         "@rushstack/eslint-patch": "^1.3.3",
