@@ -225,8 +225,8 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
 .home {
     display: grid;
     margin-top: 5rem;
-    height: calc(100dvh - 5rem);
     height: calc(100vh - 5rem);
+    height: calc(100dvh - 5rem);
     grid-template-areas: 'control context';
     grid-template-columns: minmax(0, 24rem) 1fr;
     grid-template-rows: minmax(0, 1fr);
@@ -351,7 +351,8 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     .home {
         grid-template-areas: 'context' 'control';
         grid-template-columns: 1fr;
-        grid-template-rows: minmax(0, 2.5fr) minmax(0, 3fr);
+        grid-template-rows: 20rem minmax(0, 3fr);
+        height: auto;
     }
 
     .context {
