@@ -3,6 +3,12 @@ import { NiekesInputRange, NiekesInputRadio, NiekesInputCheckbox, NiekesToggle }
 import { type Polygon } from '../types/Polygon';
 import ColorInterpolator from '../components/ColorInterpolator.vue';
 import { canvasHeight, canvasWidth } from '../config/canvas';
+import {
+    flipColorInterpolatorOptions,
+    applyColorSchemeToEachShapeOptions,
+    calcStrokeWidthOptions,
+    calcOpacityOptions,
+} from '../config/controlOptions';
 
 const emits = defineEmits(['polygon-update']);
 
@@ -40,38 +46,6 @@ const strokeControls = [
         max: canvasWidth / 4,
         step: 0.1,
         label: 'strokeWidth'
-    }
-];
-
-const calcStrokeWidthOptions = [
-    { value: 'interpolate', label: 'Interpolate' },
-    { value: 'flip', label: 'Flip' }
-];
-
-const calcOpacityOptions = [
-    { value: 'interpolate', label: 'Interpolate' },
-    { value: 'flip', label: 'Flip' }
-];
-
-const applyColorSchemeToEachShapeOptions = [
-    {
-        value: true,
-        label: 'applyColorSchemeToEachRectangle'
-    },
-    {
-        value: false,
-        label: 'interpolateColorScheme'
-    }
-];
-
-const flipColorInterpolatorOptions = [
-    {
-        value: true,
-        label: 'flipColorInterpolatorOptions'
-    },
-    {
-        value: false,
-        label: 'dontflipColorInterpolatorOptions'
     }
 ];
 

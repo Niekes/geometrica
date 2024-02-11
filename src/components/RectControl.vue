@@ -3,6 +3,12 @@ import { NiekesInputRange, NiekesInputRadio, NiekesInputCheckbox, NiekesToggle }
 import { type Rect } from '../types/Rect';
 import ColorInterpolator from '../components/ColorInterpolator.vue';
 import { canvasHeight, canvasWidth } from '../config/canvas';
+import {
+    flipColorInterpolatorOptions,
+    applyColorSchemeToEachShapeOptions,
+    calcStrokeWidthOptions,
+    calcOpacityOptions
+} from '../config/controlOptions';
 
 const emits = defineEmits(['rect-update']);
 
@@ -12,51 +18,68 @@ const props = defineProps<{
 }>();
 
 const generalControls = [
-    { value: props.rect.amount, min: 1, max: 1000, step: 1, label: 'Amount' },
-    { value: props.rect.distance, min: -64, max: 64, step: 0.1, label: 'Distance' },
-    { value: props.rect.rotation, min: -1440, max: 1440, step: 1, label: 'Rotation' }
-];
-
-const borderRadiusControls = [
-    { value: props.rect.borderRadiusTl, min: 0, max: 1, step: 0.01, label: 'borderRadiusTl' },
-    { value: props.rect.borderRadiusTr, min: 0, max: 1, step: 0.01, label: 'borderRadiusTr' },
-    { value: props.rect.borderRadiusBl, min: 0, max: 1, step: 0.01, label: 'borderRadiusBl' },
-    { value: props.rect.borderRadiusBr, min: 0, max: 1, step: 0.01, label: 'borderRadiusBr' }
-];
-
-const strokeControls = [
-    { value: props.rect.strokeWidth, min: 0.1, max: canvasWidth / 4, step: 0.1, label: 'strokeWidth' }
-];
-
-const calcStrokeWidthOptions = [
-    { value: 'interpolate', label: 'Interpolate' },
-    { value: 'flip', label: 'Flip' }
-];
-
-const calcOpacityOptions = [
-    { value: 'interpolate', label: 'Interpolate' },
-    { value: 'flip', label: 'Flip' }
-];
-
-const applyColorSchemeToEachShapeOptions = [
+    { value: props.rect.amount, min: 1, max: 1000, step: 1, label: 'Amount', name: 'amount' },
     {
-        value: true,
-        label: 'applyColorSchemeToEachRectangle'
+        value: props.rect.distance,
+        min: -64,
+        max: 64,
+        step: 0.1,
+        label: 'Distance',
+        name: 'distance'
     },
     {
-        value: false,
-        label: 'interpolateColorScheme'
+        value: props.rect.rotation,
+        min: -1440,
+        max: 1440,
+        step: 1,
+        label: 'Rotation',
+        name: 'rotation'
     }
 ];
 
-const flipColorInterpolatorOptions = [
+const borderRadiusControls = [
     {
-        value: true,
-        label: 'flipColorInterpolatorOptions'
+        value: props.rect.borderRadiusTl,
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'Border Radius Top Left',
+        name: 'borderRadiusTl'
     },
     {
-        value: false,
-        label: 'dontflipColorInterpolatorOptions'
+        value: props.rect.borderRadiusTr,
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'Border Radius Top Right',
+        name: 'borderRadiusTr'
+    },
+    {
+        value: props.rect.borderRadiusBl,
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'Border Radius Bottom Left',
+        name: 'borderRadiusBl'
+    },
+    {
+        value: props.rect.borderRadiusBr,
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'Border Radius Bottom Right',
+        name: 'borderRadiusBr'
+    }
+];
+
+const strokeControls = [
+    {
+        value: props.rect.strokeWidth,
+        min: 0.1,
+        max: canvasWidth / 4,
+        step: 0.1,
+        label: 'Stroke Width',
+        name: 'strokeWidth'
     }
 ];
 
@@ -93,7 +116,7 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
                         :min="generalControl.min"
                         :max="generalControl.max"
                         :label="generalControl.label"
-                        :name="generalControl.label.toLowerCase()"
+                        :name="generalControl.name"
                         :value="generalControl.value"
                         :step="generalControl.step"
                         @change="triggerUpdate"
@@ -111,7 +134,7 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
                         :min="borderRadiusControl.min"
                         :max="borderRadiusControl.max"
                         :label="borderRadiusControl.label"
-                        :name="borderRadiusControl.label"
+                        :name="borderRadiusControl.name"
                         :value="borderRadiusControl.value"
                         :step="borderRadiusControl.step"
                         @change="triggerUpdate"
@@ -129,7 +152,7 @@ function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
                         :min="strokeControl.min"
                         :max="strokeControl.max"
                         :label="strokeControl.label"
-                        :name="strokeControl.label"
+                        :name="strokeControl.name"
                         :value="strokeControl.value"
                         :step="strokeControl.step"
                         @change="triggerUpdate"

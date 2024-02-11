@@ -97,3 +97,25 @@ export const colorInterPolators: { name: string; fn: Function }[] = [
     { name: 'interpolateRainbow', fn: interpolateRainbow },
     { name: 'interpolateSinebow', fn: interpolateSinebow }
 ];
+
+export const flipColorInterpolatorOptions = [
+    {
+        value: false,
+        label: 'Use default direction of color gradient'
+    },
+    {
+        value: true,
+        label: 'Flip color interpolator direction'
+    }
+];
+
+export const applyColorSchemeToEachShapeOptions = [
+    {
+        value: false,
+        label: 'Interpolate color scheme'
+    },
+    {
+        value: true,
+        label: 'Apply color scheme to each rectangle'
+    }
+];

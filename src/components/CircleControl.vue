@@ -3,6 +3,12 @@ import { NiekesInputRange, NiekesInputRadio, NiekesInputCheckbox, NiekesToggle }
 import { type Circle } from '../types/Circle';
 import ColorInterpolator from '../components/ColorInterpolator.vue';
 import { canvasHeight, canvasWidth } from '../config/canvas';
+import {
+    flipColorInterpolatorOptions,
+    applyColorSchemeToEachShapeOptions,
+    calcStrokeWidthOptions,
+    calcOpacityOptions
+} from '../config/controlOptions';
 
 const emits = defineEmits(['circle-update']);
 
@@ -19,38 +25,6 @@ const generalControls = [
 
 const strokeControls = [
     { value: props.circle.strokeWidth, min: 0.1, max: 512, step: 0.1, label: 'strokeWidth' }
-];
-
-const calcStrokeWidthOptions = [
-    { value: 'interpolate', label: 'Interpolate' },
-    { value: 'flip', label: 'Flip' }
-];
-
-const calcOpacityOptions = [
-    { value: 'interpolate', label: 'Interpolate' },
-    { value: 'flip', label: 'Flip' }
-];
-
-const applyColorSchemeToEachShapeOptions = [
-    {
-        value: true,
-        label: 'applyColorSchemeToEachRectangle'
-    },
-    {
-        value: false,
-        label: 'interpolateColorScheme'
-    }
-];
-
-const flipColorInterpolatorOptions = [
-    {
-        value: true,
-        label: 'flipColorInterpolatorOptions'
-    },
-    {
-        value: false,
-        label: 'dontflipColorInterpolatorOptions'
-    }
 ];
 
 const radiusControls = [
