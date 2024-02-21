@@ -2,9 +2,6 @@
 import { RouterView } from 'vue-router';
 import { NiekesFooter, NiekesNavbar, NiekesScrollToTop } from '@niekes/lib';
 
-import '@niekes/lib/dist/styles.css';
-import './assets/css/main.css';
-
 const appName: string = import.meta.env.VITE_APP_NAME;
 const appDescription: string = import.meta.env.VITE_APP_DESCRIPTION;
 </script>
