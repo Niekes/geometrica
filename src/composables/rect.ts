@@ -2,12 +2,9 @@ import { ref, onMounted } from 'vue';
 import { color } from 'd3';
 import { type Rect } from '../types/Rect';
 import { canvasHeight, canvasWidth } from '../config/canvas';
-import { colorInterPolators } from '@/config/colorInterPolators';
+import { colorInterPolators } from '../config/colorInterPolators';
 
-export default function useRectDrawing(
-    canvasRef: { value: HTMLCanvasElement | null },
-    rect: Rect,
-) {
+export default function useRectDrawing(canvasRef: { value: HTMLCanvasElement | null }, rect: Rect) {
     const ctx = ref<CanvasRenderingContext2D | null>(null);
     const PI: number = Math.PI;
 
@@ -58,7 +55,7 @@ export default function useRectDrawing(
             const brBl = (rect.borderRadiusBl * Math.min(width, height)) / 2;
             const brBr = (rect.borderRadiusBr * Math.min(width, height)) / 2;
             const c = color(flipColorInterpolator ? colorIp(flippedK) : colorIp(k));
-            let gradient: CanvasGradient | undefined = undefined;;
+            let gradient: CanvasGradient | undefined = undefined;
 
             if (applyColorSchemeToEachShape) {
                 gradient = ctx.value.createLinearGradient(x, 0, x + width, 0);

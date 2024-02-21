@@ -2,7 +2,7 @@ import { ref, onMounted } from 'vue';
 import { color } from 'd3';
 import { type Circle } from '../types/Circle';
 import { canvasHeight, canvasWidth } from '../config/canvas';
-import { colorInterPolators } from '@/config/colorInterPolators';
+import { colorInterPolators } from '../config/colorInterPolators';
 
 export default function useCircleDrawing(
     canvasRef: { value: HTMLCanvasElement | null },
