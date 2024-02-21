@@ -9,10 +9,10 @@ jobs:
             - name: 🚚 Get latest code
               uses: actions/checkout@v3
 
-            - name: 💻 Use Node.js 21.6.1
+            - name: 💻 Use Node.js v18.17.0
               uses: actions/setup-node@v2
               with:
-                  node-version: '21.6.1'
+                  node-version: '18.17.0'
 
             - name: 🔨 Build Project
               env:
