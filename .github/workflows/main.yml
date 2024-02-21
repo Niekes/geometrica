@@ -28,8 +28,8 @@ jobs:
             - name: Create Dotenv File
               uses: actually-colab/github-action-create-env-file@v2.3
 
-            # - name: 📋 Run unit tests
-            #   run: npm run test:unit
+            - name: 📋 Run unit tests
+              run: npm run test:unit
 
             - name: 📂 Sync files
               uses: SamKirkland/FTP-Deploy-Action@v4.3.4
