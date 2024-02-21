@@ -22,6 +22,7 @@ jobs:
                   VITE_APP_DESCRIPTION: ${{ vars.VITE_APP_DESCRIPTION }}
                   VITE_APP_DESCRIPTION_EXTENDED: ${{ vars.VITE_APP_DESCRIPTION_EXTENDED }}
               run: |
+                  ls -la
                   npm install
                   npm run build
 
