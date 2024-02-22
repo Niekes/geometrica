@@ -16,11 +16,6 @@ export default defineConfig({
         }),
         vueJsx()
     ],
-    build: {
-        rollupOptions: {
-            external: ['@niekes/lib']
-        }
-    },
     server: {
         host: true,
         watch: {
