@@ -23,7 +23,7 @@ jobs:
                   VITE_APP_DESCRIPTION_EXTENDED: ${{ vars.VITE_APP_DESCRIPTION_EXTENDED }}
               run: |
                   npm install
-                  ls -la ./node_modules/@niekes/lib
+                  ls -la ./node_modules/
                   npm run build
 
             - name: Create Dotenv File
