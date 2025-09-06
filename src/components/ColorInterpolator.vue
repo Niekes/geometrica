@@ -37,9 +37,7 @@ onMounted(() => {
         canvas.style.width = '100%;';
         canvas.style.height = '2rem';
         canvas.style.border =
-            props.active === color.name
-                ? selectedStyle
-                : '1px solid var(--niekes-black)';
+            props.active === color.name ? selectedStyle : '1px solid var(--niekes-black)';
         canvas.style.cursor = 'pointer';
         canvas.style.display = 'flex';
         canvas.style.borderRadius = '5px';
@@ -74,7 +72,7 @@ onBeforeUnmount(() => {
 });
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 .color-interpolator {
     align-items: center;
     display: flex;

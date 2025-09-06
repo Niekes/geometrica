@@ -9,7 +9,6 @@ import { type Polygon } from '../types/Polygon';
 import useRectDrawing from '../composables/rect';
 import useCircleDrawing from '../composables/circle';
 import usePolygonDrawing from '../composables/polygon';
-import { NiekesButton } from '@niekes/lib';
 import { canvasHeight, canvasWidth } from '../config/canvas';
 
 // const PI: number = Math.PI;
@@ -204,7 +203,7 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
                 />
             </div>
             <div class="control__actions">
-                <niekes-button text="DOWNLOAD" @click="download"></niekes-button>
+                <button text="DOWNLOAD" @click="download"></button>
             </div>
         </div>
         <div class="context">

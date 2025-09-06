@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { NiekesInputRange, NiekesInputRadio, NiekesInputCheckbox, NiekesToggle } from '@niekes/lib';
 import { type Polygon } from '../types/Polygon';
 import ColorInterpolator from '../components/ColorInterpolator.vue';
 import { canvasHeight, canvasWidth } from '../config/canvas';
@@ -7,7 +6,7 @@ import {
     flipColorInterpolatorOptions,
     applyColorSchemeToEachShapeOptions,
     calcStrokeWidthOptions,
-    calcOpacityOptions,
+    calcOpacityOptions
 } from '../config/controlOptions';
 
 const emits = defineEmits(['polygon-update']);
