@@ -41,6 +41,7 @@ export default function useCircleDrawing(
 
         const colorIp: Function =
             colorInterPolators.find((c) => colorInterPolator === c.name)?.fn ||
+            // @ts-ignore
             colorInterPolators[0].fn;
 
         for (let i = 0; i < amount; i += 1) {
