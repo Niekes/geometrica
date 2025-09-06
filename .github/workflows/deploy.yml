@@ -3,8 +3,7 @@ name: Deploy Vite site to GitHub Pages
 on:
     push:
         branches:
-            - main # nur wenn du main nach Pages pushen willst
-    workflow_dispatch: {} # manuell triggern möglich
+            - master
 
 permissions:
     contents: read
