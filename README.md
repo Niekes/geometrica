@@ -16,6 +16,7 @@
 - **[TypeScript](https://www.typescriptlang.org/)**
 - **[TailwindCSS](https://tailwindcss.com/)**
 - **[DaisyUI](https://daisyui.com/)**
+- **[HeroIcons](https://heroicons.com/)**
 - **[Vite](https://vite.dev/)**
 
 ## Installation
