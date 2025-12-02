@@ -1,52 +1,31 @@
-# geometrica
+# Geometrica – LineArt Generator
 
-This template should help get you started developing with Vue 3 in Vite.
+[Geometrica](http://niekes.github.io/geometrica) is an interactive **LineArt Generator** that allows you to create, move, and customize geometric shapes like **circles, squares, and polygons** to design unique LineArt artworks. With simple sliders for **offset, size, rotation, and colors**, you can create complex patterns perfect for **icons, illustrations, or design elements**. Think of it like an onion bloom – layered, creative, and surprisingly versatile! 🧅✨
 
-## Recommended IDE Setup
+## Features
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+- Move, scale, and rotate geometric shapes 🟢🔵🟡
+- Adjust border radius and stroke width ✨📏
+- Live preview of your LineArt 🎥🖌️
+- Export artworks as icons or design assets 🖼️💾
 
-## Type Support for `.vue` Imports in TS
+## Technologies
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+- **[Vue 3](https://vuejs.org/)**
+- **[VueUse](https://vueuse.org/)**
+- **[TypeScript](https://www.typescriptlang.org/)**
+- **[TailwindCSS](https://tailwindcss.com/)**
+- **[DaisyUI](https://daisyui.com/)**
+- **[Vite](https://vite.dev/)**
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+## Installation
 
-1. Disable the built-in TypeScript Extension
-    1) Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-    2) Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Development
 
-```sh
+```bash
 npm run dev
-```
-
-### Type-Check, Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
 ```
