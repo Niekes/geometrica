@@ -1,11 +1,11 @@
 export const calcStrokeWidthOptions = [
     { value: 'interpolate', label: 'Interpolate' },
-    { value: 'flip', label: 'Flip' }
+    { value: 'flip', label: 'Flip interpolation' }
 ];
 
 export const calcOpacityOptions = [
     { value: 'interpolate', label: 'Interpolate' },
-    { value: 'flip', label: 'Flip' }
+    { value: 'flip', label: 'Flip interpolation' }
 ];
 
 export const flipColorInterpolatorOptions = [

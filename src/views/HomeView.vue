@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from 'vue';
+import { nextTick, onMounted, ref, type Ref } from 'vue';
 import RectControl from '../components/RectControl.vue';
 import CircleControl from '../components/CircleControl.vue';
 import PolygonControl from '../components/PolygonControl.vue';
@@ -23,7 +23,7 @@ const shapesOptions: { name: string; value: string }[] = [
     { value: 'circle', name: 'Circle' },
     { value: 'polygon', name: 'Polygon' }
 ];
-const rect: Rect = {
+const rect = ref<Rect>({
     amount: 16,
     applyColorSchemeToEachShape: false,
     bgBorderRadius: 10,
@@ -43,9 +43,9 @@ const rect: Rect = {
     rotation: 0,
     strokeWidth: 3,
     width: canvasWidth / 4
-};
+});
 
-const circle: Circle = {
+const circle = ref<Circle>({
     amount: 16,
     applyColorSchemeToEachShape: false,
     bgBorderRadius: 10,
@@ -61,9 +61,9 @@ const circle: Circle = {
     radiusY: canvasWidth / 4,
     rotation: 0,
     strokeWidth: 3
-};
+});
 
-const polygon: Polygon = {
+const polygon = ref<Polygon>({
     amount: 16,
     applyColorSchemeToEachShape: false,
     bgBorderRadius: 10,
@@ -80,7 +80,7 @@ const polygon: Polygon = {
     sides: 5,
     size: canvasHeight / 4,
     strokeWidth: 3
-};
+});
 
 const shapes = {
     rect,
@@ -88,36 +88,10 @@ const shapes = {
     polygon
 };
 
-const initRect = Object.assign({}, rect);
-const initCircle = Object.assign({}, circle);
-const initPolygon = Object.assign({}, polygon);
-
 const selectedShape = ref<string>('rect'); // config.defaults.shape
-const { drawRect } = useRectDrawing(canvas, rect);
-const { drawCircle } = useCircleDrawing(canvas, circle);
-const { drawPolygon } = usePolygonDrawing(canvas, polygon);
-
-onMounted(() => {
-    if (canvas.value) {
-        const context = canvas.value.getContext('2d');
-
-        canvas.value.width = canvasW.value;
-        canvas.value.height = canvasH.value;
-
-        if (context) {
-            ctx.value = context;
-
-            ctx.value.scale(2, 2);
-            ctx.value.imageSmoothingEnabled = false;
-
-            draw();
-        } else {
-            console.error('2D context is not supported.');
-        }
-    } else {
-        console.error('Canvas element not found.');
-    }
-});
+const { drawRect } = useRectDrawing(canvas, rect.value);
+const { drawCircle } = useCircleDrawing(canvas, circle.value);
+const { drawPolygon } = usePolygonDrawing(canvas, polygon.value);
 
 function download() {
     if (canvas.value) {
@@ -131,17 +105,6 @@ function download() {
 }
 
 async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<any> {
-    if (!event) return;
-
-    const e = event;
-
-    if (e && e.detail) {
-        const propertyName = e.detail.name as never;
-        const s = shapes[selectedShape.value as never];
-
-        s[propertyName] = e.detail.value as never;
-    }
-
     await nextTick();
 
     switch (selectedShape.value) {
@@ -164,48 +127,65 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
             break;
     }
 }
+
+onMounted(() => {
+    if (canvas.value) {
+        const context = canvas.value.getContext('2d');
+
+        canvas.value.width = canvasW.value;
+        canvas.value.height = canvasH.value;
+
+        if (context) {
+            ctx.value = context;
+
+            ctx.value.scale(2, 2);
+            ctx.value.imageSmoothingEnabled = false;
+
+            draw();
+        } else {
+            console.error('2D context is not supported.');
+        }
+    } else {
+        console.error('Canvas element not found.');
+    }
+});
 </script>
 
 <template>
     <div class="home">
-        <div class="control">
-            <div class="control__radio">
-                <div v-for="shape in shapesOptions" :key="shape.value" class="radio__wrapper">
+        <div class="bg-base-200 p-4 w-full justify-items-center overflow-scroll">
+            <div class="tabs tabs-box bg-base-300 tabs-xs mb-4">
+                <template v-for="shape in shapesOptions" :key="shape.value">
                     <input
                         :id="shape.value"
                         v-model="selectedShape"
                         name="shape"
                         type="radio"
+                        class="tab"
+                        :aria-label="shape.name"
                         :value="shape.value"
                         @change="(event) => draw(event as CustomEvent)"
                     />
-                    <label :for="shape.value" v-text="shape.name" />
-                </div>
+                </template>
             </div>
+
             <div class="control__shapes">
-                <RectControl
-                    v-if="selectedShape === 'rect'"
-                    :rect="rect"
-                    :init-rect="initRect"
-                    @rect-update="draw"
-                />
+                <RectControl v-if="selectedShape === 'rect'" v-model="rect" @rect-update="draw" />
                 <CircleControl
                     v-if="selectedShape === 'circle'"
-                    :circle="circle"
-                    :init-circle="initCircle"
+                    v-model="circle"
                     @circle-update="draw"
                 />
                 <PolygonControl
                     v-if="selectedShape === 'polygon'"
-                    :polygon="polygon"
-                    :init-polygon="initPolygon"
+                    v-model="polygon"
                     @polygon-update="draw"
                 />
             </div>
-            <div class="control__actions">
-                <button text="DOWNLOAD" @click="download"></button>
-            </div>
+
+            <button class="btn btn-primary btn-block mt-4" @click="download">Download</button>
         </div>
+
         <div class="context">
             <canvas
                 class="context__canvas"
@@ -222,25 +202,19 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
 
 <style scoped>
 .home {
+    --navbar-height: 4rem;
+
     display: grid;
-    margin-top: 5rem;
-    height: calc(100vh - 5rem);
-    height: calc(100dvh - 5rem);
+    margin-top: var(--navbar-height);
+    height: calc(100vh - var(--navbar-height));
+    height: calc(100dvh - var(--navbar-height));
     grid-template-areas: 'control context';
     grid-template-columns: minmax(0, 24rem) 1fr;
     grid-template-rows: minmax(0, 1fr);
 }
 
 .control {
-    background-color: var(--niekes-primary);
-    display: grid;
-    gap: 0;
     grid-area: control;
-    grid-template-areas: 'radio' 'shapes' 'actions';
-    grid-template-columns: 1fr;
-    grid-template-rows: min-content 1fr min-content;
-    overflow: auto;
-    padding: var(--niekes-spacing-md);
 }
 
 .control__shapes {
@@ -273,63 +247,6 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     overflow: hidden;
 }
 
-.radio__wrapper {
-    display: flex;
-    flex: 1;
-
-    & input {
-        display: none;
-
-        & + label {
-            background-color: var(--niekes-black-10);
-            color: var(--niekes-white-50);
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            padding: var(--niekes-padding);
-            transition:
-                background-color 325ms ease-in-out,
-                color 325ms ease-in-out;
-            width: 100%;
-
-            &:hover {
-                background: var(--niekes-primary);
-                color: var(--niekes-black-75);
-            }
-
-            svg {
-                height: 1rem;
-                width: 1rem;
-            }
-        }
-
-        &:checked + label {
-            background-color: var(--niekes-primary);
-            color: var(--niekes-black);
-            font-weight: bold;
-            position: relative;
-
-            &::after {
-                content: '';
-                position: absolute;
-                bottom: 0;
-                width: 75%;
-                left: 0;
-                right: 0;
-                margin: 0 auto;
-                height: 3px;
-                border-radius: 2px;
-                background: linear-gradient(
-                    111.3deg,
-                    var(--niekes-tertiary),
-                    var(--niekes-secondary),
-                    var(--niekes-tertiary)
-                );
-            }
-        }
-    }
-}
-
 .context {
     align-items: center;
     background-color: var(--niekes-white);
@@ -344,25 +261,5 @@ async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<
     max-height: 75%;
     max-width: 75%;
     aspect-ratio: 1;
-}
-
-@media (max-width: 1024px) {
-    .home {
-        grid-template-areas: 'context' 'control';
-        grid-template-columns: 1fr;
-        grid-template-rows: 20rem minmax(0, 3fr);
-        height: auto;
-    }
-
-    .context {
-        border-bottom: var(--niekes-border-width) solid var(--niekes-black-50);
-    }
-
-    .context__canvas {
-        aspect-ratio: 1;
-        max-height: 90%;
-        max-width: 90%;
-        height: 90%;
-    }
 }
 </style>

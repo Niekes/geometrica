@@ -1,6 +1,23 @@
 <script setup lang="ts">
-import { type Polygon } from '../types/Polygon';
+// Vue
+import { ref, watch } from 'vue';
+import { useCloned } from '@vueuse/core';
+
+// Icons
+import { LockClosedIcon, LockOpenIcon } from '@heroicons/vue/24/outline';
+
+// Types
+import type { Polygon } from '../types/Polygon';
+import type { ColorInterPolator } from '@/types/ColorInterPolators';
+
+// Components
+import BaseRadioButton from '@/components/BaseRadioButton.vue';
+import BaseCheckBox from '@/components/BaseCheckBox.vue';
+import BaseRangeSlider from '@/components/BaseRangeSlider.vue';
+import BaseAccordion from '@/components/BaseAccordion.vue';
 import ColorInterpolator from '../components/ColorInterpolator.vue';
+
+// Config
 import { canvasHeight, canvasWidth } from '../config/canvas';
 import {
     flipColorInterpolatorOptions,
@@ -9,223 +26,233 @@ import {
     calcOpacityOptions
 } from '../config/controlOptions';
 
+const polygon = defineModel<Polygon>({ required: true });
 const emits = defineEmits(['polygon-update']);
 
-const props = defineProps<{
-    polygon: Polygon;
-    initPolygon: Polygon;
-}>();
+const { cloned: clonedPolygon } = useCloned(polygon.value);
 
-const generalControls = [
-    { value: props.polygon.amount, min: 1, max: 1000, step: 1, label: 'Amount' },
-    { value: props.polygon.distance, min: -256, max: 256, step: 0.1, label: 'Distance' },
-    { value: props.polygon.rotation, min: -1440, max: 1440, step: 1, label: 'Rotation' }
+type Control = {
+    min: number;
+    max: number;
+    step: number;
+    label: string;
+    name: keyof Polygon;
+};
+
+const generalControls: Control[] = [
+    { min: 1, max: 1000, step: 1, label: 'Amount', name: 'amount' },
+    { min: -256, max: 256, step: 0.1, label: 'Distance', name: 'distance' },
+    { min: -1440, max: 1440, step: 1, label: 'Rotation', name: 'rotation' }
 ];
 
-const sizeControl = {
-    value: props.polygon.size,
-    min: 0,
-    max: canvasWidth / 2,
-    step: 1,
-    label: 'Size'
-};
+const strokeControls: Control[] = [
+    { min: 0.1, max: canvasWidth / 4, step: 0.1, label: 'Stroke Width', name: 'strokeWidth' }
+];
 
-const borderRadiusControl = {
-    value: props.polygon.borderRadius,
-    min: 0,
-    max: 1,
-    step: 0.01,
-    label: 'borderRadius'
-};
+const sidesControl: Control = { min: 3, max: 20, step: 1, label: 'Sides', name: 'sides' };
 
-const strokeControls = [
-    {
-        value: props.polygon.strokeWidth,
-        min: 0.1,
-        max: canvasWidth / 4,
-        step: 0.1,
-        label: 'strokeWidth'
+const sizeControls: Control[] = [
+    { min: 0, max: canvasWidth / 2, step: 1, label: 'Size', name: 'size' }
+];
+
+const borderRadiusControls: Control[] = [
+    { min: 0, max: 1, step: 0.01, label: 'Border Radius', name: 'borderRadius' }
+];
+
+const positionControls: Control[] = [
+    { min: -canvasWidth / 4, max: canvasWidth / 4, step: 1, label: 'CX', name: 'cx' },
+    { min: -canvasHeight / 4, max: canvasHeight / 4, step: 1, label: 'CY', name: 'cy' }
+];
+
+const isSizeLocked = ref(true);
+
+watch([() => polygon.value.size], (newValues, oldValues) => {
+    if (isSizeLocked.value && newValues[0] !== oldValues[0]) {
+        polygon.value.size = newValues[0];
+        triggerUpdate();
     }
-];
+});
 
-const sidesControl = { value: props.polygon.sides, min: 3, max: 20, step: 1, label: 'Sides' };
+const setColorInterPolator = (interpolator: { name: ColorInterPolator }) => {
+    polygon.value.colorInterPolator = interpolator.name;
+    triggerUpdate();
+};
 
-const positionControls = [
-    { value: props.polygon.cx, min: -canvasWidth / 4, max: canvasWidth / 4, step: 1, label: 'Cx' },
-    { value: props.polygon.cy, min: -canvasWidth / 4, max: canvasHeight / 4, step: 1, label: 'Cy' }
-];
+const resetGeneral = () => {
+    generalControls.forEach(
+        (ctrl) => ((polygon.value[ctrl.name] as number) = clonedPolygon.value[ctrl.name] as number)
+    );
+    triggerUpdate();
+};
 
-function setColorInterPolator(interpolator: any) {
-    triggerUpdate({
-        detail: { name: 'colorInterPolator', value: interpolator.name }
-    } as CustomEvent);
-}
+const resetStroke = () => {
+    strokeControls.forEach(
+        (ctrl) => ((polygon.value[ctrl.name] as number) = clonedPolygon.value[ctrl.name] as number)
+    );
+    triggerUpdate();
+};
 
-function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
-    emits('polygon-update', { detail: event.detail });
-}
+const resetSize = () => {
+    sizeControls.forEach(
+        (ctrl) => ((polygon.value[ctrl.name] as number) = clonedPolygon.value[ctrl.name] as number)
+    );
+    triggerUpdate();
+};
+
+const resetBorderRadius = () => {
+    borderRadiusControls.forEach(
+        (ctrl) => ((polygon.value[ctrl.name] as number) = clonedPolygon.value[ctrl.name] as number)
+    );
+    triggerUpdate();
+};
+
+const resetPosition = () => {
+    positionControls.forEach(
+        (ctrl) => ((polygon.value[ctrl.name] as number) = clonedPolygon.value[ctrl.name] as number)
+    );
+    triggerUpdate();
+};
+
+const triggerUpdate = () => {
+    emits('polygon-update', polygon.value);
+};
+
+watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
 </script>
 
 <template>
-    <div class="polygon-control">
-        <div class="general-control">
-            <niekes-toggle>
-                <div slot="caption">General</div>
-                <div slot="content">
-                    <niekes-input-range
-                        v-for="generalControl in generalControls"
-                        :key="generalControl.label"
-                        :min="generalControl.min"
-                        :max="generalControl.max"
-                        :label="generalControl.label"
-                        :name="generalControl.label.toLowerCase()"
-                        :value="generalControl.value"
-                        :step="generalControl.step"
-                        @change="triggerUpdate"
-                    />
-                </div>
-            </niekes-toggle>
-        </div>
-        <div class="border-radius-control">
-            <niekes-toggle>
-                <div slot="caption">Border Radius</div>
-                <div slot="content">
-                    <niekes-input-range
-                        :key="borderRadiusControl.label"
-                        :min="borderRadiusControl.min"
-                        :max="borderRadiusControl.max"
-                        :label="borderRadiusControl.label"
-                        :name="borderRadiusControl.label"
-                        :value="borderRadiusControl.value"
-                        :step="borderRadiusControl.step"
-                        @change="triggerUpdate"
-                    />
-                </div>
-            </niekes-toggle>
-        </div>
-        <div class="stroke-control">
-            <niekes-toggle>
-                <div slot="caption">Stroke</div>
-                <div slot="content">
-                    <niekes-input-range
-                        v-for="strokeControl in strokeControls"
-                        :key="strokeControl.label"
-                        :min="strokeControl.min"
-                        :max="strokeControl.max"
-                        :label="strokeControl.label"
-                        :name="strokeControl.label"
-                        :value="strokeControl.value"
-                        :step="strokeControl.step"
-                        @change="triggerUpdate"
-                    />
+    <div class="flex flex-col gap-4">
+        <BaseAccordion>
+            <template #title>General</template>
+            <template #content>
+                <BaseRangeSlider
+                    v-for="ctrl in generalControls"
+                    :key="ctrl.name"
+                    v-model="polygon[ctrl.name] as number"
+                    :min="ctrl.min"
+                    :max="ctrl.max"
+                    :step="ctrl.step"
+                    :label="ctrl.label"
+                    @input="triggerUpdate"
+                />
+                <button class="btn self-end" @click="resetGeneral">Reset</button>
+            </template>
+        </BaseAccordion>
 
-                    <niekes-input-checkbox
-                        :options="calcStrokeWidthOptions"
-                        :name="'calcStrokeWidth'"
-                        :value="props.polygon.calcStrokeWidth"
-                        @change="triggerUpdate"
-                    />
-                </div>
-            </niekes-toggle>
-        </div>
-        <div class="color-control">
-            <niekes-toggle>
-                <div slot="caption">Color</div>
-                <div slot="content">
-                    <niekes-input-checkbox
-                        :options="calcOpacityOptions"
-                        :name="'calcOpacity'"
-                        :value="props.polygon.calcOpacity"
-                        @change="triggerUpdate"
-                    />
+        <BaseAccordion>
+            <template #title>Border Radius</template>
+            <template #content>
+                <BaseRangeSlider
+                    v-for="ctrl in borderRadiusControls"
+                    :key="ctrl.name"
+                    v-model="polygon[ctrl.name] as number"
+                    :min="ctrl.min"
+                    :max="ctrl.max"
+                    :step="ctrl.step"
+                    :label="ctrl.label"
+                    @input="triggerUpdate"
+                />
+                <button class="btn self-end" @click="resetBorderRadius">Reset</button>
+            </template>
+        </BaseAccordion>
 
-                    <niekes-input-radio
-                        :options="applyColorSchemeToEachShapeOptions"
-                        :name="'applyColorSchemeToEachShape'"
-                        :value="props.polygon.applyColorSchemeToEachShape"
-                        @change="triggerUpdate"
-                    />
+        <BaseAccordion>
+            <template #title>Stroke</template>
+            <template #content>
+                <BaseRangeSlider
+                    v-for="ctrl in strokeControls"
+                    :key="ctrl.name"
+                    v-model="polygon[ctrl.name] as number"
+                    :min="ctrl.min"
+                    :max="ctrl.max"
+                    :step="ctrl.step"
+                    :label="ctrl.label"
+                    @input="triggerUpdate"
+                />
+                <BaseCheckBox
+                    :options="calcStrokeWidthOptions"
+                    v-model="polygon.calcStrokeWidth"
+                    @change="triggerUpdate"
+                />
+                <button class="btn self-end" @click="resetStroke">Reset</button>
+            </template>
+        </BaseAccordion>
 
-                    <niekes-input-radio
-                        :options="flipColorInterpolatorOptions"
-                        :name="'flipColorInterpolator'"
-                        :value="props.polygon.flipColorInterpolator"
-                        @change="triggerUpdate"
-                    />
+        <BaseAccordion>
+            <template #title>Color</template>
+            <template #content>
+                <BaseCheckBox
+                    :options="calcOpacityOptions"
+                    v-model="polygon.calcOpacity"
+                    @change="triggerUpdate"
+                />
+                <BaseRadioButton
+                    :options="applyColorSchemeToEachShapeOptions"
+                    v-model="polygon.applyColorSchemeToEachShape"
+                    @change="triggerUpdate"
+                />
+                <BaseRadioButton
+                    :options="flipColorInterpolatorOptions"
+                    v-model="polygon.flipColorInterpolator"
+                    @change="triggerUpdate"
+                />
+                <ColorInterpolator
+                    :active="polygon.colorInterPolator"
+                    @update-color-interpolator="setColorInterPolator"
+                />
+            </template>
+        </BaseAccordion>
 
-                    <ColorInterpolator
-                        :active="props.polygon.colorInterPolator"
-                        @update-color-interpolator="setColorInterPolator"
-                    />
-                </div>
-            </niekes-toggle>
-        </div>
-        <div class="sides-control">
-            <niekes-toggle>
-                <div slot="caption">Sides</div>
-                <div slot="content">
-                    <niekes-input-range
-                        :key="sidesControl.label"
-                        :min="sidesControl.min"
-                        :max="sidesControl.max"
-                        :label="sidesControl.label"
-                        :name="sidesControl.label.toLowerCase()"
-                        :value="sidesControl.value"
-                        :step="sidesControl.step"
-                        @change="triggerUpdate"
-                    />
-                </div>
-            </niekes-toggle>
-        </div>
-        <div class="size-control">
-            <niekes-toggle>
-                <div slot="caption">Size</div>
-                <div slot="content">
-                    <niekes-input-range
-                        :key="sizeControl.label"
-                        :min="sizeControl.min"
-                        :max="sizeControl.max"
-                        :label="sizeControl.label"
-                        :name="sizeControl.label.toLowerCase()"
-                        :value="sizeControl.value"
-                        :step="sizeControl.step"
-                        @change="triggerUpdate"
-                    />
-                </div>
-            </niekes-toggle>
-        </div>
-        <div class="position-control">
-            <niekes-toggle>
-                <div slot="caption">Position</div>
-                <div slot="content">
-                    <niekes-input-range
-                        v-for="positionControl in positionControls"
-                        :key="positionControl.label"
-                        :min="positionControl.min"
-                        :max="positionControl.max"
-                        :label="positionControl.label"
-                        :name="positionControl.label.toLowerCase()"
-                        :value="positionControl.value"
-                        :step="positionControl.step"
-                        @change="triggerUpdate"
-                    />
-                </div>
-            </niekes-toggle>
-        </div>
+        <BaseAccordion>
+            <template #title>Sides</template>
+            <template #content>
+                <BaseRangeSlider
+                    v-model="polygon.sides as number"
+                    :min="sidesControl.min"
+                    :max="sidesControl.max"
+                    :step="sidesControl.step"
+                    :label="sidesControl.label"
+                    @input="triggerUpdate"
+                />
+            </template>
+        </BaseAccordion>
+
+        <BaseAccordion>
+            <template #title>Size</template>
+            <template #content>
+                <button @click="isSizeLocked = !isSizeLocked" class="btn btn-square self-end">
+                    <LockClosedIcon v-if="isSizeLocked" class="size-4" />
+                    <LockOpenIcon v-if="!isSizeLocked" class="size-4" />
+                </button>
+                <BaseRangeSlider
+                    v-for="ctrl in sizeControls"
+                    :key="ctrl.name"
+                    v-model="polygon[ctrl.name] as number"
+                    :min="ctrl.min"
+                    :max="ctrl.max"
+                    :step="ctrl.step"
+                    :label="ctrl.label"
+                    @input="triggerUpdate"
+                />
+                <button class="btn self-end" @click="resetSize">Reset</button>
+            </template>
+        </BaseAccordion>
+
+        <BaseAccordion>
+            <template #title>Position</template>
+            <template #content>
+                <BaseRangeSlider
+                    v-for="ctrl in positionControls"
+                    :key="ctrl.name"
+                    v-model="polygon[ctrl.name] as number"
+                    :min="ctrl.min"
+                    :max="ctrl.max"
+                    :step="ctrl.step"
+                    :label="ctrl.label"
+                    @input="triggerUpdate"
+                />
+                <button class="btn self-end" @click="resetPosition">Reset</button>
+            </template>
+        </BaseAccordion>
     </div>
 </template>
-
-<style scoped>
-.polygon-control {
-    display: flex;
-    flex-direction: column;
-}
-
-.polygon-control > * {
-    margin-top: var(--niekes-spacing-sm);
-}
-
-.polygon-control > *:last-child {
-    margin-bottom: var(--niekes-spacing-sm);
-}
-</style>

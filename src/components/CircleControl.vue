@@ -1,6 +1,23 @@
 <script setup lang="ts">
-import { type Circle } from '../types/Circle';
+// Vue
+import { ref, watch } from 'vue';
+import { useCloned } from '@vueuse/core';
+
+// Icons
+import { LockClosedIcon, LockOpenIcon } from '@heroicons/vue/24/outline';
+
+// Types
+import type { Circle } from '../types/Circle';
+import type { ColorInterPolator } from '@/types/ColorInterPolators';
+
+// Components
+import BaseRadioButton from '@/components/BaseRadioButton.vue';
+import BaseCheckBox from '@/components/BaseCheckBox.vue';
+import BaseRangeSlider from '@/components/BaseRangeSlider.vue';
+import BaseAccordion from '@/components/BaseAccordion.vue';
 import ColorInterpolator from '../components/ColorInterpolator.vue';
+
+// Config
 import { canvasHeight, canvasWidth } from '../config/canvas';
 import {
     flipColorInterpolatorOptions,
@@ -9,171 +26,199 @@ import {
     calcOpacityOptions
 } from '../config/controlOptions';
 
+const circle = defineModel<Circle>({ required: true });
 const emits = defineEmits(['circle-update']);
 
-const props = defineProps<{
-    circle: Circle;
-    initCircle: Circle;
-}>();
+const { cloned: clonedCircle } = useCloned(circle.value);
 
-const generalControls = [
-    { value: props.circle.amount, min: 1, max: 1000, step: 1, label: 'Amount' },
-    { value: props.circle.distance, min: -256, max: 256, step: 0.1, label: 'Distance' },
-    { value: props.circle.rotation, min: -1440, max: 1440, step: 1, label: 'Rotation' }
+type Control = {
+    min: number;
+    max: number;
+    step: number;
+    label: string;
+    name: keyof Circle;
+};
+
+const generalControls: Control[] = [
+    { min: 1, max: 1000, step: 1, label: 'Amount', name: 'amount' },
+    { min: -256, max: 256, step: 0.1, label: 'Distance', name: 'distance' },
+    { min: -1440, max: 1440, step: 1, label: 'Rotation', name: 'rotation' }
 ];
 
-const strokeControls = [
-    { value: props.circle.strokeWidth, min: 0.1, max: 512, step: 0.1, label: 'strokeWidth' }
+const strokeControls: Control[] = [
+    { min: 0.1, max: 512, step: 0.1, label: 'Stroke Width', name: 'strokeWidth' }
 ];
 
-const radiusControls = [
-    { value: props.circle.radiusX, min: 1, max: canvasWidth / 2, step: 1, label: 'radiusX' },
-    { value: props.circle.radiusY, min: 1, max: canvasHeight / 2, step: 1, label: 'radiusY' }
+const isRadiusLocked = ref(true);
+const radiusControls: Control[] = [
+    { min: 1, max: canvasWidth / 2, step: 1, label: 'Radius X', name: 'radiusX' },
+    { min: 1, max: canvasHeight / 2, step: 1, label: 'Radius Y', name: 'radiusY' }
 ];
 
-const positionControls = [
-    { value: props.circle.cx, min: -canvasWidth / 4, max: canvasWidth / 4, step: 1, label: 'Cx' },
-    { value: props.circle.cy, min: -canvasWidth / 4, max: canvasHeight / 4, step: 1, label: 'Cy' }
+watch(
+    [() => circle.value.radiusX, () => circle.value.radiusY],
+    (newValues, oldValues) => {
+        if (isRadiusLocked.value) {
+            const changedIndex = newValues.findIndex((val, i) => val !== oldValues[i]);
+            if (changedIndex !== -1) {
+                const newVal = newValues[changedIndex] ?? 0;
+                circle.value.radiusX = newVal;
+                circle.value.radiusY = newVal;
+                triggerUpdate();
+            }
+        }
+    },
+    { deep: true }
+);
+
+const positionControls: Control[] = [
+    { min: -canvasWidth / 4, max: canvasWidth / 4, step: 1, label: 'CX', name: 'cx' },
+    { min: -canvasHeight / 4, max: canvasHeight / 4, step: 1, label: 'CY', name: 'cy' }
 ];
 
-function setColorInterPolator(interpolator: any) {
-    triggerUpdate({
-        detail: { name: 'colorInterPolator', value: interpolator.name }
-    } as CustomEvent);
-}
+const setColorInterPolator = (interpolator: { name: ColorInterPolator }) => {
+    circle.value.colorInterPolator = interpolator.name;
+    triggerUpdate();
+};
 
-function triggerUpdate(event: CustomEvent<{ name: string; value: any }>) {
-    emits('circle-update', { detail: event.detail });
-}
+const resetGeneral = () => {
+    generalControls.forEach(
+        (ctrl) => ((circle.value[ctrl.name] as number) = clonedCircle.value[ctrl.name] as number)
+    );
+    triggerUpdate();
+};
+
+const resetStroke = () => {
+    strokeControls.forEach(
+        (ctrl) => ((circle.value[ctrl.name] as number) = clonedCircle.value[ctrl.name] as number)
+    );
+    triggerUpdate();
+};
+
+const resetRadius = () => {
+    radiusControls.forEach(
+        (ctrl) => ((circle.value[ctrl.name] as number) = clonedCircle.value[ctrl.name] as number)
+    );
+    triggerUpdate();
+};
+
+const resetPosition = () => {
+    positionControls.forEach(
+        (ctrl) => ((circle.value[ctrl.name] as number) = clonedCircle.value[ctrl.name] as number)
+    );
+    triggerUpdate();
+};
+
+const triggerUpdate = () => {
+    emits('circle-update', circle.value);
+};
+
+watch(circle, () => emits('circle-update', circle.value), { deep: true });
 </script>
 
 <template>
-    <div class="circle-control">
-        <div class="general-control">
-            <niekes-toggle>
-                <div slot="caption">General</div>
-                <div slot="content">
-                    <niekes-input-range
-                        v-for="generalControl in generalControls"
-                        :key="generalControl.label"
-                        :min="generalControl.min"
-                        :max="generalControl.max"
-                        :label="generalControl.label"
-                        :name="generalControl.label.toLowerCase()"
-                        :value="generalControl.value"
-                        :step="generalControl.step"
-                        @change="triggerUpdate"
-                    />
-                </div>
-            </niekes-toggle>
-        </div>
-        <div class="stroke-control">
-            <niekes-toggle>
-                <div slot="caption">Stroke</div>
-                <div slot="content">
-                    <niekes-input-range
-                        v-for="strokeControl in strokeControls"
-                        :key="strokeControl.label"
-                        :min="strokeControl.min"
-                        :max="strokeControl.max"
-                        :label="strokeControl.label"
-                        :name="strokeControl.label"
-                        :value="strokeControl.value"
-                        :step="strokeControl.step"
-                        @change="triggerUpdate"
-                    />
+    <div class="flex flex-col gap-4">
+        <BaseAccordion>
+            <template #title>General</template>
+            <template #content>
+                <BaseRangeSlider
+                    v-for="ctrl in generalControls"
+                    :key="ctrl.name"
+                    v-model="circle[ctrl.name] as number"
+                    :min="ctrl.min"
+                    :max="ctrl.max"
+                    :step="ctrl.step"
+                    :label="ctrl.label"
+                    @input="triggerUpdate"
+                />
+                <button class="btn self-end" @click="resetGeneral">Reset</button>
+            </template>
+        </BaseAccordion>
 
-                    <niekes-input-checkbox
-                        :options="calcStrokeWidthOptions"
-                        :name="'calcStrokeWidth'"
-                        :value="props.circle.calcStrokeWidth"
-                        @change="triggerUpdate"
-                    />
-                </div>
-            </niekes-toggle>
-        </div>
-        <div class="color-control">
-            <niekes-toggle>
-                <div slot="caption">Color</div>
-                <div slot="content">
-                    <niekes-input-checkbox
-                        :options="calcOpacityOptions"
-                        :name="'calcOpacity'"
-                        :value="props.circle.calcOpacity"
-                        @change="triggerUpdate"
-                    />
+        <BaseAccordion>
+            <template #title>Stroke</template>
+            <template #content>
+                <BaseRangeSlider
+                    v-for="ctrl in strokeControls"
+                    :key="ctrl.name"
+                    v-model="circle[ctrl.name] as number"
+                    :min="ctrl.min"
+                    :max="ctrl.max"
+                    :step="ctrl.step"
+                    :label="ctrl.label"
+                    @input="triggerUpdate"
+                />
+                <BaseCheckBox
+                    :options="calcStrokeWidthOptions"
+                    v-model="circle.calcStrokeWidth"
+                    @change="triggerUpdate"
+                />
+                <button class="btn self-end" @click="resetStroke">Reset</button>
+            </template>
+        </BaseAccordion>
 
-                    <niekes-input-radio
-                        :options="applyColorSchemeToEachShapeOptions"
-                        :name="'applyColorSchemeToEachShape'"
-                        :value="props.circle.applyColorSchemeToEachShape"
-                        @change="triggerUpdate"
-                    />
+        <BaseAccordion>
+            <template #title>Color</template>
+            <template #content>
+                <BaseCheckBox
+                    :options="calcOpacityOptions"
+                    v-model="circle.calcOpacity"
+                    @change="triggerUpdate"
+                />
+                <BaseRadioButton
+                    :options="applyColorSchemeToEachShapeOptions"
+                    v-model="circle.applyColorSchemeToEachShape"
+                    @change="triggerUpdate"
+                />
+                <BaseRadioButton
+                    :options="flipColorInterpolatorOptions"
+                    v-model="circle.flipColorInterpolator"
+                    @change="triggerUpdate"
+                />
+                <ColorInterpolator
+                    :active="circle.colorInterPolator"
+                    @update-color-interpolator="setColorInterPolator"
+                />
+            </template>
+        </BaseAccordion>
 
-                    <niekes-input-radio
-                        :options="flipColorInterpolatorOptions"
-                        :name="'flipColorInterpolator'"
-                        :value="props.circle.flipColorInterpolator"
-                        @change="triggerUpdate"
-                    />
+        <BaseAccordion>
+            <template #title>Radius</template>
+            <template #content>
+                <button @click="isRadiusLocked = !isRadiusLocked" class="btn btn-square self-end">
+                    <LockClosedIcon v-if="isRadiusLocked" class="size-4" />
+                    <LockOpenIcon v-if="!isRadiusLocked" class="size-4" />
+                </button>
 
-                    <ColorInterpolator
-                        :active="props.circle.colorInterPolator"
-                        @update-color-interpolator="setColorInterPolator"
-                    />
-                </div>
-            </niekes-toggle>
-        </div>
-        <div class="radius-control">
-            <niekes-toggle>
-                <div slot="caption">Radius</div>
-                <div slot="content">
-                    <niekes-input-range
-                        v-for="radiusControl in radiusControls"
-                        :key="radiusControl.label"
-                        :min="radiusControl.min"
-                        :max="radiusControl.max"
-                        :label="radiusControl.label"
-                        :name="radiusControl.label"
-                        :value="radiusControl.value"
-                        :step="radiusControl.step"
-                        @change="triggerUpdate"
-                    />
-                </div>
-            </niekes-toggle>
-        </div>
-        <div class="position-control">
-            <niekes-toggle>
-                <div slot="caption">Position</div>
-                <div slot="content">
-                    <niekes-input-range
-                        v-for="positionControl in positionControls"
-                        :key="positionControl.label"
-                        :min="positionControl.min"
-                        :max="positionControl.max"
-                        :label="positionControl.label"
-                        :name="positionControl.label.toLowerCase()"
-                        :value="positionControl.value"
-                        :step="positionControl.step"
-                        @change="triggerUpdate"
-                    />
-                </div>
-            </niekes-toggle>
-        </div>
+                <BaseRangeSlider
+                    v-for="ctrl in radiusControls"
+                    :key="ctrl.name"
+                    v-model="circle[ctrl.name] as number"
+                    :min="ctrl.min"
+                    :max="ctrl.max"
+                    :step="ctrl.step"
+                    :label="ctrl.label"
+                    @input="triggerUpdate"
+                />
+                <button class="btn self-end" @click="resetRadius">Reset</button>
+            </template>
+        </BaseAccordion>
+
+        <BaseAccordion>
+            <template #title>Position</template>
+            <template #content>
+                <BaseRangeSlider
+                    v-for="ctrl in positionControls"
+                    :key="ctrl.name"
+                    v-model="circle[ctrl.name] as number"
+                    :min="ctrl.min"
+                    :max="ctrl.max"
+                    :step="ctrl.step"
+                    :label="ctrl.label"
+                    @input="triggerUpdate"
+                />
+                <button class="btn self-end" @click="resetPosition">Reset</button>
+            </template>
+        </BaseAccordion>
     </div>
 </template>
-
-<style scoped>
-.circle-control {
-    display: flex;
-    flex-direction: column;
-}
-
-.circle-control > * {
-    margin-top: var(--niekes-spacing-sm);
-}
-
-.circle-control > *:last-child {
-    margin-bottom: var(--niekes-spacing-sm);
-}
-</style>

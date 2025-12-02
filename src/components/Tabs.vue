@@ -1,0 +1,12 @@
+<script setup lang="ts">
+// Vue
+import { ref } from 'vue';
+</script>
+
+<template>
+    <div role="tablist" class="tabs tabs-box">
+        <a role="tab" class="tab">Tab 1</a>
+        <a role="tab" class="tab tab-active">Tab 2</a>
+        <a role="tab" class="tab">Tab 3</a>
+    </div>
+</template>
