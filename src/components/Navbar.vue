@@ -1,17 +1,6 @@
 <script setup lang="ts">
-import { useActiveElement } from '@vueuse/core';
-import type { ShallowRef } from 'vue';
-
 const appName: string = import.meta.env.VITE_APP_NAME;
 const appDescription: string = import.meta.env.VITE_APP_DESCRIPTION;
-
-const closeDropdown = () => {
-    const active = useActiveElement() as ShallowRef<HTMLInputElement | null>;
-
-    if (active.value) {
-        active.value.blur();
-    }
-};
 </script>
 
 <template>
