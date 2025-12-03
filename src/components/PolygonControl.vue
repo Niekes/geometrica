@@ -3,9 +3,6 @@
 import { ref, watch } from 'vue';
 import { useCloned } from '@vueuse/core';
 
-// Icons
-import { LockClosedIcon, LockOpenIcon } from '@heroicons/vue/24/outline';
-
 // Types
 import type { Polygon } from '../types/Polygon';
 import type { ColorInterPolator } from '@/types/ColorInterPolators';
@@ -63,15 +60,6 @@ const positionControls: Control[] = [
     { min: -canvasWidth / 4, max: canvasWidth / 4, step: 1, label: 'CX', name: 'cx' },
     { min: -canvasHeight / 4, max: canvasHeight / 4, step: 1, label: 'CY', name: 'cy' }
 ];
-
-const isSizeLocked = ref(true);
-
-watch([() => polygon.value.size], (newValues, oldValues) => {
-    if (isSizeLocked.value && newValues[0] !== oldValues[0]) {
-        polygon.value.size = newValues[0];
-        triggerUpdate();
-    }
-});
 
 const setColorInterPolator = (interpolator: { name: ColorInterPolator }) => {
     polygon.value.colorInterPolator = interpolator.name;
@@ -220,10 +208,6 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
         <BaseAccordion>
             <template #title>Size</template>
             <template #content>
-                <button @click="isSizeLocked = !isSizeLocked" class="btn btn-square self-end">
-                    <LockClosedIcon v-if="isSizeLocked" class="size-4" />
-                    <LockOpenIcon v-if="!isSizeLocked" class="size-4" />
-                </button>
                 <BaseRangeSlider
                     v-for="ctrl in sizeControls"
                     :key="ctrl.name"

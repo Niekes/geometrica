@@ -13,6 +13,11 @@ permissions:
 jobs:
     build:
         runs-on: ubuntu-latest
+        env:
+            VITE_APP_EMAIL: ${{ vars.VITE_APP_EMAIL }}
+            VITE_APP_NAME: ${{ vars.VITE_APP_NAME }}
+            VITE_APP_DESCRIPTION: ${{ vars.VITE_APP_DESCRIPTION }}
+            VITE_APP_DESCRIPTION_EXTENDED: ${{ vars.VITE_APP_DESCRIPTION_EXTENDED }}
         steps:
             - uses: actions/checkout@v4
             - uses: actions/setup-node@v4

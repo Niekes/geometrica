@@ -104,7 +104,7 @@ function download() {
     }
 }
 
-async function draw(event?: CustomEvent<{ name: string; value: any }>): Promise<any> {
+async function draw(): Promise<any> {
     await nextTick();
 
     switch (selectedShape.value) {
@@ -152,21 +152,23 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="home">
+    <div class="home grid">
         <div class="bg-base-200 p-4 w-full justify-items-center overflow-scroll">
-            <div class="tabs tabs-box bg-base-300 tabs-xs mb-4">
-                <template v-for="shape in shapesOptions" :key="shape.value">
-                    <input
-                        :id="shape.value"
-                        v-model="selectedShape"
-                        name="shape"
-                        type="radio"
-                        class="tab"
-                        :aria-label="shape.name"
-                        :value="shape.value"
-                        @change="(event) => draw(event as CustomEvent)"
-                    />
-                </template>
+            <div class="flex items-center justify-center">
+                <div class="tabs tabs-box bg-base-300 tabs-xs mb-4">
+                    <template v-for="shape in shapesOptions" :key="shape.value">
+                        <input
+                            :id="shape.value"
+                            v-model="selectedShape"
+                            name="shape"
+                            type="radio"
+                            class="tab"
+                            :aria-label="shape.name"
+                            :value="shape.value"
+                            @change="draw"
+                        />
+                    </template>
+                </div>
             </div>
 
             <div class="control__shapes">
@@ -188,7 +190,7 @@ onMounted(() => {
 
         <div class="context">
             <canvas
-                class="context__canvas"
+                class="context__canvas shadow-md shadow-black/50"
                 ref="canvas"
                 :style="{
                     'background-color': '#000',
@@ -204,7 +206,6 @@ onMounted(() => {
 .home {
     --navbar-height: 4rem;
 
-    display: grid;
     margin-top: var(--navbar-height);
     height: calc(100vh - var(--navbar-height));
     height: calc(100dvh - var(--navbar-height));
@@ -221,35 +222,8 @@ onMounted(() => {
     grid-area: shapes;
 }
 
-.shapes__rectangle,
-.shapes__circle,
-.shapes__polygon {
-    width: 100%;
-}
-
-.control__actions {
-    grid-area: actions;
-
-    button {
-        width: 100%;
-
-        &:not(:last-child) {
-            margin-bottom: var(--niekes-spacing-md);
-        }
-    }
-}
-
-.control__radio {
-    border: var(--niekes-border-width) solid var(--niekes-tertiary);
-    border-radius: var(--niekes-border-radius-xs);
-    display: flex;
-    grid-area: radio;
-    overflow: hidden;
-}
-
 .context {
     align-items: center;
-    background-color: var(--niekes-white);
     display: flex;
     grid-area: context;
     justify-content: center;
@@ -257,7 +231,6 @@ onMounted(() => {
 
 .context__canvas {
     border: 1px solid var(--niekes-black-10);
-    box-shadow: var(--niekes-box-shadow);
     max-height: 75%;
     max-width: 75%;
     aspect-ratio: 1;
