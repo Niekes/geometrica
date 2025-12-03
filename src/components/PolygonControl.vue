@@ -116,7 +116,7 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                 <BaseRangeSlider
                     v-for="ctrl in generalControls"
                     :key="ctrl.name"
-                    v-model="polygon[ctrl.name] as number"
+                    v-model.number="polygon[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"
@@ -133,7 +133,7 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                 <BaseRangeSlider
                     v-for="ctrl in borderRadiusControls"
                     :key="ctrl.name"
-                    v-model="polygon[ctrl.name] as number"
+                    v-model.number="polygon[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"
@@ -150,7 +150,7 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                 <BaseRangeSlider
                     v-for="ctrl in strokeControls"
                     :key="ctrl.name"
-                    v-model="polygon[ctrl.name] as number"
+                    v-model.number="polygon[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"
@@ -159,7 +159,7 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                 />
                 <BaseCheckBox
                     :options="calcStrokeWidthOptions"
-                    v-model="polygon.calcStrokeWidth"
+                    v-model.number="polygon.calcStrokeWidth"
                     @change="triggerUpdate"
                 />
                 <button class="btn self-end" @click="resetStroke">Reset</button>
@@ -171,17 +171,17 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
             <template #content>
                 <BaseCheckBox
                     :options="calcOpacityOptions"
-                    v-model="polygon.calcOpacity"
+                    v-model.number="polygon.calcOpacity"
                     @change="triggerUpdate"
                 />
                 <BaseRadioButton
                     :options="applyColorSchemeToEachShapeOptions"
-                    v-model="polygon.applyColorSchemeToEachShape"
+                    v-model.number="polygon.applyColorSchemeToEachShape"
                     @change="triggerUpdate"
                 />
                 <BaseRadioButton
                     :options="flipColorInterpolatorOptions"
-                    v-model="polygon.flipColorInterpolator"
+                    v-model.number="polygon.flipColorInterpolator"
                     @change="triggerUpdate"
                 />
                 <ColorInterpolator
@@ -195,7 +195,7 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
             <template #title>Sides</template>
             <template #content>
                 <BaseRangeSlider
-                    v-model="polygon.sides as number"
+                    v-model.number="polygon.sides as number"
                     :min="sidesControl.min"
                     :max="sidesControl.max"
                     :step="sidesControl.step"
@@ -211,7 +211,7 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                 <BaseRangeSlider
                     v-for="ctrl in sizeControls"
                     :key="ctrl.name"
-                    v-model="polygon[ctrl.name] as number"
+                    v-model.number="polygon[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"
@@ -228,7 +228,7 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                 <BaseRangeSlider
                     v-for="ctrl in positionControls"
                     :key="ctrl.name"
-                    v-model="polygon[ctrl.name] as number"
+                    v-model.number="polygon[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"

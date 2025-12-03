@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref, type Ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import RectControl from '../components/RectControl.vue';
 import CircleControl from '../components/CircleControl.vue';
 import PolygonControl from '../components/PolygonControl.vue';

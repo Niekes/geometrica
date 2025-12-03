@@ -124,7 +124,7 @@ watch(circle, () => emits('circle-update', circle.value), { deep: true });
                 <BaseRangeSlider
                     v-for="ctrl in generalControls"
                     :key="ctrl.name"
-                    v-model="circle[ctrl.name] as number"
+                    v-model.number="circle[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"
@@ -141,7 +141,7 @@ watch(circle, () => emits('circle-update', circle.value), { deep: true });
                 <BaseRangeSlider
                     v-for="ctrl in strokeControls"
                     :key="ctrl.name"
-                    v-model="circle[ctrl.name] as number"
+                    v-model.number="circle[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"
@@ -150,7 +150,7 @@ watch(circle, () => emits('circle-update', circle.value), { deep: true });
                 />
                 <BaseCheckBox
                     :options="calcStrokeWidthOptions"
-                    v-model="circle.calcStrokeWidth"
+                    v-model.number="circle.calcStrokeWidth"
                     @change="triggerUpdate"
                 />
                 <button class="btn self-end" @click="resetStroke">Reset</button>
@@ -162,17 +162,17 @@ watch(circle, () => emits('circle-update', circle.value), { deep: true });
             <template #content>
                 <BaseCheckBox
                     :options="calcOpacityOptions"
-                    v-model="circle.calcOpacity"
+                    v-model.number="circle.calcOpacity"
                     @change="triggerUpdate"
                 />
                 <BaseRadioButton
                     :options="applyColorSchemeToEachShapeOptions"
-                    v-model="circle.applyColorSchemeToEachShape"
+                    v-model.number="circle.applyColorSchemeToEachShape"
                     @change="triggerUpdate"
                 />
                 <BaseRadioButton
                     :options="flipColorInterpolatorOptions"
-                    v-model="circle.flipColorInterpolator"
+                    v-model.number="circle.flipColorInterpolator"
                     @change="triggerUpdate"
                 />
                 <ColorInterpolator
@@ -193,7 +193,7 @@ watch(circle, () => emits('circle-update', circle.value), { deep: true });
                 <BaseRangeSlider
                     v-for="ctrl in radiusControls"
                     :key="ctrl.name"
-                    v-model="circle[ctrl.name] as number"
+                    v-model.number="circle[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"
@@ -210,7 +210,7 @@ watch(circle, () => emits('circle-update', circle.value), { deep: true });
                 <BaseRangeSlider
                     v-for="ctrl in positionControls"
                     :key="ctrl.name"
-                    v-model="circle[ctrl.name] as number"
+                    v-model.number="circle[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"

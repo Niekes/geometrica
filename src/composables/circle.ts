@@ -38,8 +38,8 @@ export default function useCircleDrawing(
         const interpolateStrokeWidth: boolean = calcStrokeWidth.includes('interpolate');
         const flipStrokeWidth: boolean = calcStrokeWidth.includes('flip');
 
-        const cx: number = canvasWidth / 4 + Number(circle.cx);
-        const cy: number = canvasHeight / 4 + Number(circle.cy) * -1;
+        const cx: number = canvasWidth / 4 + circle.cx;
+        const cy: number = canvasHeight / 4 + circle.cy * -1;
 
         const colorIp: Function =
             colorInterPolators.find((c) => colorInterPolator === c.name)?.fn ||
@@ -47,17 +47,17 @@ export default function useCircleDrawing(
             colorInterPolators[0].fn;
 
         for (let i = 0; i < amount; i += 1) {
-            if (Number(circle.radiusX) - i * circle.distance < 0) return;
-            if (Number(circle.radiusY) - i * circle.distance < 0) return;
+            if (circle.radiusX - i * circle.distance < 0) return;
+            if (circle.radiusY - i * circle.distance < 0) return;
 
-            const radiusX = Number(circle.radiusX) - i * circle.distance;
-            const radiusY = Number(circle.radiusY) - i * circle.distance;
+            const radiusX = circle.radiusX - i * circle.distance;
+            const radiusY = circle.radiusY - i * circle.distance;
 
             const k = i / adjustedAmount;
             const angle = (radians / adjustedAmount) * i;
 
-            const x = -radiusX + Number(circle.radiusX) - i * circle.distance;
-            const y = -radiusY + Number(circle.radiusY) - i * circle.distance;
+            const x = -radiusX + circle.radiusX - i * circle.distance;
+            const y = -radiusY + circle.radiusY - i * circle.distance;
 
             const flippedK = Math.abs(k - 1);
             const c = color(flipColorInterpolator ? colorIp(flippedK) : colorIp(k));

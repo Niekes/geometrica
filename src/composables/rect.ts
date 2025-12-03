@@ -32,8 +32,8 @@ export default function useRectDrawing(canvasRef: { value: HTMLCanvasElement | n
         const interpolateStrokeWidth: boolean = calcStrokeWidth.includes('interpolate');
         const flipStrokeWidth: boolean = calcStrokeWidth.includes('flip');
 
-        const cx: number = canvasWidth / 4 + Number(rect.cx);
-        const cy: number = canvasHeight / 4 + Number(rect.cy) * -1;
+        const cx: number = canvasWidth / 4 + rect.cx;
+        const cy: number = canvasHeight / 4 + rect.cy * -1;
 
         const colorIp: Function =
             colorInterPolators.find((c) => colorInterPolator === c.name)?.fn ||

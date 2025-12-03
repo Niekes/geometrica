@@ -76,8 +76,8 @@ export default function usePolygonDrawing(
         const interpolateStrokeWidth: boolean = calcStrokeWidth.includes('interpolate');
         const flipStrokeWidth: boolean = calcStrokeWidth.includes('flip');
 
-        const cx: number = canvasWidth / 4 + Number(polygon.cx);
-        const cy: number = canvasHeight / 4 + Number(polygon.cy) * -1;
+        const cx: number = canvasWidth / 4 + polygon.cx;
+        const cy: number = canvasHeight / 4 + polygon.cy * -1;
 
         const colorIp: Function =
             colorInterPolators.find((c) => colorInterPolator === c.name)?.fn ||

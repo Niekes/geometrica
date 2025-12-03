@@ -170,7 +170,7 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
                     v-for="ctrl in generalControls"
                     :key="ctrl.name"
                     @input="triggerUpdate"
-                    v-model="rect[ctrl.name] as number"
+                    v-model.number="rect[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"
@@ -196,7 +196,7 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
                     v-for="ctrl in borderRadiusControls"
                     :key="ctrl.name"
                     @input="triggerUpdate"
-                    v-model="rect[ctrl.name] as number"
+                    v-model.number="rect[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"
@@ -214,7 +214,7 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
                     v-for="ctrl in strokeControls"
                     :key="ctrl.name"
                     @input="triggerUpdate"
-                    v-model="rect[ctrl.name] as number"
+                    v-model.number="rect[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"
@@ -223,7 +223,7 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
 
                 <BaseCheckBox
                     :options="calcStrokeWidthOptions"
-                    v-model="rect.calcStrokeWidth"
+                    v-model.number="rect.calcStrokeWidth"
                     @change="triggerUpdate"
                 />
 
@@ -236,17 +236,17 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
             <template #content>
                 <BaseCheckBox
                     :options="calcOpacityOptions"
-                    v-model="rect.calcOpacity"
+                    v-model.number="rect.calcOpacity"
                     @change="triggerUpdate"
                 />
                 <BaseRadioButton
                     :options="applyColorSchemeToEachShapeOptions"
-                    v-model="rect.applyColorSchemeToEachShape"
+                    v-model.number="rect.applyColorSchemeToEachShape"
                     @change="triggerUpdate"
                 />
                 <BaseRadioButton
                     :options="flipColorInterpolatorOptions"
-                    v-model="rect.flipColorInterpolator"
+                    v-model.number="rect.flipColorInterpolator"
                     @change="triggerUpdate"
                 />
                 <ColorInterpolator
@@ -270,7 +270,7 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
                     v-for="ctrl in sizeControls"
                     :key="ctrl.name"
                     @input="triggerUpdate"
-                    v-model="rect[ctrl.name] as number"
+                    v-model.number="rect[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"
@@ -288,7 +288,7 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
                     v-for="ctrl in positionControls"
                     :key="ctrl.name"
                     @input="triggerUpdate"
-                    v-model="rect[ctrl.name] as number"
+                    v-model.number="rect[ctrl.name] as number"
                     :min="ctrl.min"
                     :max="ctrl.max"
                     :step="ctrl.step"
