@@ -7,7 +7,8 @@ import { useCloned } from '@vueuse/core';
 import { LockClosedIcon, LockOpenIcon } from '@heroicons/vue/24/outline';
 
 // Types
-import type { Circle } from '../types/Circle';
+import type { Circle } from '@/types/Circle';
+import type { BaseControl } from '@/types/Control';
 import type { ColorInterPolator } from '@/types/ColorInterPolators';
 
 // Components
@@ -15,44 +16,79 @@ import BaseRadioButton from '@/components/BaseRadioButton.vue';
 import BaseCheckBox from '@/components/BaseCheckBox.vue';
 import BaseRangeSlider from '@/components/BaseRangeSlider.vue';
 import BaseAccordion from '@/components/BaseAccordion.vue';
-import ColorInterpolator from '../components/ColorInterpolator.vue';
+import ColorInterpolator from '@/components/ColorInterpolator.vue';
 
 // Config
-import { canvasHeight, canvasWidth } from '../config/canvas';
+import { canvasHeight, canvasWidth } from '@/config/canvas';
 import {
     flipColorInterpolatorOptions,
     applyColorSchemeToEachShapeOptions,
     calcStrokeWidthOptions,
     calcOpacityOptions
-} from '../config/controlOptions';
+} from '@/config/controlOptions';
 
 const circle = defineModel<Circle>({ required: true });
 const emits = defineEmits(['circle-update']);
 
 const { cloned: clonedCircle } = useCloned(circle.value);
 
-type Control = {
-    min: number;
-    max: number;
-    step: number;
-    label: string;
-    name: keyof Circle;
-};
+type Control = BaseControl & { name: keyof Circle };
 
 const generalControls: Control[] = [
-    { min: 1, max: 1000, step: 1, label: 'Amount', name: 'amount' },
-    { min: -256, max: 256, step: 0.1, label: 'Distance', name: 'distance' },
-    { min: -1440, max: 1440, step: 1, label: 'Rotation', name: 'rotation' }
+    {
+        min: 1,
+        max: 1000,
+        step: 1,
+        label: 'Amount',
+        name: 'amount'
+    },
+    {
+        min: -64,
+        max: 64,
+        step: 0.1,
+        label: 'Distance',
+        name: 'distance',
+        format: (d: number) => d.toFixed(1)
+    },
+    {
+        min: -1440,
+        max: 1440,
+        step: 1,
+        label: 'Rotation',
+        name: 'rotation',
+        format: (d: number) => `${d}°`
+    }
 ];
 
 const strokeControls: Control[] = [
-    { min: 0.1, max: 512, step: 0.1, label: 'Stroke Width', name: 'strokeWidth' }
+    {
+        min: 0.1,
+        max: 512,
+        step: 0.1,
+        label: 'Stroke Width',
+        name: 'strokeWidth',
+        format: (d: number) => d.toFixed(1)
+    }
 ];
 
 const isRadiusLocked = ref(true);
 const radiusControls: Control[] = [
-    { min: 1, max: canvasWidth / 2, step: 1, label: 'Radius X', name: 'radiusX' },
-    { min: 1, max: canvasHeight / 2, step: 1, label: 'Radius Y', name: 'radiusY' }
+    {
+        min: 1,
+        max: canvasWidth / 2,
+        step: 1,
+        label: 'Radius X',
+        name: 'radiusX',
+        format: (d: number) => `${d}px`
+    },
+    {
+        min: 1,
+        max: canvasHeight / 2,
+        step: 1,
+        label: 'Radius Y',
+        name: 'radiusY',
+        format: (d: number) => `${d}px`
+    }
 ];
 
 watch(
@@ -72,8 +108,22 @@ watch(
 );
 
 const positionControls: Control[] = [
-    { min: -canvasWidth / 4, max: canvasWidth / 4, step: 1, label: 'CX', name: 'cx' },
-    { min: -canvasHeight / 4, max: canvasHeight / 4, step: 1, label: 'CY', name: 'cy' }
+    {
+        min: -canvasWidth / 4,
+        max: canvasWidth / 4,
+        step: 1,
+        label: 'CX',
+        name: 'cx',
+        format: (d: number) => `${d}px`
+    },
+    {
+        min: -canvasHeight / 4,
+        max: canvasHeight / 4,
+        step: 1,
+        label: 'CY',
+        name: 'cy',
+        format: (d: number) => `${d}px`
+    }
 ];
 
 const setColorInterPolator = (interpolator: { name: ColorInterPolator }) => {
@@ -130,8 +180,9 @@ watch(circle, () => emits('circle-update', circle.value), { deep: true });
                     :step="ctrl.step"
                     :label="ctrl.label"
                     @input="triggerUpdate"
+                    :format="ctrl.format"
                 />
-                <button class="btn self-end" @click="resetGeneral">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetGeneral">Reset</button>
             </template>
         </BaseAccordion>
 
@@ -146,6 +197,7 @@ watch(circle, () => emits('circle-update', circle.value), { deep: true });
                     :max="ctrl.max"
                     :step="ctrl.step"
                     :label="ctrl.label"
+                    :format="ctrl.format"
                     @input="triggerUpdate"
                 />
                 <BaseCheckBox
@@ -153,7 +205,7 @@ watch(circle, () => emits('circle-update', circle.value), { deep: true });
                     v-model.number="circle.calcStrokeWidth"
                     @change="triggerUpdate"
                 />
-                <button class="btn self-end" @click="resetStroke">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetStroke">Reset</button>
             </template>
         </BaseAccordion>
 
@@ -185,7 +237,10 @@ watch(circle, () => emits('circle-update', circle.value), { deep: true });
         <BaseAccordion>
             <template #title>Radius</template>
             <template #content>
-                <button @click="isRadiusLocked = !isRadiusLocked" class="btn btn-square self-end">
+                <button
+                    @click="isRadiusLocked = !isRadiusLocked"
+                    class="btn btn-square self-end btn-sm"
+                >
                     <LockClosedIcon v-if="isRadiusLocked" class="size-4" />
                     <LockOpenIcon v-if="!isRadiusLocked" class="size-4" />
                 </button>
@@ -198,9 +253,10 @@ watch(circle, () => emits('circle-update', circle.value), { deep: true });
                     :max="ctrl.max"
                     :step="ctrl.step"
                     :label="ctrl.label"
+                    :format="ctrl.format"
                     @input="triggerUpdate"
                 />
-                <button class="btn self-end" @click="resetRadius">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetRadius">Reset</button>
             </template>
         </BaseAccordion>
 
@@ -215,9 +271,10 @@ watch(circle, () => emits('circle-update', circle.value), { deep: true });
                     :max="ctrl.max"
                     :step="ctrl.step"
                     :label="ctrl.label"
+                    :format="ctrl.format"
                     @input="triggerUpdate"
                 />
-                <button class="btn self-end" @click="resetPosition">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetPosition">Reset</button>
             </template>
         </BaseAccordion>
     </div>

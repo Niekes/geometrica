@@ -7,42 +7,57 @@ import { useCloned } from '@vueuse/core';
 import { LockClosedIcon, LockOpenIcon } from '@heroicons/vue/24/outline';
 
 // Types
-import { type Rect } from '../types/Rect';
+import { type Rect } from '@/types/Rect';
 import type { ColorInterPolator } from '@/types/ColorInterPolators';
+import type { BaseControl } from '@/types/Control';
 
 // Components
 import BaseRadioButton from '@/components/BaseRadioButton.vue';
 import BaseCheckBox from '@/components/BaseCheckBox.vue';
 import BaseRangeSlider from '@/components/BaseRangeSlider.vue';
 import BaseAccordion from '@/components/BaseAccordion.vue';
-import ColorInterpolator from '../components/ColorInterpolator.vue';
+import ColorInterpolator from '@/components/ColorInterpolator.vue';
 
 // Config
-import { canvasHeight, canvasWidth } from '../config/canvas';
+import { canvasHeight, canvasWidth } from '@/config/canvas';
 import {
     flipColorInterpolatorOptions,
     applyColorSchemeToEachShapeOptions,
     calcStrokeWidthOptions,
     calcOpacityOptions
-} from '../config/controlOptions';
+} from '@/config/controlOptions';
 
 const rect = defineModel<Rect>({ required: true });
 const emits = defineEmits(['rect-update']);
 
 const { cloned: clonedRect } = useCloned(rect.value);
 
-type Control = {
-    min: number;
-    max: number;
-    step: number;
-    label: string;
-    name: keyof Rect;
-};
+type Control = BaseControl & { name: keyof Rect };
 
 const generalControls: Control[] = [
-    { min: 1, max: 1000, step: 1, label: 'Amount', name: 'amount' },
-    { min: -64, max: 64, step: 0.1, label: 'Distance', name: 'distance' },
-    { min: -1440, max: 1440, step: 1, label: 'Rotation', name: 'rotation' }
+    {
+        min: 1,
+        max: 1000,
+        step: 1,
+        label: 'Amount',
+        name: 'amount'
+    },
+    {
+        min: -64,
+        max: 64,
+        step: 0.1,
+        label: 'Distance',
+        name: 'distance',
+        format: (d: number) => d.toFixed(1)
+    },
+    {
+        min: -1440,
+        max: 1440,
+        step: 1,
+        label: 'Rotation',
+        name: 'rotation',
+        format: (d: number) => `${d}°`
+    }
 ];
 
 const resetGeneral = () => {
@@ -53,11 +68,40 @@ const resetGeneral = () => {
 };
 
 const isBorderRadiusLocked = ref(true);
+const toBorderPercent = (d: number) => `${(d * 50).toFixed(1)}%`;
 const borderRadiusControls: Control[] = [
-    { min: 0, max: 1, step: 0.01, label: 'Border Radius Top Left', name: 'borderRadiusTl' },
-    { min: 0, max: 1, step: 0.01, label: 'Border Radius Top Right', name: 'borderRadiusTr' },
-    { min: 0, max: 1, step: 0.01, label: 'Border Radius Bottom Left', name: 'borderRadiusBl' },
-    { min: 0, max: 1, step: 0.01, label: 'Border Radius Bottom Right', name: 'borderRadiusBr' }
+    {
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'Border Radius Top Left',
+        name: 'borderRadiusTl',
+        format: toBorderPercent
+    },
+    {
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'Border Radius Top Right',
+        name: 'borderRadiusTr',
+        format: toBorderPercent
+    },
+    {
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'Border Radius Bottom Left',
+        name: 'borderRadiusBl',
+        format: toBorderPercent
+    },
+    {
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'Border Radius Bottom Right',
+        name: 'borderRadiusBr',
+        format: toBorderPercent
+    }
 ];
 
 watch(
@@ -91,7 +135,14 @@ const resetBorderRadius = () => {
 };
 
 const strokeControls: Control[] = [
-    { min: 0.1, max: canvasWidth / 4, step: 0.1, label: 'Stroke Width', name: 'strokeWidth' }
+    {
+        min: 0.1,
+        max: canvasWidth / 4,
+        step: 0.1,
+        label: 'Stroke Width',
+        name: 'strokeWidth',
+        format: (d: number) => d.toFixed(1)
+    }
 ];
 
 const resetStroke = () => {
@@ -103,8 +154,22 @@ const resetStroke = () => {
 
 const isSizeLocked = ref(true);
 const sizeControls: Control[] = [
-    { min: 1, max: canvasWidth / 2, step: 1, label: 'Width', name: 'width' },
-    { min: 1, max: canvasHeight / 2, step: 1, label: 'Height', name: 'height' }
+    {
+        min: 1,
+        max: canvasWidth / 2,
+        step: 1,
+        label: 'Width',
+        name: 'width',
+        format: (d: number) => `${d}px`
+    },
+    {
+        min: 1,
+        max: canvasHeight / 2,
+        step: 1,
+        label: 'Height',
+        name: 'height',
+        format: (d: number) => `${d}px`
+    }
 ];
 
 watch(
@@ -131,8 +196,22 @@ const resetSize = () => {
 };
 
 const positionControls: Control[] = [
-    { min: -canvasWidth / 4, max: canvasWidth / 4, step: 1, label: 'CX', name: 'cx' },
-    { min: -canvasHeight / 4, max: canvasHeight / 4, step: 1, label: 'CY', name: 'cy' }
+    {
+        min: -canvasWidth / 4,
+        max: canvasWidth / 4,
+        step: 1,
+        label: 'CX',
+        name: 'cx',
+        format: (d: number) => `${d}px`
+    },
+    {
+        min: -canvasHeight / 4,
+        max: canvasHeight / 4,
+        step: 1,
+        label: 'CY',
+        name: 'cy',
+        format: (d: number) => `${d}px`
+    }
 ];
 
 const resetPosition = () => {
@@ -175,9 +254,10 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
                     :max="ctrl.max"
                     :step="ctrl.step"
                     :label="ctrl.label"
+                    :format="ctrl.format"
                 />
 
-                <button class="btn self-end" @click="resetGeneral">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetGeneral">Reset</button>
             </template>
         </BaseAccordion>
 
@@ -186,7 +266,7 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
             <template #content>
                 <button
                     @click="isBorderRadiusLocked = !isBorderRadiusLocked"
-                    class="btn btn-square self-end"
+                    class="btn btn-sm btn-square self-end"
                 >
                     <LockClosedIcon v-if="isBorderRadiusLocked" class="size-4" />
                     <LockOpenIcon v-if="!isBorderRadiusLocked" class="size-4" />
@@ -201,9 +281,10 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
                     :max="ctrl.max"
                     :step="ctrl.step"
                     :label="ctrl.label"
+                    :format="ctrl.format"
                 />
 
-                <button class="btn self-end" @click="resetBorderRadius">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetBorderRadius">Reset</button>
             </template>
         </BaseAccordion>
 
@@ -219,6 +300,7 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
                     :max="ctrl.max"
                     :step="ctrl.step"
                     :label="ctrl.label"
+                    :format="ctrl.format"
                 />
 
                 <BaseCheckBox
@@ -227,7 +309,7 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
                     @change="triggerUpdate"
                 />
 
-                <button class="btn self-end" @click="resetStroke">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetStroke">Reset</button>
             </template>
         </BaseAccordion>
 
@@ -254,14 +336,17 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
                     @update-color-interpolator="setColorInterPolator"
                 />
 
-                <button class="btn self-end" @click="resetColor">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetColor">Reset</button>
             </template>
         </BaseAccordion>
 
         <BaseAccordion>
             <template #title> Size </template>
             <template #content>
-                <button @click="isSizeLocked = !isSizeLocked" class="btn btn-square self-end">
+                <button
+                    @click="isSizeLocked = !isSizeLocked"
+                    class="btn btn-sm btn-square self-end"
+                >
                     <LockClosedIcon v-if="isSizeLocked" class="size-4" />
                     <LockOpenIcon v-if="!isSizeLocked" class="size-4" />
                 </button>
@@ -275,9 +360,10 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
                     :max="ctrl.max"
                     :step="ctrl.step"
                     :label="ctrl.label"
+                    :format="ctrl.format"
                 />
 
-                <button class="btn self-end" @click="resetSize">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetSize">Reset</button>
             </template>
         </BaseAccordion>
 
@@ -293,9 +379,10 @@ watch(rect, () => emits('rect-update', rect.value), { deep: true });
                     :max="ctrl.max"
                     :step="ctrl.step"
                     :label="ctrl.label"
+                    :format="ctrl.format"
                 />
 
-                <button class="btn self-end" @click="resetPosition">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetPosition">Reset</button>
             </template>
         </BaseAccordion>
     </div>

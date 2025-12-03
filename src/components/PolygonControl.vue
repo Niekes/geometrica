@@ -4,61 +4,113 @@ import { ref, watch } from 'vue';
 import { useCloned } from '@vueuse/core';
 
 // Types
-import type { Polygon } from '../types/Polygon';
+import type { Polygon } from '@/types/Polygon';
 import type { ColorInterPolator } from '@/types/ColorInterPolators';
+import type { BaseControl } from '@/types/Control';
 
 // Components
 import BaseRadioButton from '@/components/BaseRadioButton.vue';
 import BaseCheckBox from '@/components/BaseCheckBox.vue';
 import BaseRangeSlider from '@/components/BaseRangeSlider.vue';
 import BaseAccordion from '@/components/BaseAccordion.vue';
-import ColorInterpolator from '../components/ColorInterpolator.vue';
+import ColorInterpolator from '@/components/ColorInterpolator.vue';
 
 // Config
-import { canvasHeight, canvasWidth } from '../config/canvas';
+import { canvasHeight, canvasWidth } from '@/config/canvas';
 import {
     flipColorInterpolatorOptions,
     applyColorSchemeToEachShapeOptions,
     calcStrokeWidthOptions,
     calcOpacityOptions
-} from '../config/controlOptions';
+} from '@/config/controlOptions';
 
 const polygon = defineModel<Polygon>({ required: true });
 const emits = defineEmits(['polygon-update']);
 
 const { cloned: clonedPolygon } = useCloned(polygon.value);
 
-type Control = {
-    min: number;
-    max: number;
-    step: number;
-    label: string;
+type Control = BaseControl & {
     name: keyof Polygon;
 };
 
 const generalControls: Control[] = [
-    { min: 1, max: 1000, step: 1, label: 'Amount', name: 'amount' },
-    { min: -256, max: 256, step: 0.1, label: 'Distance', name: 'distance' },
-    { min: -1440, max: 1440, step: 1, label: 'Rotation', name: 'rotation' }
+    {
+        min: 1,
+        max: 1000,
+        step: 1,
+        label: 'Amount',
+        name: 'amount'
+    },
+    {
+        min: -64,
+        max: 64,
+        step: 0.1,
+        label: 'Distance',
+        name: 'distance',
+        format: (d: number) => d.toFixed(1)
+    },
+    {
+        min: -1440,
+        max: 1440,
+        step: 1,
+        label: 'Rotation',
+        name: 'rotation',
+        format: (d: number) => `${d}°`
+    }
 ];
 
 const strokeControls: Control[] = [
-    { min: 0.1, max: canvasWidth / 4, step: 0.1, label: 'Stroke Width', name: 'strokeWidth' }
+    {
+        min: 0.1,
+        max: canvasWidth / 4,
+        step: 0.1,
+        label: 'Stroke Width',
+        name: 'strokeWidth',
+        format: (d: number) => d.toFixed(1)
+    }
 ];
 
 const sidesControl: Control = { min: 3, max: 20, step: 1, label: 'Sides', name: 'sides' };
 
 const sizeControls: Control[] = [
-    { min: 0, max: canvasWidth / 2, step: 1, label: 'Size', name: 'size' }
+    {
+        min: 0,
+        max: canvasWidth / 2,
+        step: 1,
+        label: 'Size',
+        name: 'size',
+        format: (d: number) => `${d}px`
+    }
 ];
 
 const borderRadiusControls: Control[] = [
-    { min: 0, max: 1, step: 0.01, label: 'Border Radius', name: 'borderRadius' }
+    {
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'Border Radius',
+        name: 'borderRadius',
+        format: (d: number) => `${(d * 50).toFixed(1)}%`
+    }
 ];
 
 const positionControls: Control[] = [
-    { min: -canvasWidth / 4, max: canvasWidth / 4, step: 1, label: 'CX', name: 'cx' },
-    { min: -canvasHeight / 4, max: canvasHeight / 4, step: 1, label: 'CY', name: 'cy' }
+    {
+        min: -canvasWidth / 4,
+        max: canvasWidth / 4,
+        step: 1,
+        label: 'CX',
+        name: 'cx',
+        format: (d: number) => `${d}px`
+    },
+    {
+        min: -canvasHeight / 4,
+        max: canvasHeight / 4,
+        step: 1,
+        label: 'CY',
+        name: 'cy',
+        format: (d: number) => `${d}px`
+    }
 ];
 
 const setColorInterPolator = (interpolator: { name: ColorInterPolator }) => {
@@ -121,9 +173,10 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                     :max="ctrl.max"
                     :step="ctrl.step"
                     :label="ctrl.label"
+                    :format="ctrl.format"
                     @input="triggerUpdate"
                 />
-                <button class="btn self-end" @click="resetGeneral">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetGeneral">Reset</button>
             </template>
         </BaseAccordion>
 
@@ -138,9 +191,10 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                     :max="ctrl.max"
                     :step="ctrl.step"
                     :label="ctrl.label"
+                    :format="ctrl.format"
                     @input="triggerUpdate"
                 />
-                <button class="btn self-end" @click="resetBorderRadius">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetBorderRadius">Reset</button>
             </template>
         </BaseAccordion>
 
@@ -155,6 +209,7 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                     :max="ctrl.max"
                     :step="ctrl.step"
                     :label="ctrl.label"
+                    :format="ctrl.format"
                     @input="triggerUpdate"
                 />
                 <BaseCheckBox
@@ -162,7 +217,7 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                     v-model.number="polygon.calcStrokeWidth"
                     @change="triggerUpdate"
                 />
-                <button class="btn self-end" @click="resetStroke">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetStroke">Reset</button>
             </template>
         </BaseAccordion>
 
@@ -200,6 +255,7 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                     :max="sidesControl.max"
                     :step="sidesControl.step"
                     :label="sidesControl.label"
+                    :format="sidesControl.format"
                     @input="triggerUpdate"
                 />
             </template>
@@ -216,9 +272,10 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                     :max="ctrl.max"
                     :step="ctrl.step"
                     :label="ctrl.label"
+                    :format="ctrl.format"
                     @input="triggerUpdate"
                 />
-                <button class="btn self-end" @click="resetSize">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetSize">Reset</button>
             </template>
         </BaseAccordion>
 
@@ -235,7 +292,7 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                     :label="ctrl.label"
                     @input="triggerUpdate"
                 />
-                <button class="btn self-end" @click="resetPosition">Reset</button>
+                <button class="btn btn-xs mt-4 self-end" @click="resetPosition">Reset</button>
             </template>
         </BaseAccordion>
     </div>
