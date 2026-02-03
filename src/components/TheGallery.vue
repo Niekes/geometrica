@@ -2,7 +2,7 @@
 import BaseModal from './BaseModal.vue';
 
 const showGallery = defineModel<boolean>({ default: false });
-const baseUrl = `${window.location.origin}/`;
+const baseUrl = `${window.location.origin}/geometrica`;
 
 const galleryLinks = [
     'shape=polygon&rect%5Bamount%5D=16&rect%5BapplyColorSchemeToEachShape%5D=false&rect%5BbgBorderRadius%5D=10&rect%5BbgColor%5D=%23000&rect%5BborderRadiusBl%5D=0&rect%5BborderRadiusBr%5D=0&rect%5BborderRadiusTl%5D=0&rect%5BborderRadiusTr%5D=0&rect%5BcalcOpacity%5D=&rect%5BcalcStrokeWidth%5D=&rect%5BcolorInterPolator%5D=interpolateMagma&rect%5Bcx%5D=0&rect%5Bcy%5D=0&rect%5Bdistance%5D=32&rect%5BflipColorInterpolator%5D=false&rect%5Bheight%5D=512&rect%5Brotation%5D=0&rect%5BstrokeWidth%5D=3&rect%5Bwidth%5D=512&circle%5Bamount%5D=16&circle%5BapplyColorSchemeToEachShape%5D=false&circle%5BbgBorderRadius%5D=10&circle%5BbgColor%5D=%23000&circle%5BcalcOpacity%5D=&circle%5BcalcStrokeWidth%5D=&circle%5BcolorInterPolator%5D=interpolateMagma&circle%5Bcx%5D=0&circle%5Bcy%5D=0&circle%5Bdistance%5D=32&circle%5BflipColorInterpolator%5D=false&circle%5BradiusX%5D=512&circle%5BradiusY%5D=512&circle%5Brotation%5D=0&circle%5BstrokeWidth%5D=3&polygon%5Bamount%5D=50&polygon%5BapplyColorSchemeToEachShape%5D=false&polygon%5BbgBorderRadius%5D=10&polygon%5BbgColor%5D=%23000&polygon%5BborderRadius%5D=0.05&polygon%5BcalcOpacity%5D=&polygon%5BcalcStrokeWidth%5D=&polygon%5BcolorInterPolator%5D=interpolateCool&polygon%5Bcx%5D=0&polygon%5Bcy%5D=-60&polygon%5Bdistance%5D=5&polygon%5BflipColorInterpolator%5D=false&polygon%5Brotation%5D=65&polygon%5Bsides%5D=3&polygon%5Bsize%5D=800&polygon%5BstrokeWidth%5D=3',
