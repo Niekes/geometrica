@@ -20,6 +20,7 @@ import ColorInterpolator from '@/components/ColorInterpolator.vue';
 
 // Config
 import { canvasHeight, canvasWidth } from '@/config/canvas';
+import { defaultCircle } from '@/config/defaults';
 import {
     flipColorInterpolatorOptions,
     applyColorSchemeToEachShapeOptions,
@@ -29,8 +30,6 @@ import {
 
 const circle = defineModel<Circle>({ required: true });
 const emits = defineEmits(['circle-update']);
-
-const { cloned: clonedCircle } = useCloned(circle.value);
 
 type Control = BaseControl & { name: keyof Circle };
 
@@ -131,30 +130,37 @@ const setColorInterPolator = (interpolator: { name: ColorInterPolator }) => {
     triggerUpdate();
 };
 
+const resetColor = () => {
+    circle.value.applyColorSchemeToEachShape = defaultCircle.applyColorSchemeToEachShape;
+    circle.value.flipColorInterpolator = defaultCircle.flipColorInterpolator;
+    circle.value.colorInterPolator = defaultCircle.colorInterPolator;
+    circle.value.calcOpacity = defaultCircle.calcOpacity;
+};
+
 const resetGeneral = () => {
     generalControls.forEach(
-        (ctrl) => ((circle.value[ctrl.name] as number) = clonedCircle.value[ctrl.name] as number)
+        (ctrl) => ((circle.value[ctrl.name] as number) = defaultCircle[ctrl.name] as number)
     );
     triggerUpdate();
 };
 
 const resetStroke = () => {
     strokeControls.forEach(
-        (ctrl) => ((circle.value[ctrl.name] as number) = clonedCircle.value[ctrl.name] as number)
+        (ctrl) => ((circle.value[ctrl.name] as number) = defaultCircle[ctrl.name] as number)
     );
     triggerUpdate();
 };
 
 const resetRadius = () => {
     radiusControls.forEach(
-        (ctrl) => ((circle.value[ctrl.name] as number) = clonedCircle.value[ctrl.name] as number)
+        (ctrl) => ((circle.value[ctrl.name] as number) = defaultCircle[ctrl.name] as number)
     );
     triggerUpdate();
 };
 
 const resetPosition = () => {
     positionControls.forEach(
-        (ctrl) => ((circle.value[ctrl.name] as number) = clonedCircle.value[ctrl.name] as number)
+        (ctrl) => ((circle.value[ctrl.name] as number) = defaultCircle[ctrl.name] as number)
     );
     triggerUpdate();
 };
@@ -231,6 +237,7 @@ watch(circle, () => emits('circle-update', circle.value), { deep: true });
                     :active="circle.colorInterPolator"
                     @update-color-interpolator="setColorInterPolator"
                 />
+                <button class="btn btn-xs mt-4 self-end" @click="resetColor">Reset</button>
             </template>
         </BaseAccordion>
 

@@ -20,6 +20,7 @@ import ColorInterpolator from '@/components/ColorInterpolator.vue';
 
 // Config
 import { canvasHeight, canvasWidth } from '@/config/canvas';
+import { defaultRect } from '@/config/defaults';
 import {
     flipColorInterpolatorOptions,
     applyColorSchemeToEachShapeOptions,
@@ -29,8 +30,6 @@ import {
 
 const rect = defineModel<Rect>({ required: true });
 const emits = defineEmits(['rect-update']);
-
-const { cloned: clonedRect } = useCloned(rect.value);
 
 type Control = BaseControl & { name: keyof Rect };
 
@@ -62,7 +61,7 @@ const generalControls: Control[] = [
 
 const resetGeneral = () => {
     generalControls.forEach((ctrl) => {
-        (rect.value[ctrl.name] as number) = clonedRect.value[ctrl.name] as number;
+        (rect.value[ctrl.name] as number) = defaultRect[ctrl.name] as number;
     });
     triggerUpdate();
 };
@@ -129,7 +128,7 @@ watch(
 
 const resetBorderRadius = () => {
     borderRadiusControls.forEach((ctrl) => {
-        (rect.value[ctrl.name] as number) = clonedRect.value[ctrl.name] as number;
+        (rect.value[ctrl.name] as number) = defaultRect[ctrl.name] as number;
     });
     triggerUpdate();
 };
@@ -147,7 +146,7 @@ const strokeControls: Control[] = [
 
 const resetStroke = () => {
     strokeControls.forEach((ctrl) => {
-        (rect.value[ctrl.name] as number) = clonedRect.value[ctrl.name] as number;
+        (rect.value[ctrl.name] as number) = defaultRect[ctrl.name] as number;
     });
     triggerUpdate();
 };
@@ -190,7 +189,7 @@ watch(
 
 const resetSize = () => {
     sizeControls.forEach((ctrl) => {
-        (rect.value[ctrl.name] as number) = clonedRect.value[ctrl.name] as number;
+        (rect.value[ctrl.name] as number) = defaultRect[ctrl.name] as number;
     });
     triggerUpdate();
 };
@@ -216,7 +215,7 @@ const positionControls: Control[] = [
 
 const resetPosition = () => {
     positionControls.forEach((ctrl) => {
-        (rect.value[ctrl.name] as number) = clonedRect.value[ctrl.name] as number;
+        (rect.value[ctrl.name] as number) = defaultRect[ctrl.name] as number;
     });
     triggerUpdate();
 };
@@ -227,10 +226,10 @@ const setColorInterPolator = (interpolator: { name: ColorInterPolator }) => {
 };
 
 const resetColor = () => {
-    rect.value.applyColorSchemeToEachShape = clonedRect.value.applyColorSchemeToEachShape;
-    rect.value.flipColorInterpolator = clonedRect.value.flipColorInterpolator;
-    rect.value.colorInterPolator = clonedRect.value.colorInterPolator;
-    rect.value.calcOpacity = clonedRect.value.calcOpacity;
+    rect.value.applyColorSchemeToEachShape = defaultRect.applyColorSchemeToEachShape;
+    rect.value.flipColorInterpolator = defaultRect.flipColorInterpolator;
+    rect.value.colorInterPolator = defaultRect.colorInterPolator;
+    rect.value.calcOpacity = defaultRect.calcOpacity;
 };
 
 const triggerUpdate = () => {

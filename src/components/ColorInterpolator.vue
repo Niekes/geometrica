@@ -1,75 +1,50 @@
 <template>
-    <div class="color-interpolator" ref="root"></div>
+    <div class="color-interpolator">
+        <canvas
+            v-for="(color, index) in colorInterpolators"
+            :key="color.name"
+            :ref="(el) => setCanvasRef(el, index)"
+            :class="{ 'is-active': active === color.name }"
+            class="interpolator-canvas"
+            width="32"
+            height="1"
+            @click="$emit('update-color-interpolator', color)"
+        ></canvas>
+    </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onBeforeUnmount, ref } from 'vue';
+import { ref } from 'vue';
 import { colorInterPolators } from '../config/colorInterPolators';
 
 const props = defineProps({
     active: { type: String, required: true }
 });
 
-const selectedStyle: string = '3px solid var(--niekes-status-alert)';
-
-const root = ref<HTMLElement | null>(null);
-
-const emits = defineEmits(['update-color-interpolator']);
+defineEmits(['update-color-interpolator']);
 
 const colorInterpolators = ref(colorInterPolators);
 
-const setColorInterpolator = (e?: MouseEvent, color?: any) => {
-    if (root.value) {
-        root.value.querySelectorAll('canvas').forEach((canvas) => {
-            canvas.style.border = '1px solid black';
-        });
-    }
+// Draw gradient on canvas when it's mounted
+const setCanvasRef = (el: any, index: number) => {
+    if (!el) return;
 
-    (e?.currentTarget as HTMLCanvasElement).style.border = selectedStyle;
+    // Check if customized already (simple check to avoid redrawing if not needed)
+    // We verify if data-drawn is set to avoid infinite redraws if reactivity triggers updates
+    if (el.dataset.drawn === 'true') return;
 
-    emits('update-color-interpolator', color);
-};
+    const canvas = el as HTMLCanvasElement;
+    const ctx = canvas.getContext('2d');
+    const color = colorInterpolators.value[index];
 
-onMounted(() => {
-    colorInterpolators.value.forEach((color) => {
-        const canvas: HTMLCanvasElement = document.createElement('canvas');
-
-        canvas.style.width = '100%;';
-        canvas.style.height = '2rem';
-        canvas.style.border =
-            props.active === color.name ? selectedStyle : '1px solid var(--niekes-black)';
-        canvas.style.cursor = 'pointer';
-        canvas.style.display = 'flex';
-        canvas.style.borderRadius = '5px';
-        canvas.style.margin = '0 0 0.25rem 0';
-        canvas.style.width = '100%';
-        canvas.width = 32;
-        canvas.height = 1;
-
-        canvas.addEventListener('click', (e) => setColorInterpolator(e, color));
-
-        if (root.value) {
-            root.value.appendChild(canvas);
-
-            const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d');
-
-            for (let i = 0; i <= canvas.width; i += 1) {
-                if (ctx) {
-                    ctx.fillStyle = color.fn(i / canvas.width);
-                    ctx.fillRect(i, 0, 1, 1);
-                }
-            }
+    if (ctx && color) {
+        for (let i = 0; i <= canvas.width; i += 1) {
+            ctx.fillStyle = color.fn(i / canvas.width);
+            ctx.fillRect(i, 0, 1, 1);
         }
-    });
-});
-
-onBeforeUnmount(() => {
-    if (root.value) {
-        root.value
-            .querySelector('canvas')
-            ?.removeEventListener('click', (e) => setColorInterpolator(e));
+        el.dataset.drawn = 'true';
     }
-});
+};
 </script>
 
 <style scoped>
@@ -77,5 +52,20 @@ onBeforeUnmount(() => {
     align-items: center;
     display: flex;
     flex-direction: column;
+}
+
+.interpolator-canvas {
+    width: 100%;
+    height: 2rem;
+    cursor: pointer;
+    display: flex;
+    border-radius: 5px;
+    margin-bottom: 0.25rem;
+    border: 1px solid var(--niekes-black, #000); /* Fallback to black if variable fails */
+    box-sizing: border-box; /* Ensure border doesn't add to width */
+}
+
+.is-active {
+    border: 3px solid var(--niekes-status-alert, red) !important;
 }
 </style>

@@ -17,6 +17,7 @@ import ColorInterpolator from '@/components/ColorInterpolator.vue';
 
 // Config
 import { canvasHeight, canvasWidth } from '@/config/canvas';
+import { defaultPolygon } from '@/config/defaults';
 import {
     flipColorInterpolatorOptions,
     applyColorSchemeToEachShapeOptions,
@@ -26,8 +27,6 @@ import {
 
 const polygon = defineModel<Polygon>({ required: true });
 const emits = defineEmits(['polygon-update']);
-
-const { cloned: clonedPolygon } = useCloned(polygon.value);
 
 type Control = BaseControl & {
     name: keyof Polygon;
@@ -118,37 +117,44 @@ const setColorInterPolator = (interpolator: { name: ColorInterPolator }) => {
     triggerUpdate();
 };
 
+const resetColor = () => {
+    polygon.value.applyColorSchemeToEachShape = defaultPolygon.applyColorSchemeToEachShape;
+    polygon.value.flipColorInterpolator = defaultPolygon.flipColorInterpolator;
+    polygon.value.colorInterPolator = defaultPolygon.colorInterPolator;
+    polygon.value.calcOpacity = defaultPolygon.calcOpacity;
+};
+
 const resetGeneral = () => {
     generalControls.forEach(
-        (ctrl) => ((polygon.value[ctrl.name] as number) = clonedPolygon.value[ctrl.name] as number)
+        (ctrl) => ((polygon.value[ctrl.name] as number) = defaultPolygon[ctrl.name] as number)
     );
     triggerUpdate();
 };
 
 const resetStroke = () => {
     strokeControls.forEach(
-        (ctrl) => ((polygon.value[ctrl.name] as number) = clonedPolygon.value[ctrl.name] as number)
+        (ctrl) => ((polygon.value[ctrl.name] as number) = defaultPolygon[ctrl.name] as number)
     );
     triggerUpdate();
 };
 
 const resetSize = () => {
     sizeControls.forEach(
-        (ctrl) => ((polygon.value[ctrl.name] as number) = clonedPolygon.value[ctrl.name] as number)
+        (ctrl) => ((polygon.value[ctrl.name] as number) = defaultPolygon[ctrl.name] as number)
     );
     triggerUpdate();
 };
 
 const resetBorderRadius = () => {
     borderRadiusControls.forEach(
-        (ctrl) => ((polygon.value[ctrl.name] as number) = clonedPolygon.value[ctrl.name] as number)
+        (ctrl) => ((polygon.value[ctrl.name] as number) = defaultPolygon[ctrl.name] as number)
     );
     triggerUpdate();
 };
 
 const resetPosition = () => {
     positionControls.forEach(
-        (ctrl) => ((polygon.value[ctrl.name] as number) = clonedPolygon.value[ctrl.name] as number)
+        (ctrl) => ((polygon.value[ctrl.name] as number) = defaultPolygon[ctrl.name] as number)
     );
     triggerUpdate();
 };
@@ -243,6 +249,7 @@ watch(polygon, () => emits('polygon-update', polygon.value), { deep: true });
                     :active="polygon.colorInterPolator"
                     @update-color-interpolator="setColorInterPolator"
                 />
+                <button class="btn btn-xs mt-4 self-end" @click="resetColor">Reset</button>
             </template>
         </BaseAccordion>
 

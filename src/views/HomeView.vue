@@ -9,7 +9,9 @@ import { type Polygon } from '../types/Polygon';
 import useRectDrawing from '../composables/rect';
 import useCircleDrawing from '../composables/circle';
 import usePolygonDrawing from '../composables/polygon';
+import { useUrlSync } from '../composables/useUrlSync';
 import { canvasHeight, canvasWidth } from '../config/canvas';
+import { defaultRect, defaultCircle, defaultPolygon } from '../config/defaults';
 
 // const PI: number = Math.PI;
 // const HALF_PI: number = PI / 2;
@@ -23,64 +25,11 @@ const shapesOptions: { name: string; value: string }[] = [
     { value: 'circle', name: 'Circle' },
     { value: 'polygon', name: 'Polygon' }
 ];
-const rect = ref<Rect>({
-    amount: 16,
-    applyColorSchemeToEachShape: false,
-    bgBorderRadius: 10,
-    bgColor: '#000',
-    borderRadiusBl: 0,
-    borderRadiusBr: 0,
-    borderRadiusTl: 0,
-    borderRadiusTr: 0,
-    calcOpacity: [],
-    calcStrokeWidth: [],
-    colorInterPolator: 'interpolateMagma',
-    cx: 0,
-    cy: 0,
-    distance: 32,
-    flipColorInterpolator: false,
-    height: canvasHeight / 4,
-    rotation: 0,
-    strokeWidth: 3,
-    width: canvasWidth / 4
-});
+const rect = ref<Rect>({ ...defaultRect });
 
-const circle = ref<Circle>({
-    amount: 16,
-    applyColorSchemeToEachShape: false,
-    bgBorderRadius: 10,
-    bgColor: '#000',
-    calcOpacity: [],
-    calcStrokeWidth: [],
-    colorInterPolator: 'interpolateMagma',
-    cx: 0,
-    cy: 0,
-    distance: 32,
-    flipColorInterpolator: false,
-    radiusX: canvasHeight / 4,
-    radiusY: canvasWidth / 4,
-    rotation: 0,
-    strokeWidth: 3
-});
+const circle = ref<Circle>({ ...defaultCircle });
 
-const polygon = ref<Polygon>({
-    amount: 16,
-    applyColorSchemeToEachShape: false,
-    bgBorderRadius: 10,
-    bgColor: '#000',
-    borderRadius: 0,
-    calcOpacity: [],
-    calcStrokeWidth: [],
-    colorInterPolator: 'interpolateMagma',
-    cx: 0,
-    cy: 0,
-    distance: 32,
-    flipColorInterpolator: false,
-    rotation: 0,
-    sides: 5,
-    size: canvasHeight / 4,
-    strokeWidth: 3
-});
+const polygon = ref<Polygon>({ ...defaultPolygon });
 
 const shapes = {
     rect,
@@ -89,6 +38,15 @@ const shapes = {
 };
 
 const selectedShape = ref<string>('rect'); // config.defaults.shape
+
+// Initialize URL sync
+const { initFromUrl, setupWatchers } = useUrlSync({
+    selectedShape,
+    rect,
+    circle,
+    polygon
+});
+
 const { drawRect } = useRectDrawing(canvas, rect.value);
 const { drawCircle } = useCircleDrawing(canvas, circle.value);
 const { drawPolygon } = usePolygonDrawing(canvas, polygon.value);
@@ -129,6 +87,12 @@ async function draw(): Promise<any> {
 }
 
 onMounted(() => {
+    // Initialize state from URL parameters
+    initFromUrl();
+
+    // Set up watchers for URL sync
+    setupWatchers();
+
     if (canvas.value) {
         const context = canvas.value.getContext('2d');
 
