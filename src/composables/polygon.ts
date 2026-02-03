@@ -73,8 +73,9 @@ export default function usePolygonDrawing(
         const interpolateOpacity: boolean = calcOpacity.includes('interpolate');
         const flipOpacity: boolean = calcOpacity.includes('flip');
 
-        const interpolateStrokeWidth: boolean = calcStrokeWidth.includes('interpolate');
         const flipStrokeWidth: boolean = calcStrokeWidth.includes('flip');
+        const interpolateStrokeWidth: boolean =
+            calcStrokeWidth.includes('interpolate') || flipStrokeWidth;
 
         const cx: number = canvasWidth / 4 + polygon.cx;
         const cy: number = canvasHeight / 4 + polygon.cy * -1;

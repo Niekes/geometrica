@@ -3,6 +3,7 @@ import { nextTick, onMounted, ref } from 'vue';
 import RectControl from '../components/RectControl.vue';
 import CircleControl from '../components/CircleControl.vue';
 import PolygonControl from '../components/PolygonControl.vue';
+import TheGallery from '../components/TheGallery.vue';
 import { type Rect } from '../types/Rect';
 import { type Circle } from '../types/Circle';
 import { type Polygon } from '../types/Polygon';
@@ -13,8 +14,6 @@ import { useUrlSync } from '../composables/useUrlSync';
 import { canvasHeight, canvasWidth } from '../config/canvas';
 import { defaultRect, defaultCircle, defaultPolygon } from '../config/defaults';
 
-// const PI: number = Math.PI;
-// const HALF_PI: number = PI / 2;
 const canvas = ref<HTMLCanvasElement | null>(null);
 const canvasH = ref<number>(canvasHeight);
 const canvasW = ref<number>(canvasWidth);
@@ -31,13 +30,7 @@ const circle = ref<Circle>({ ...defaultCircle });
 
 const polygon = ref<Polygon>({ ...defaultPolygon });
 
-const shapes = {
-    rect,
-    circle,
-    polygon
-};
-
-const selectedShape = ref<string>('rect'); // config.defaults.shape
+const selectedShape = ref<string>('rect');
 
 // Initialize URL sync
 const { initFromUrl, setupWatchers } = useUrlSync({
@@ -60,6 +53,12 @@ function download() {
         link.href = canvas.value.toDataURL();
         link.click();
     }
+}
+
+const showGallery = ref(false);
+
+function openGallery() {
+    showGallery.value = true;
 }
 
 async function draw(): Promise<any> {
@@ -150,12 +149,15 @@ onMounted(() => {
             </div>
 
             <button class="btn btn-primary btn-block mt-4" @click="download">Download</button>
+            <button class="btn btn-neutral btn-block mt-4" @click="openGallery">Gallery</button>
         </div>
 
         <div class="context">
             <canvas
                 class="context__canvas shadow-md shadow-black/50"
                 ref="canvas"
+                :height="canvasH"
+                :width="canvasW"
                 :style="{
                     'background-color': '#000',
                     'border-radius': '10%'
@@ -163,6 +165,8 @@ onMounted(() => {
                 @contextmenu.prevent.stop
             />
         </div>
+
+        <TheGallery v-model="showGallery" />
     </div>
 </template>
 

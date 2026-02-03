@@ -24,9 +24,7 @@ export default function useCircleDrawing(
             colorInterPolator,
             flipColorInterpolator,
             applyColorSchemeToEachShape,
-            rotation,
-            radiusX,
-            radiusY
+            rotation
         } = circle;
 
         const radians: number = (rotation * PI) / 180;
@@ -35,8 +33,9 @@ export default function useCircleDrawing(
         const interpolateOpacity: boolean = calcOpacity.includes('interpolate');
         const flipOpacity: boolean = calcOpacity.includes('flip');
 
-        const interpolateStrokeWidth: boolean = calcStrokeWidth.includes('interpolate');
         const flipStrokeWidth: boolean = calcStrokeWidth.includes('flip');
+        const interpolateStrokeWidth: boolean =
+            calcStrokeWidth.includes('interpolate') || flipStrokeWidth;
 
         const cx: number = canvasWidth / 4 + circle.cx;
         const cy: number = canvasHeight / 4 + circle.cy * -1;
