@@ -89,8 +89,8 @@ onMounted(() => {
 
             <LayerControl
                 v-if="scene.selectedLayer.value"
-                :key="scene.selectedLayer.value.id"
-                :layer="scene.selectedLayer.value"
+                v-model="scene.selectedLayer.value"
+                :key="scene.selectedLayer.value?.id"
             />
 
             <div class="divider"></div>

@@ -20,7 +20,6 @@ export type Command =
           x: number;
           y: number;
       }
-    | { cmd: 'E'; rx: number; ry: number }
     | { cmd: 'Z' };
 
 const SAMPLING_STEPS = 64;
@@ -76,205 +75,225 @@ class Lexer {
     }
 }
 
+type ParseState = {
+    cx: number;
+    cy: number;
+    sx: number;
+    sy: number;
+    prevCubicCtrl: { x: number; y: number } | null;
+    prevQuadCtrl: { x: number; y: number } | null;
+};
+
+type ParseContext = {
+    lexer: Lexer;
+    state: ParseState;
+    commands: Command[];
+    relative: boolean;
+};
+
+function readArgs(ctx: ParseContext, count: 1): [number];
+function readArgs(ctx: ParseContext, count: 2): [number, number];
+function readArgs(ctx: ParseContext, count: 4): [number, number, number, number];
+function readArgs(ctx: ParseContext, count: 6): [number, number, number, number, number, number];
+function readArgs(ctx: ParseContext, count: number): number[] {
+    const args: number[] = [];
+
+    for (let i = 0; i < count; i += 1) {
+        args.push(ctx.lexer.readNumber());
+    }
+
+    return args;
+}
+
+const toAbsolute = (ctx: ParseContext, x: number, y: number): [number, number] =>
+    ctx.relative ? [ctx.state.cx + x, ctx.state.cy + y] : [x, y];
+
+const moveTo = (ctx: ParseContext, x: number, y: number) => {
+    ctx.state.cx = x;
+    ctx.state.cy = y;
+};
+
+function parseMove(ctx: ParseContext) {
+    const [x, y] = readArgs(ctx, 2);
+    const [absX, absY] = toAbsolute(ctx, x, y);
+
+    ctx.commands.push({ cmd: 'M', x: absX, y: absY });
+    moveTo(ctx, absX, absY);
+    ctx.state.sx = absX;
+    ctx.state.sy = absY;
+    ctx.state.prevCubicCtrl = null;
+    ctx.state.prevQuadCtrl = null;
+
+    // pairs after the first moveto are implicit linetos
+    while (!ctx.lexer.atEnd() && !ctx.lexer.peekCommand()) {
+        const [lx, ly] = readArgs(ctx, 2);
+        const [aX, aY] = toAbsolute(ctx, lx, ly);
+
+        ctx.commands.push({ cmd: 'L', x: aX, y: aY });
+        moveTo(ctx, aX, aY);
+        ctx.state.prevCubicCtrl = null;
+        ctx.state.prevQuadCtrl = null;
+    }
+}
+
+function parseLine(ctx: ParseContext) {
+    const [x, y] = readArgs(ctx, 2);
+    const [aX, aY] = toAbsolute(ctx, x, y);
+
+    ctx.commands.push({ cmd: 'L', x: aX, y: aY });
+    moveTo(ctx, aX, aY);
+    resetControlPoints(ctx);
+}
+
+function parseHorizontal(ctx: ParseContext) {
+    const [x] = readArgs(ctx, 1);
+    const aX = ctx.relative ? ctx.state.cx + x : x;
+
+    ctx.commands.push({ cmd: 'L', x: aX, y: ctx.state.cy });
+    ctx.state.cx = aX;
+    resetControlPoints(ctx);
+}
+
+function parseVertical(ctx: ParseContext) {
+    const [y] = readArgs(ctx, 1);
+    const aY = ctx.relative ? ctx.state.cy + y : y;
+
+    ctx.commands.push({ cmd: 'L', x: ctx.state.cx, y: aY });
+    ctx.state.cy = aY;
+    resetControlPoints(ctx);
+}
+
+function resetControlPoints(ctx: ParseContext) {
+    ctx.state.prevCubicCtrl = null;
+    ctx.state.prevQuadCtrl = null;
+}
+
+function parseCubic(ctx: ParseContext) {
+    const [x1, y1, x2, y2, x, y] = readArgs(ctx, 6);
+    const [aX1, aY1] = toAbsolute(ctx, x1, y1);
+    const [aX2, aY2] = toAbsolute(ctx, x2, y2);
+    const [aX, aY] = toAbsolute(ctx, x, y);
+
+    pushCubic(ctx.commands, aX1, aY1, aX2, aY2, aX, aY);
+    ctx.state.prevCubicCtrl = { x: aX2, y: aY2 };
+    moveTo(ctx, aX, aY);
+}
+
+function parseSmoothCubic(ctx: ParseContext) {
+    const [x2, y2, x, y] = readArgs(ctx, 4);
+    const reflectX: number = ctx.state.prevCubicCtrl
+        ? 2 * ctx.state.cx - ctx.state.prevCubicCtrl.x
+        : ctx.state.cx;
+    const reflectY: number = ctx.state.prevCubicCtrl
+        ? 2 * ctx.state.cy - ctx.state.prevCubicCtrl.y
+        : ctx.state.cy;
+    const [aX2, aY2] = toAbsolute(ctx, x2, y2);
+    const [aX, aY] = toAbsolute(ctx, x, y);
+
+    pushCubic(ctx.commands, reflectX, reflectY, aX2, aY2, aX, aY);
+    ctx.state.prevCubicCtrl = { x: aX2, y: aY2 };
+    moveTo(ctx, aX, aY);
+}
+
+function parseQuad(ctx: ParseContext) {
+    const [x1, y1, x, y] = readArgs(ctx, 4);
+    const [aX1, aY1] = toAbsolute(ctx, x1, y1);
+    const [aX, aY] = toAbsolute(ctx, x, y);
+
+    ctx.commands.push({ cmd: 'Q', x1: aX1, y1: aY1, x: aX, y: aY });
+    ctx.state.prevQuadCtrl = { x: aX1, y: aY1 };
+    moveTo(ctx, aX, aY);
+}
+
+function parseSmoothQuad(ctx: ParseContext) {
+    const [x, y] = readArgs(ctx, 2);
+    const reflectX: number = ctx.state.prevQuadCtrl
+        ? 2 * ctx.state.cx - ctx.state.prevQuadCtrl.x
+        : ctx.state.cx;
+    const reflectY: number = ctx.state.prevQuadCtrl
+        ? 2 * ctx.state.cy - ctx.state.prevQuadCtrl.y
+        : ctx.state.cy;
+    const [aX, aY] = toAbsolute(ctx, x, y);
+
+    ctx.commands.push({ cmd: 'Q', x1: reflectX, y1: reflectY, x: aX, y: aY });
+    ctx.state.prevQuadCtrl = { x: reflectX, y: reflectY };
+    moveTo(ctx, aX, aY);
+}
+
+function parseArc(ctx: ParseContext) {
+    const rx = ctx.lexer.readNumber();
+    const ry = ctx.lexer.readNumber();
+    const rot = ctx.lexer.readNumber();
+    const largeArc = ctx.lexer.readFlag();
+    const sweep = ctx.lexer.readFlag();
+    const [x, y] = readArgs(ctx, 2);
+    const [aX, aY] = toAbsolute(ctx, x, y);
+
+    if (rx === 0 || ry === 0) {
+        ctx.commands.push({ cmd: 'L', x: aX, y: aY });
+    } else {
+        ctx.commands.push({ cmd: 'A', rx, ry, rot, largeArc, sweep, x: aX, y: aY });
+    }
+
+    moveTo(ctx, aX, aY);
+    resetControlPoints(ctx);
+}
+
+function parseClose(ctx: ParseContext) {
+    ctx.commands.push({ cmd: 'Z' });
+    moveTo(ctx, ctx.state.sx, ctx.state.sy);
+    resetControlPoints(ctx);
+}
+
+const COMMAND_HANDLERS: Record<string, (ctx: ParseContext) => void> = {
+    M: parseMove,
+    L: parseLine,
+    H: parseHorizontal,
+    V: parseVertical,
+    C: parseCubic,
+    S: parseSmoothCubic,
+    Q: parseQuad,
+    T: parseSmoothQuad,
+    A: parseArc,
+    Z: parseClose
+};
+
 export function parsePath(d: string): Command[] {
     const lexer = new Lexer(d);
     const commands: Command[] = [];
-
-    let cx = 0;
-    let cy = 0;
-    let sx = 0;
-    let sy = 0;
-    let prevCubicCtrl: { x: number; y: number } | null = null;
-    let prevQuadCtrl: { x: number; y: number } | null = null;
-
-    function readNumbers(count: 1): [number];
-    function readNumbers(count: 2): [number, number];
-    function readNumbers(count: 4): [number, number, number, number];
-    function readNumbers(count: 6): [number, number, number, number, number, number];
-    function readNumbers(count: number): number[] {
-        const args: number[] = [];
-        for (let i = 0; i < count; i += 1) {
-            args.push(lexer.readNumber());
-        }
-        return args;
-    }
+    const state: ParseState = {
+        cx: 0,
+        cy: 0,
+        sx: 0,
+        sy: 0,
+        prevCubicCtrl: null,
+        prevQuadCtrl: null
+    };
 
     try {
         while (!lexer.atEnd()) {
             const command = lexer.readCommand();
             const relative = command === command.toLowerCase();
-            const upper = command.toUpperCase();
 
-            switch (upper) {
-                case 'M': {
-                    const [x, y] = readNumbers(2);
-                    const absX = relative ? cx + x : x;
-                    const absY = relative ? cy + y : y;
-                    commands.push({ cmd: 'M', x: absX, y: absY });
-                    cx = absX;
-                    cy = absY;
-                    sx = absX;
-                    sy = absY;
-                    prevCubicCtrl = null;
-                    prevQuadCtrl = null;
-
-                    // implicit lineto pairs after the first moveto
-                    while (!lexer.atEnd() && !lexer.peekCommand()) {
-                        const [lx, ly] = readNumbers(2);
-                        const aX = relative ? cx + lx : lx;
-                        const aY = relative ? cy + ly : ly;
-                        commands.push({ cmd: 'L', x: aX, y: aY });
-                        cx = aX;
-                        cy = aY;
-                        prevCubicCtrl = null;
-                        prevQuadCtrl = null;
-                    }
-                    break;
-                }
-                case 'L': {
-                    const [x, y] = readNumbers(2);
-                    const absX = relative ? cx + x : x;
-                    const absY = relative ? cy + y : y;
-                    commands.push({ cmd: 'L', x: absX, y: absY });
-                    cx = absX;
-                    cy = absY;
-                    prevCubicCtrl = null;
-                    prevQuadCtrl = null;
-                    break;
-                }
-                case 'H': {
-                    const [x] = readNumbers(1);
-                    const absX = relative ? cx + x : x;
-                    commands.push({ cmd: 'L', x: absX, y: cy });
-                    cx = absX;
-                    prevCubicCtrl = null;
-                    prevQuadCtrl = null;
-                    break;
-                }
-                case 'V': {
-                    const [y] = readNumbers(1);
-                    const absY = relative ? cy + y : y;
-                    commands.push({ cmd: 'L', x: cx, y: absY });
-                    cy = absY;
-                    prevCubicCtrl = null;
-                    prevQuadCtrl = null;
-                    break;
-                }
-                case 'C': {
-                    const [x1, y1, x2, y2, x, y] = readNumbers(6);
-                    const aX1 = relative ? cx + x1 : x1;
-                    const aY1 = relative ? cy + y1 : y1;
-                    const aX2 = relative ? cx + x2 : x2;
-                    const aY2 = relative ? cy + y2 : y2;
-                    const aX = relative ? cx + x : x;
-                    const aY = relative ? cy + y : y;
-                    commands.push({
-                        cmd: 'C',
-                        x1: aX1,
-                        y1: aY1,
-                        x2: aX2,
-                        y2: aY2,
-                        x: aX,
-                        y: aY
-                    });
-                    prevCubicCtrl = { x: aX2, y: aY2 };
-                    cx = aX;
-                    cy = aY;
-                    break;
-                }
-                case 'S': {
-                    const [x2, y2, x, y] = readNumbers(4);
-                    const reflectX = prevCubicCtrl ? 2 * cx - prevCubicCtrl.x : cx;
-                    const reflectY = prevCubicCtrl ? 2 * cy - prevCubicCtrl.y : cy;
-                    const aX2 = relative ? cx + x2 : x2;
-                    const aY2 = relative ? cy + y2 : y2;
-                    const aX = relative ? cx + x : x;
-                    const aY = relative ? cy + y : y;
-                    commands.push({
-                        cmd: 'C',
-                        x1: reflectX,
-                        y1: reflectY,
-                        x2: aX2,
-                        y2: aY2,
-                        x: aX,
-                        y: aY
-                    });
-                    prevCubicCtrl = { x: aX2, y: aY2 };
-                    cx = aX;
-                    cy = aY;
-                    break;
-                }
-                case 'Q': {
-                    const [x1, y1, x, y] = readNumbers(4);
-                    const aX1 = relative ? cx + x1 : x1;
-                    const aY1 = relative ? cy + y1 : y1;
-                    const aX = relative ? cx + x : x;
-                    const aY = relative ? cy + y : y;
-                    commands.push({ cmd: 'Q', x1: aX1, y1: aY1, x: aX, y: aY });
-                    prevQuadCtrl = { x: aX1, y: aY1 };
-                    cx = aX;
-                    cy = aY;
-                    break;
-                }
-                case 'T': {
-                    const [x, y] = readNumbers(2);
-                    const reflectX: number = prevQuadCtrl ? 2 * cx - prevQuadCtrl.x : cx;
-                    const reflectY: number = prevQuadCtrl ? 2 * cy - prevQuadCtrl.y : cy;
-                    const aX = relative ? cx + x : x;
-                    const aY = relative ? cy + y : y;
-                    commands.push({ cmd: 'Q', x1: reflectX, y1: reflectY, x: aX, y: aY });
-                    prevQuadCtrl = { x: reflectX, y: reflectY };
-                    cx = aX;
-                    cy = aY;
-                    break;
-                }
-                case 'A': {
-                    const rx = lexer.readNumber();
-                    const ry = lexer.readNumber();
-                    const rot = lexer.readNumber();
-                    const largeArc = lexer.readFlag();
-                    const sweep = lexer.readFlag();
-                    const [x, y] = readNumbers(2);
-                    const aX = relative ? cx + x : x;
-                    const aY = relative ? cy + y : y;
-
-                    if (rx === 0 || ry === 0) {
-                        commands.push({ cmd: 'L', x: aX, y: aY });
-                    } else {
-                        commands.push({
-                            cmd: 'A',
-                            rx,
-                            ry,
-                            rot,
-                            largeArc,
-                            sweep,
-                            x: aX,
-                            y: aY
-                        });
-                    }
-                    cx = aX;
-                    cy = aY;
-                    prevCubicCtrl = null;
-                    prevQuadCtrl = null;
-                    break;
-                }
-                case 'Z': {
-                    commands.push({ cmd: 'Z' });
-                    cx = sx;
-                    cy = sy;
-                    prevCubicCtrl = null;
-                    prevQuadCtrl = null;
-                    break;
-                }
-                default:
-                    throw new Error(`Unsupported command: ${command}`);
-            }
+            COMMAND_HANDLERS[command.toUpperCase()]!({ lexer, state, commands, relative });
         }
     } catch {
         return [];
     }
 
     return commands;
+}
+
+function pushCubic(
+    commands: Command[],
+    x1: number,
+    y1: number,
+    x2: number,
+    y2: number,
+    x: number,
+    y: number
+) {
+    commands.push({ cmd: 'C', x1, y1, x2, y2, x, y });
 }
 
 function cubicAt(t: number, p0: number, p1: number, p2: number, p3: number): number {
@@ -287,7 +306,7 @@ function quadAt(t: number, p0: number, p1: number, p2: number): number {
     return mt * mt * p0 + 2 * mt * t * p1 + t * t * p2;
 }
 
-export function arcToCenterParams(
+function arcToCenterParams(
     x1: number,
     y1: number,
     rx: number,
@@ -297,7 +316,7 @@ export function arcToCenterParams(
     sweep: 0 | 1,
     x2: number,
     y2: number
-): { cx: number; cy: number; startAngle: number; deltaAngle: number } {
+): { cx: number; cy: number; startAngle: number; deltaAngle: number; rx: number; ry: number } {
     const phi = (rotDeg * Math.PI) / 180;
     const cosPhi = Math.cos(phi);
     const sinPhi = Math.sin(phi);
@@ -312,8 +331,9 @@ export function arcToCenterParams(
     const x1pSq = x1p * x1p;
     const y1pSq = y1p * y1p;
 
-    let lambda = (x1pSq / rxSq + y1pSq / rySq) ** 0.5;
-    const correction = lambda > 1 ? lambda : 1;
+    // degenerate arcs have their radii scaled up to reach the endpoint
+    const lambda = x1pSq / rxSq + y1pSq / rySq;
+    const correction = lambda > 1 ? Math.sqrt(lambda) : 1;
     const rxc = rx * correction;
     const ryc = ry * correction;
 
@@ -347,7 +367,37 @@ export function arcToCenterParams(
     if (sweep === 0 && deltaAngle > 0) deltaAngle -= 2 * Math.PI;
     if (sweep === 1 && deltaAngle < 0) deltaAngle += 2 * Math.PI;
 
-    return { cx, cy, startAngle, deltaAngle };
+    return { cx, cy, startAngle, deltaAngle, rx: rxc, ry: ryc };
+}
+
+export type ArcParams = {
+    cx: number;
+    cy: number;
+    startAngle: number;
+    deltaAngle: number;
+    phi: number;
+    rx: number;
+    ry: number;
+};
+
+export function arcParams(
+    x0: number,
+    y0: number,
+    command: Extract<Command, { cmd: 'A' }>
+): ArcParams {
+    const { cx, cy, startAngle, deltaAngle, rx, ry } = arcToCenterParams(
+        x0,
+        y0,
+        command.rx,
+        command.ry,
+        command.rot,
+        command.largeArc,
+        command.sweep,
+        command.x,
+        command.y
+    );
+
+    return { cx, cy, startAngle, deltaAngle, phi: (command.rot * Math.PI) / 180, rx, ry };
 }
 
 export function getPathBounds(commands: Command[]): PathBounds | null {
@@ -403,23 +453,15 @@ export function getPathBounds(commands: Command[]): PathBounds | null {
                     cx: arcCx,
                     cy: arcCy,
                     startAngle,
-                    deltaAngle
-                } = arcToCenterParams(
-                    cx,
-                    cy,
-                    command.rx,
-                    command.ry,
-                    command.rot,
-                    command.largeArc,
-                    command.sweep,
-                    command.x,
-                    command.y
-                );
-                const phi = (command.rot * Math.PI) / 180;
+                    deltaAngle,
+                    phi,
+                    rx,
+                    ry
+                } = arcParams(cx, cy, command);
                 for (let i = 0; i <= SAMPLING_STEPS; i += 1) {
                     const theta = startAngle + (deltaAngle * i) / SAMPLING_STEPS;
-                    const ellipseX = command.rx * Math.cos(theta);
-                    const ellipseY = command.ry * Math.sin(theta);
+                    const ellipseX = rx * Math.cos(theta);
+                    const ellipseY = ry * Math.sin(theta);
                     track(
                         arcCx + ellipseX * Math.cos(phi) - ellipseY * Math.sin(phi),
                         arcCy + ellipseX * Math.sin(phi) + ellipseY * Math.cos(phi)
@@ -429,10 +471,6 @@ export function getPathBounds(commands: Command[]): PathBounds | null {
                 cy = command.y;
                 break;
             }
-            case 'E':
-                track(cx - command.rx, cy - command.ry);
-                track(cx + command.rx, cy + command.ry);
-                break;
             case 'Z':
                 break;
         }
@@ -443,7 +481,7 @@ export function getPathBounds(commands: Command[]): PathBounds | null {
 
 const round = (n: number): number => Math.round(n * 1e4) / 1e4;
 
-export function serializePath(commands: Command[]): string {
+function serializePath(commands: Command[]): string {
     let d = '';
 
     for (const command of commands) {
@@ -469,8 +507,6 @@ export function serializePath(commands: Command[]): string {
                     command.largeArc
                 } ${command.sweep} ${round(command.x)} ${round(command.y)}`;
                 break;
-            case 'E':
-                throw new Error('E cannot be serialized; it only exists for tracing');
             case 'Z':
                 d += 'Z';
                 break;
@@ -535,12 +571,6 @@ export function normalizePath(d: string, targetSize: number): NormalizedPath | n
                     sweep: command.sweep,
                     x: transformX(command.x),
                     y: transformY(command.y)
-                };
-            case 'E':
-                return {
-                    cmd: 'E' as const,
-                    rx: round(command.rx * scale),
-                    ry: round(command.ry * scale)
                 };
             case 'Z':
                 return { cmd: 'Z' as const };

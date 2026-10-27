@@ -1,0 +1,94 @@
+{
+    "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+
+
+    // Every rule that can catch a violation of the documented architecture is
+    // an error, so the gates fail the build.
+    "rules": {
+        "unused-files": "error",
+        "unused-exports": "error",
+        "unused-types": "error",
+        "unused-class-members": "error",
+        "private-type-leaks": "error",
+        "unresolved-imports": "error",
+        "unlisted-dependencies": "error",
+        "duplicate-exports": "error",
+        "circular-dependencies": "error",
+        "re-export-cycle": "error",
+        "boundary-violation": "error",
+        "coverage-gaps": "error",
+        "stale-suppressions": "warn"
+    },
+
+    // The architecture. Dependencies point inwards only:
+    //
+    //   views          ->  all app zones
+    //   components     ->  components, composables, config, types, lib
+    //   composables    ->  composables, lib, config, types
+    //   lib            ->  lib, config, types
+    //   config         ->  types
+    //   types          ->  (nothing internal)
+    //   tests          ->  all zones
+    //
+    // The engine (`lib`) never reaches into composables or components; the
+    // UI never reaches past the engine into internal helpers it does not own.
+    "boundaries": {
+        "zones": [
+            { "name": "types", "patterns": ["src/types/**"] },
+            { "name": "config", "patterns": ["src/config/**"] },
+            { "name": "lib", "patterns": ["src/lib/**"] },
+            { "name": "composables", "patterns": ["src/composables/**"] },
+            { "name": "tests", "patterns": ["src/lib/__tests__/**", "src/components/__tests__/**", "src/composables/__tests__/**"] },
+            { "name": "components", "patterns": ["src/components/**"] },
+            { "name": "views", "patterns": ["src/views/**"] }
+        ],
+        "rules": [
+            { "from": "types", "allow": [] },
+            { "from": "config", "allow": ["types"] },
+            { "from": "lib", "allow": ["lib", "config", "types"] },
+            { "from": "composables", "allow": ["composables", "lib", "config", "types"] },
+            {
+                "from": "components",
+                "allow": ["components", "composables", "lib", "config", "types"]
+            },
+            { "from": "views", "allow": ["views", "components", "composables", "lib", "config", "types"] },
+            {
+                "from": "tests",
+                "allow": ["tests", "views", "components", "composables", "lib", "config", "types"]
+            }
+        ],
+        // Every analysed file has to belong to a zone, so a new module cannot
+        // be dropped into src/ without being placed in the architecture.
+        "coverage": {
+            "requireAllFiles": true,
+            "allowUnmatched": [
+                "src/main.ts",
+                "src/router/**",
+                "src/App.vue",
+                "src/assets/**",
+                "env.d.ts",
+                "index.html",
+                "eslint.config.js",
+                "vite.config.ts",
+                "vitest.config.ts"
+            ]
+        }
+    },
+
+    // Test files have large describe() blocks; the app entry and the router
+    // are exercised by the running app and the HomeView component test, not
+    // by unit tests. Coverage gaps are a concern for the engine and the
+    // composables only, not for the .vue wiring.
+    "health": {
+        "ignore": [
+            "src/**/__tests__/**",
+            "src/main.ts",
+            "src/router/**",
+            "src/assets/**",
+            "src/App.vue",
+            "src/components/TheNavbar.vue",
+            "src/views/AboutView.vue",
+            "index.html"
+        ]
+    }
+}

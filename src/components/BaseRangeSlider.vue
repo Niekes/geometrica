@@ -45,7 +45,7 @@ const percent = computed(() => (numericValue.value - props.min) / (props.max - p
 const midPercent = computed(() => (props.mid - props.min) / (props.max - props.min));
 
 // Emits
-const emit = defineEmits(['update:modelValue', 'input']);
+defineEmits(['update:modelValue', 'input']);
 </script>
 
 <template>

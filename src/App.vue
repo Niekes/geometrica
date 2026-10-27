@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router';
-import Navbar from './components/Navbar.vue';
+import TheNavbar from './components/TheNavbar.vue';
 </script>
 
 <template>
-    <Navbar />
+    <TheNavbar />
     <RouterView v-slot="{ Component, route }">
         <KeepAlive>
             <component :is="Component" :key="route.path" />

@@ -3,7 +3,7 @@ import { parseState, serializeState } from '../lib/urlState';
 import { type Layer } from '../types/Layer';
 import { type Background } from '../config/defaults';
 
-interface UseUrlSyncOptions {
+export interface UseUrlSyncOptions {
     layers: Ref<Layer[]>;
     background: Ref<Background>;
     onLoad?: () => void;
@@ -35,7 +35,8 @@ export function useUrlSync(state: UseUrlSyncOptions) {
     }
 
     function onPopState() {
-        if (initFromUrl()) onLoad?.();
+        // initFromUrl calls onLoad itself when it loads state
+        initFromUrl();
     }
 
     function setupWatchers() {

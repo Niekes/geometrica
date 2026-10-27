@@ -3,5 +3,5 @@ export type BaseControl = {
     max: number;
     step: number;
     label: string;
-    format?: Function;
+    format?: (value: number) => string;
 };

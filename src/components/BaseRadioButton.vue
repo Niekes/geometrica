@@ -4,7 +4,7 @@ type Option = {
     label: string;
 };
 
-const props = defineProps<{
+defineProps<{
     options: Option[];
     modelValue: string | boolean;
 }>();

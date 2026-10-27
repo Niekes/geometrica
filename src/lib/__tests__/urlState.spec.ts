@@ -61,6 +61,24 @@ describe('parseState', () => {
         expect(layer.calcOpacity).toEqual(['interpolate', 'flip']);
     });
 
+    it('migrates a legacy URL without a shape parameter', () => {
+        const parsed = parseState('circle[amount]=3&circle[bgColor]=%23fff');
+
+        expect(parsed).not.toBeNull();
+        expect(parsed!.layers[0]!.shape).toBe('circle');
+        expect(parsed!.layers[0]!.amount).toBe(3);
+        expect(parsed!.background.color).toBe('#fff');
+    });
+
+    it('falls back to defaults for a v2 URL without background or layer fields', () => {
+        const parsed = parseState('v=2&l[0][amount]=3&l[0][name]=x&l[0][path]=');
+
+        expect(parsed).not.toBeNull();
+        expect(parsed!.background).toEqual(defaultBackground);
+        expect(parsed!.layers[0]!.name).toBe('x');
+        expect(parsed!.layers[0]!.path).toBe('');
+    });
+
     it('migrates a legacy rect URL into a single layer with background', () => {
         const parsed = parseState(
             'shape=rect&rect[amount]=8&rect[distance]=10&rect[width]=100&rect[height]=50&rect[strokeWidth]=2&rect[bgColor]=%23000&rect[bgBorderRadius]=10&rect[applyColorSchemeToEachShape]=true&rect[calcOpacity]=interpolate'

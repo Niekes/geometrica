@@ -1,7 +1,7 @@
 import { color } from 'd3';
-import { computeInstances } from './computeInstances';
+import { computeInstances, type Instance } from './computeInstances';
 import { type Command, getPathBounds, normalizePath, parsePath } from './pathBounds';
-import { tracePath } from './tracePath';
+import { tracePath, type TraceCommand } from './tracePath';
 import { canvasHeight, canvasWidth } from '../config/canvas';
 import { colorInterPolators } from '../config/colorInterPolators';
 import { type Layer } from '../types/Layer';
@@ -15,7 +15,7 @@ export type SceneOptions = {
 };
 
 type Geometry = {
-    commands: Command[];
+    commands: TraceCommand[];
     width: number;
     height: number;
 };
@@ -31,10 +31,8 @@ export function renderScene(
     ctx.clearRect(0, 0, width, height);
 
     // the first layer is the topmost one and is drawn last
-    for (let i = layers.length - 1; i >= 0; i -= 1) {
-        const layer = layers[i];
-
-        if (!layer || !layer.visible) continue;
+    for (const layer of [...layers].reverse()) {
+        if (!layer.visible) continue;
 
         renderLayer(ctx, layer, width, height);
     }
@@ -48,56 +46,31 @@ function renderLayer(
 ): void {
     const cx = width / 2 + layer.cx;
     const cy = height / 2 + layer.cy * -1;
-
-    const colorIp = (colorInterPolators.find((c) => layer.colorInterPolator === c.name)?.fn ??
-        colorInterPolators[0]?.fn ??
-        ((t: number) => '#000')) as (t: number) => string;
-
-    const interpolateOpacity = layer.calcOpacity.includes('interpolate');
-    const flipOpacity = layer.calcOpacity.includes('flip');
-    const flipStrokeWidth = layer.calcStrokeWidth.includes('flip');
-    const interpolateStrokeWidth = layer.calcStrokeWidth.includes('interpolate') || flipStrokeWidth;
-
-    const wantsFill = layer.fillMode === 'fill' || layer.fillMode === 'fillStroke';
-    const wantsStroke = layer.fillMode === 'stroke' || layer.fillMode === 'fillStroke';
+    const colorIp = resolveInterpolator(layer);
+    const opacityFlags = {
+        interpolate: layer.calcOpacity.includes('interpolate'),
+        flip: layer.calcOpacity.includes('flip')
+    };
+    const wantsFill = layer.fillMode !== 'stroke';
+    const wantsStroke = layer.fillMode !== 'fill';
 
     for (const instance of computeInstances(layer)) {
         const geometry = buildGeometry(layer, instance.shrink);
 
         if (!geometry) continue;
 
-        const solid = color(
-            layer.flipColorInterpolator ? colorIp(instance.flippedK) : colorIp(instance.k)
-        );
-
-        if (interpolateOpacity && solid) solid.opacity = instance.k;
-        if (interpolateOpacity && flipOpacity && solid) solid.opacity = instance.flippedK;
-
         ctx.save();
         ctx.globalAlpha = layer.opacity;
         ctx.translate(cx, cy);
         ctx.rotate(instance.angle + (layer.shape === 'polygon' ? -PI / 2 : 0));
 
-        if (wantsStroke) {
-            const base = flipStrokeWidth ? instance.flippedK : instance.k;
-            ctx.lineWidth = interpolateStrokeWidth
-                ? Math.max(layer.strokeWidth * base, 1e-10)
-                : layer.strokeWidth;
-        }
+        if (wantsStroke) ctx.lineWidth = instanceStrokeWidth(layer, instance);
 
         tracePath(ctx, geometry.commands);
 
         const style = layer.applyColorSchemeToEachShape
-            ? buildGradient(
-                  ctx,
-                  layer,
-                  instance,
-                  geometry,
-                  interpolateOpacity,
-                  flipOpacity,
-                  colorIp
-              )
-            : solid?.toString() || '#000';
+            ? buildGradient(ctx, layer, instance, geometry, opacityFlags, colorIp)
+            : instanceColor(layer, instance, colorIp, opacityFlags);
 
         if (wantsFill) {
             ctx.fillStyle = style;
@@ -113,13 +86,44 @@ function renderLayer(
     }
 }
 
+function resolveInterpolator(layer: Layer): (t: number) => string {
+    return (
+        colorInterPolators.find((c) => layer.colorInterPolator === c.name) ?? colorInterPolators[0]!
+    ).fn;
+}
+
+type OpacityFlags = { interpolate: boolean; flip: boolean };
+
+function instanceColor(
+    layer: Layer,
+    instance: { k: number; flippedK: number },
+    colorIp: (t: number) => string,
+    opacityFlags: OpacityFlags
+): string {
+    const solid = color(
+        layer.flipColorInterpolator ? colorIp(instance.flippedK) : colorIp(instance.k)
+    );
+
+    if (solid && opacityFlags.interpolate) solid.opacity = instance.k;
+    if (solid && opacityFlags.interpolate && opacityFlags.flip) solid.opacity = instance.flippedK;
+
+    return solid?.toString() || '#000';
+}
+
+function instanceStrokeWidth(layer: Layer, instance: Instance): number {
+    const interpolate = layer.calcStrokeWidth.includes('interpolate');
+    const flip = layer.calcStrokeWidth.includes('flip');
+    const base = flip ? instance.flippedK : instance.k;
+
+    return interpolate || flip ? Math.max(layer.strokeWidth * base, 1e-10) : layer.strokeWidth;
+}
+
 function buildGradient(
     ctx: CanvasRenderingContext2D,
     layer: Layer,
     instance: { k: number; flippedK: number },
     geometry: Geometry,
-    interpolateOpacity: boolean,
-    flipOpacity: boolean,
+    opacityFlags: OpacityFlags,
     colorIp: (t: number) => string
 ): CanvasGradient {
     const r = Math.max(geometry.width, geometry.height) / 2;
@@ -142,8 +146,8 @@ function buildGradient(
         const t = j / 10;
         const stop = color(layer.flipColorInterpolator ? colorIp(1 - t) : colorIp(t));
 
-        if (interpolateOpacity && stop) stop.opacity = instance.k;
-        if (interpolateOpacity && flipOpacity && stop) stop.opacity = instance.flippedK;
+        if (opacityFlags.interpolate && stop) stop.opacity = instance.k;
+        if (opacityFlags.interpolate && opacityFlags.flip && stop) stop.opacity = instance.flippedK;
 
         gradient.addColorStop(t, stop?.toString() || '#000');
     }
@@ -314,8 +318,6 @@ function scaleCommand(command: Command, scale: number): Command {
                 x: command.x * scale,
                 y: command.y * scale
             };
-        case 'E':
-            return { ...command, rx: command.rx * scale, ry: command.ry * scale };
         case 'Z':
             return command;
     }

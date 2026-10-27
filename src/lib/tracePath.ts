@@ -1,8 +1,12 @@
-import { type Command, arcToCenterParams } from './pathBounds';
+import { type Command, arcParams } from './pathBounds';
 
 const TAU = Math.PI * 2;
 
-export function tracePath(ctx: CanvasRenderingContext2D, commands: Command[]): void {
+export type EllipseCommand = { cmd: 'E'; rx: number; ry: number };
+
+export type TraceCommand = Command | EllipseCommand;
+
+export function tracePath(ctx: CanvasRenderingContext2D, commands: TraceCommand[]): void {
     let cx = 0;
     let cy = 0;
 
@@ -42,19 +46,9 @@ export function tracePath(ctx: CanvasRenderingContext2D, commands: Command[]): v
                     cx: arcCx,
                     cy: arcCy,
                     startAngle,
-                    deltaAngle
-                } = arcToCenterParams(
-                    cx,
-                    cy,
-                    command.rx,
-                    command.ry,
-                    command.rot,
-                    command.largeArc,
-                    command.sweep,
-                    command.x,
-                    command.y
-                );
-                const phi = (command.rot * Math.PI) / 180;
+                    deltaAngle,
+                    phi
+                } = arcParams(cx, cy, command);
                 ctx.ellipse(
                     arcCx,
                     arcCy,

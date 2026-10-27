@@ -107,6 +107,111 @@ describe('renderScene: shape presets', () => {
         expect(pixel(80, 50)[3]).toBe(0);
     });
 
+    it('fills custom paths built from curve commands', () => {
+        // cubic bulge, quadratic bow and a half circle arc
+        const cubic = makeLayer('custom', {
+            path: 'M0 0 C0 100 100 100 100 0 L100 100 L0 100 Z',
+            size: 60
+        });
+        const quadratic = makeLayer('custom', { path: 'M0 0 Q50 100 100 0 Z', size: 60 });
+        const arc = makeLayer('custom', { path: 'M0 0 A50 50 0 0 1 100 0 Z', size: 60 });
+
+        renderScene(ctx, [cubic], { width: CANVAS_SIZE, height: CANVAS_SIZE });
+        // the cubic bulge dips to y=65, the closing lines sit at y=80
+        expect(pixel(50, 70)[3]).toBe(255);
+        expect(pixel(50, 85)[3]).toBe(0);
+
+        renderScene(ctx, [quadratic], { width: CANVAS_SIZE, height: CANVAS_SIZE });
+        // the bow spans y=35 (chord) to y=65 (apex) at the center
+        expect(pixel(50, 42)[3]).toBe(255);
+        expect(pixel(50, 70)[3]).toBe(0);
+
+        renderScene(ctx, [arc], { width: CANVAS_SIZE, height: CANVAS_SIZE });
+        // the half circle spans y=35 (arc top) to y=65 (chord) at the center
+        expect(pixel(50, 45)[3]).toBe(255);
+        expect(pixel(50, 70)[3]).toBe(0);
+    });
+
+    it('falls back to the first interpolator for an unknown color scheme name', () => {
+        const layer = makeLayer('rect', {
+            width: 60,
+            height: 60,
+            colorInterPolator: 'nope' as unknown as Layer['colorInterPolator']
+        });
+
+        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
+
+        expect(pixel(50, 50)[3]).toBe(255);
+    });
+
+    it('draws rounded rect corners through quadratic segments', () => {
+        const layer = makeLayer('rect', {
+            width: 60,
+            height: 60,
+            borderRadiusTl: 1,
+            borderRadiusTr: 1,
+            borderRadiusBl: 1,
+            borderRadiusBr: 1
+        });
+
+        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
+
+        expectBright(pixel(50, 50));
+        // the corner itself is cut by the rounding
+        expect(pixel(21, 21)[3]).toBe(0);
+    });
+
+    it('renders all interpolation toggles combined without errors', () => {
+        const layer = makeLayer('rect', {
+            width: 60,
+            height: 60,
+            amount: 2,
+            distance: 10,
+            fillMode: 'fillStroke',
+            strokeWidth: 5,
+            applyColorSchemeToEachShape: true,
+            gradientType: 'radial',
+            calcOpacity: ['interpolate', 'flip'],
+            calcStrokeWidth: ['interpolate', 'flip']
+        });
+
+        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
+
+        expect(pixel(50, 50)[3]).toBe(255);
+    });
+
+    it('strokes with the full color ramp when applyColorSchemeToEachShape is on', () => {
+        const layer = makeLayer('rect', {
+            width: 60,
+            height: 60,
+            fillMode: 'stroke',
+            strokeWidth: 5,
+            applyColorSchemeToEachShape: true,
+            gradientType: 'linear',
+            gradientAngle: 90
+        });
+
+        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
+
+        expect(pixel(21, 50)[3]).toBe(255);
+    });
+
+    it('skips degenerate zero-size instances at the repetition end', () => {
+        const layer = makeLayer('polygon', { sides: 3, size: 20, amount: 2, distance: 20 });
+
+        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
+
+        expect(pixel(50, 50)[3]).toBe(255);
+    });
+
+    it('skips custom layers with an empty path', () => {
+        const layer = makeLayer('custom', { path: '', size: 60 });
+
+        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
+
+        expect(pixel(50, 50)[3]).toBe(0);
+    });
+
     it('skips layers with invalid custom paths', () => {
         const layer = makeLayer('custom', { path: 'not a path', size: 60 });
 

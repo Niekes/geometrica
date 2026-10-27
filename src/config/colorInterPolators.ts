@@ -53,7 +53,7 @@ const interpolateArgon = interpolateRgbBasis([
     '#fdeff9'
 ]);
 
-export const colorInterPolators: { name: string; fn: Function }[] = [
+export const colorInterPolators: { name: string; fn: (t: number) => string }[] = [
     { name: 'interpolateMagma', fn: interpolateMagma },
     { name: 'interpolateArgon', fn: interpolateArgon },
     { name: 'interpolateMegatron', fn: interpolateMegatron },
@@ -96,26 +96,4 @@ export const colorInterPolators: { name: string; fn: Function }[] = [
     { name: 'interpolateYlOrRd', fn: interpolateYlOrRd },
     { name: 'interpolateRainbow', fn: interpolateRainbow },
     { name: 'interpolateSinebow', fn: interpolateSinebow }
-];
-
-export const flipColorInterpolatorOptions = [
-    {
-        value: false,
-        label: 'Use default direction of color gradient'
-    },
-    {
-        value: true,
-        label: 'Flip color interpolator direction'
-    }
-];
-
-export const applyColorSchemeToEachShapeOptions = [
-    {
-        value: false,
-        label: 'Interpolate color scheme'
-    },
-    {
-        value: true,
-        label: 'Apply color scheme to each rectangle'
-    }
 ];

@@ -43,3 +43,9 @@ _Avoid_: Farbschema, Palette
 **Fill-Modus**:
 Pro Layer wählbare Darstellung einer Instanz: Stroke, Fill oder Fill+Stroke.
 _Avoid_: Zeichenmodus
+
+### Architektur
+
+**Zone**:
+Eine Schicht der App-Architektur mit festgelegten Importrechten. Abhängigkeiten zeigen nur nach innen (types → config → lib → composables → components → views); die Grenzen werden von fallow erzwungen.
+_Avoid_: Schicht (im Architektursinne), Layer (kollidiert mit dem Bild-Layer)

@@ -4,15 +4,32 @@ import { type Background, buildLayer, defaultBackground } from '../config/defaul
 
 export default function useScene() {
     const background = ref<Background>({ ...defaultBackground });
-    const layers = ref<Layer[]>([]);
-    const selectedLayerId = ref('');
+    const layers = ref<Layer[]>([freshLayer('rect', 'Layer 1')]);
+    const selectedLayerId = ref(layers.value[0]?.id ?? '');
 
-    const selectedLayer = computed<Layer | undefined>(() =>
-        layers.value.find((layer) => layer.id === selectedLayerId.value)
-    );
+    // invariant: the scene always holds at least one layer, so a selection always exists
+    const selectedLayer = computed<Layer>({
+        get: () =>
+            layers.value.find((layer) => layer.id === selectedLayerId.value) ?? layers.value[0]!,
+        set: (value) => {
+            const index = layers.value.findIndex((layer) => layer.id === value.id);
+
+            if (index === -1) {
+                layers.value.push(value);
+            } else {
+                layers.value[index] = value;
+            }
+        }
+    });
 
     function createLayer(shape: ShapePreset): Layer {
         return { ...buildLayer(shape), id: crypto.randomUUID() };
+    }
+
+    function freshLayer(shape: ShapePreset, name: string): Layer {
+        const layer = createLayer(shape);
+        layer.name = name;
+        return layer;
     }
 
     function uniqueName(): string {
@@ -25,13 +42,8 @@ export default function useScene() {
     }
 
     function init(layersFromUrl: Layer[]) {
-        if (layersFromUrl.length === 0) {
-            const layer = createLayer('rect');
-            layer.name = 'Layer 1';
-            layers.value = [layer];
-        } else {
-            layers.value = layersFromUrl;
-        }
+        layers.value =
+            layersFromUrl.length === 0 ? [freshLayer('rect', 'Layer 1')] : [...layersFromUrl];
 
         selectFirstLayer();
     }
@@ -41,15 +53,7 @@ export default function useScene() {
     }
 
     function addLayer() {
-        if (selectedLayer.value) {
-            duplicateLayer(selectedLayer.value.id);
-            return;
-        }
-
-        const layer = createLayer('rect');
-        layer.name = uniqueName();
-        layers.value.push(layer);
-        selectedLayerId.value = layer.id;
+        duplicateLayer(selectedLayer.value.id);
     }
 
     function duplicateLayer(id: string) {

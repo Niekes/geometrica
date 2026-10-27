@@ -1,0 +1,7 @@
+# Fallow als Quality-Gate mit Zonenarchitektur
+
+Geometrica bekommt dieselbe Guardrail-Pipeline wie d3-3d: fallow mit allen Regeln als `error` (dead-code, unused-exports/types, private-type-leaks, circular-dependencies, boundary-violation, coverage-gaps, dupes), Audit-Hooks auf Commit/Push, Coverage-Thresholds für `src/lib` und `src/composables` sowie eine CI mit Test-Matrix (Node 22/24), lint, Coverage und fallow audit mit Badge-Commits auf master. Wir entscheiden uns gegen Suppressions für Bestandsbefunde: Der Bestand wird komplett gepurzert, bis jede Regel grün ist — der Code ist klein und frisch umgebaut, das ist der günstigste Moment. Gegen Suppressions sprechen: Sie zementieren technische Schulden und verwässern das Signal für neuen Code.
+
+Die Architektur wird als Zonen in `.fallowrc.jsonc` erzwungen; Abhängigkeiten zeigen nur nach innen: `types` → (nichts), `config` → types, `lib` → lib/config/types, `composables` → composables/lib/config/types, `components` → components/composables/lib/config/types, `views` → alle App-Zonen, `tests` → alle.
+
+Wir bewusst nicht übernommen aus d3-3d: der vite-plus-Runner (`vp`) — geometrica ist eine Vue-App mit jsdom-Canvas-Testumgebung, kein Published-Library-Build — und der `plans/`-Ordner. ESLint wird parallel als Flat-Config auf Latest repariert (in geometrica war der Lint vor dieser Entscheidung bereits kaputt), Stylelint wird entfernt, da nie installiert.

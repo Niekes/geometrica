@@ -14,10 +14,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, type ComponentPublicInstance } from 'vue';
 import { colorInterPolators } from '../config/colorInterPolators';
 
-const props = defineProps({
+defineProps({
     active: { type: String, required: true }
 });
 
@@ -26,20 +26,19 @@ defineEmits(['update-color-interpolator']);
 const colorInterpolators = ref(colorInterPolators);
 
 // Draw gradient on canvas when it's mounted
-const setCanvasRef = (el: any, index: number) => {
-    if (!el) return;
+const setCanvasRef = (el: Element | ComponentPublicInstance | null, index: number) => {
+    if (!(el instanceof HTMLCanvasElement)) return;
 
     // Check if customized already (simple check to avoid redrawing if not needed)
     // We verify if data-drawn is set to avoid infinite redraws if reactivity triggers updates
     if (el.dataset.drawn === 'true') return;
 
-    const canvas = el as HTMLCanvasElement;
-    const ctx = canvas.getContext('2d');
+    const ctx = el.getContext('2d');
     const color = colorInterpolators.value[index];
 
     if (ctx && color) {
-        for (let i = 0; i <= canvas.width; i += 1) {
-            ctx.fillStyle = color.fn(i / canvas.width);
+        for (let i = 0; i <= el.width; i += 1) {
+            ctx.fillStyle = color.fn(i / el.width);
             ctx.fillRect(i, 0, 1, 1);
         }
         el.dataset.drawn = 'true';
