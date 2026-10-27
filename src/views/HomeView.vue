@@ -1,48 +1,23 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref } from 'vue';
-import RectControl from '../components/RectControl.vue';
-import CircleControl from '../components/CircleControl.vue';
-import PolygonControl from '../components/PolygonControl.vue';
+import { nextTick, onMounted, ref, watch } from 'vue';
+import LayerList from '../components/LayerList.vue';
+import LayerControl from '../components/LayerControl.vue';
 import TheGallery from '../components/TheGallery.vue';
-import { type Rect } from '../types/Rect';
-import { type Circle } from '../types/Circle';
-import { type Polygon } from '../types/Polygon';
-import useRectDrawing from '../composables/rect';
-import useCircleDrawing from '../composables/circle';
-import usePolygonDrawing from '../composables/polygon';
+import useScene from '../composables/useScene';
 import { useUrlSync } from '../composables/useUrlSync';
+import { renderScene } from '../lib/renderScene';
 import { canvasHeight, canvasWidth } from '../config/canvas';
-import { defaultRect, defaultCircle, defaultPolygon } from '../config/defaults';
 
 const canvas = ref<HTMLCanvasElement | null>(null);
-const canvasH = ref<number>(canvasHeight);
-const canvasW = ref<number>(canvasWidth);
 const ctx = ref<CanvasRenderingContext2D | null>(null);
 
-const shapesOptions: { name: string; value: string }[] = [
-    { value: 'rect', name: 'Rectangle' },
-    { value: 'circle', name: 'Circle' },
-    { value: 'polygon', name: 'Polygon' }
-];
-const rect = ref<Rect>({ ...defaultRect });
+const scene = useScene();
 
-const circle = ref<Circle>({ ...defaultCircle });
-
-const polygon = ref<Polygon>({ ...defaultPolygon });
-
-const selectedShape = ref<string>('rect');
-
-// Initialize URL sync
 const { initFromUrl, setupWatchers } = useUrlSync({
-    selectedShape,
-    rect,
-    circle,
-    polygon
+    layers: scene.layers,
+    background: scene.background,
+    onLoad: () => scene.selectFirstLayer()
 });
-
-const { drawRect } = useRectDrawing(canvas, rect.value);
-const { drawCircle } = useCircleDrawing(canvas, circle.value);
-const { drawPolygon } = usePolygonDrawing(canvas, polygon.value);
 
 function download() {
     if (canvas.value) {
@@ -57,46 +32,28 @@ function download() {
 
 const showGallery = ref(false);
 
-function openGallery() {
-    showGallery.value = true;
-}
-
-async function draw(): Promise<any> {
+async function draw(): Promise<void> {
     await nextTick();
 
-    switch (selectedShape.value) {
-        case 'circle':
-            // this.canvasBackgroundColor = circle.bgColor;
-            // this.canvasBorderRadius = circle.bgBorderRadius;
-            drawCircle();
-            break;
+    if (!ctx.value) return;
 
-        case 'polygon':
-            // this.canvasBackgroundColor = polygon.bgColor;
-            // this.canvasBorderRadius = polygon.bgBorderRadius;
-            drawPolygon();
-            break;
-
-        default:
-            // this.canvasBackgroundColor = rect.bgColor;
-            // this.canvasBorderRadius = rect.rect;
-            drawRect();
-            break;
-    }
+    renderScene(ctx.value, scene.layers.value);
 }
 
-onMounted(() => {
-    // Initialize state from URL parameters
-    initFromUrl();
+watch(scene.layers, draw, { deep: true });
 
-    // Set up watchers for URL sync
+onMounted(() => {
+    const hasUrlState = initFromUrl();
+
+    if (!hasUrlState || scene.layers.value.length === 0) scene.init(scene.layers.value);
+
     setupWatchers();
 
     if (canvas.value) {
         const context = canvas.value.getContext('2d');
 
-        canvas.value.width = canvasW.value;
-        canvas.value.height = canvasH.value;
+        canvas.value.width = canvasWidth;
+        canvas.value.height = canvasHeight;
 
         if (context) {
             ctx.value = context;
@@ -117,50 +74,66 @@ onMounted(() => {
 <template>
     <div class="home grid">
         <div class="bg-base-200 p-4 w-full justify-items-center overflow-scroll">
-            <div class="flex items-center justify-center">
-                <div class="tabs tabs-box bg-base-300 tabs-xs mb-4">
-                    <template v-for="shape in shapesOptions" :key="shape.value">
-                        <input
-                            :id="shape.value"
-                            v-model="selectedShape"
-                            name="shape"
-                            type="radio"
-                            class="tab"
-                            :aria-label="shape.name"
-                            :value="shape.value"
-                            @change="draw"
-                        />
-                    </template>
-                </div>
-            </div>
+            <LayerList
+                :layers="scene.layers.value"
+                :selected-id="scene.selectedLayerId.value"
+                @select="(id: string) => (scene.selectedLayerId.value = id)"
+                @add="scene.addLayer"
+                @duplicate="scene.duplicateLayer"
+                @remove="scene.removeLayer"
+                @move="scene.moveLayer"
+                @toggle-visibility="scene.toggleVisibility"
+            />
 
-            <div class="control__shapes">
-                <RectControl v-if="selectedShape === 'rect'" v-model="rect" @rect-update="draw" />
-                <CircleControl
-                    v-if="selectedShape === 'circle'"
-                    v-model="circle"
-                    @circle-update="draw"
+            <div class="divider"></div>
+
+            <LayerControl
+                v-if="scene.selectedLayer.value"
+                :key="scene.selectedLayer.value.id"
+                :layer="scene.selectedLayer.value"
+            />
+
+            <div class="divider"></div>
+
+            <div class="w-full flex flex-col gap-2">
+                <label class="text-xs font-semibold uppercase opacity-60" for="bg-color">
+                    Background
+                </label>
+                <input
+                    id="bg-color"
+                    type="color"
+                    class="w-full h-8 cursor-pointer bg-transparent"
+                    v-model="scene.background.value.color"
                 />
-                <PolygonControl
-                    v-if="selectedShape === 'polygon'"
-                    v-model="polygon"
-                    @polygon-update="draw"
+                <label class="w-full text-xs" for="bg-radius">
+                    Radius ({{ scene.background.value.borderRadius }}%)
+                </label>
+                <input
+                    id="bg-radius"
+                    type="range"
+                    min="0"
+                    max="50"
+                    step="1"
+                    class="range range-xs w-full"
+                    v-model.number="scene.background.value.borderRadius"
                 />
             </div>
 
             <button class="btn btn-primary btn-block mt-4" @click="download">Download</button>
-            <button class="btn btn-neutral btn-block mt-4" @click="openGallery">Gallery</button>
+            <button class="btn btn-neutral btn-block mt-4" @click="showGallery = true">
+                Gallery
+            </button>
         </div>
 
         <div class="context">
             <canvas
                 class="context__canvas shadow-md shadow-black/50"
                 ref="canvas"
-                :height="canvasH"
-                :width="canvasW"
+                :height="canvasHeight"
+                :width="canvasWidth"
                 :style="{
-                    'background-color': '#000',
-                    'border-radius': '10%'
+                    'background-color': scene.background.value.color,
+                    'border-radius': `${scene.background.value.borderRadius}%`
                 }"
                 @contextmenu.prevent.stop
             />

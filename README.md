@@ -1,12 +1,17 @@
 # Geometrica – LineArt Generator
 
-[Geometrica](http://niekes.github.io/geometrica) is an interactive **LineArt Generator** that allows you to create, move, and customize geometric shapes like **circles, squares, and polygons** to design unique LineArt artworks. With simple sliders for **offset, size, rotation, and colors**, you can create complex patterns perfect for **icons, illustrations, or design elements**.
+[Geometrica](http://niekes.github.io/geometrica) is an interactive **LineArt Generator** that allows you to create, move, and customize geometric shapes like **circles, squares, polygons, and your own SVG paths** to design unique artworks. Stack shapes in **layers**, repeat them geometrically, fill them with **color gradients**, and create complex patterns perfect for **icons, illustrations, or design elements**.
 
 ## Features
 
-- Move, scale, and rotate geometric shapes 🟢🔵🟡
+- Unlimited **layers**, each with its own shape, repetition, and colors
+- Shape presets: rectangle, circle, polygon — plus **custom SVG path shapes**
+- Geometric repetition with amount, distance, and rotation per layer
+- Stroke, fill, or fill + stroke with **linear and radial gradients**
+- Move, scale, and rotate shapes 🟢🔵🟡
 - Adjust border radius and stroke width ✨📏
-- Live preview of your LineArt 🎥🖌️
+- Live preview of your artwork 🎥🖌️
+- Shareable URLs with automatic migration of old links 🔗
 - Export artworks as icons or design assets 🖼️💾
 
 ## Technologies

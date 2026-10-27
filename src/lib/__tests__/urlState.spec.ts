@@ -1,0 +1,112 @@
+import { describe, it, expect } from 'vitest';
+import { serializeState, parseState } from '../urlState';
+import { buildLayer, defaultBackground } from '../../config/defaults';
+import { type Layer } from '../../types/Layer';
+
+function makeLayer(index: number, overrides: Partial<Layer> = {}): Layer {
+    return {
+        ...buildLayer('rect'),
+        id: `l-${index}`,
+        name: `Layer ${index + 1}`,
+        ...overrides
+    };
+}
+
+describe('serializeState / parseState roundtrip (v2)', () => {
+    it('roundtrips background and layers', () => {
+        const layers = [
+            makeLayer(0, {
+                shape: 'custom',
+                fillMode: 'fillStroke',
+                path: 'M0 0 L10 0 L10 10 Z',
+                amount: 5,
+                gradientType: 'radial',
+                gradientAngle: 45,
+                opacity: 0.7,
+                visible: false,
+                calcOpacity: ['interpolate', 'flip']
+            }),
+            makeLayer(1, { shape: 'circle', radiusX: 300, radiusY: 200, calcStrokeWidth: ['flip'] })
+        ];
+        const state = {
+            background: { color: '#123456', borderRadius: 25 },
+            layers
+        };
+
+        const query = serializeState(state);
+        const parsed = parseState(query);
+
+        expect(parsed).not.toBeNull();
+        expect(parsed!.background).toEqual(state.background);
+        expect(parsed!.layers).toEqual(layers);
+    });
+});
+
+describe('parseState', () => {
+    it('parses a v2 query string', () => {
+        const parsed = parseState(
+            'v=2&bg[color]=%23ff0000&bg[borderRadius]=15&l[0][shape]=polygon&l[0][amount]=8&l[0][sides]=6&l[0][size]=100&l[0][opacity]=0.5&l[0][applyColorSchemeToEachShape]=true&l[0][calcOpacity]=interpolate%2Cflip'
+        );
+
+        expect(parsed).not.toBeNull();
+        expect(parsed!.background).toEqual({ color: '#ff0000', borderRadius: 15 });
+        expect(parsed!.layers.length).toBe(1);
+        const layer = parsed!.layers[0]!;
+        expect(layer.shape).toBe('polygon');
+        expect(layer.amount).toBe(8);
+        expect(layer.sides).toBe(6);
+        expect(layer.size).toBe(100);
+        expect(layer.opacity).toBe(0.5);
+        expect(layer.applyColorSchemeToEachShape).toBe(true);
+        expect(layer.calcOpacity).toEqual(['interpolate', 'flip']);
+    });
+
+    it('migrates a legacy rect URL into a single layer with background', () => {
+        const parsed = parseState(
+            'shape=rect&rect[amount]=8&rect[distance]=10&rect[width]=100&rect[height]=50&rect[strokeWidth]=2&rect[bgColor]=%23000&rect[bgBorderRadius]=10&rect[applyColorSchemeToEachShape]=true&rect[calcOpacity]=interpolate'
+        );
+
+        expect(parsed).not.toBeNull();
+        expect(parsed!.background).toEqual({ color: '#000', borderRadius: 10 });
+        expect(parsed!.layers.length).toBe(1);
+        const layer = parsed!.layers[0]!;
+        expect(layer.shape).toBe('rect');
+        expect(layer.amount).toBe(8);
+        expect(layer.distance).toBe(10);
+        expect(layer.width).toBe(100);
+        expect(layer.height).toBe(50);
+        expect(layer.strokeWidth).toBe(2);
+        expect(layer.applyColorSchemeToEachShape).toBe(true);
+        expect(layer.calcOpacity).toEqual(['interpolate']);
+        // layer-specific v2 defaults are filled in
+        expect(layer.fillMode).toBe('stroke');
+        expect(layer.opacity).toBe(1);
+        expect(layer.visible).toBe(true);
+    });
+
+    it('migrates a legacy polygon URL', () => {
+        const parsed = parseState(
+            'shape=polygon&polygon[sides]=7&polygon[borderRadius]=0.2&polygon[size]=200'
+        );
+
+        expect(parsed).not.toBeNull();
+        expect(parsed!.background).toEqual(defaultBackground);
+        const layer = parsed!.layers[0]!;
+        expect(layer.shape).toBe('polygon');
+        expect(layer.sides).toBe(7);
+        expect(layer.borderRadius).toBe(0.2);
+        expect(layer.size).toBe(200);
+    });
+
+    it('falls back to rect for an unknown legacy shape', () => {
+        const parsed = parseState('shape=star&star[amount]=3');
+
+        expect(parsed).not.toBeNull();
+        expect(parsed!.layers[0]!.shape).toBe('rect');
+    });
+
+    it('returns null for an empty or unknown query string', () => {
+        expect(parseState('')).toBeNull();
+        expect(parseState('foo=bar')).toBeNull();
+    });
+});

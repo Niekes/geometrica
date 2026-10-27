@@ -22,10 +22,28 @@ export const flipColorInterpolatorOptions = [
 export const applyColorSchemeToEachShapeOptions = [
     {
         value: false,
-        label: 'Interpolate color scheme'
+        label: 'Interpolate color scheme along the repetition'
     },
     {
         value: true,
-        label: 'Apply color scheme to each rectangle'
+        label: 'Apply color scheme to each shape'
     }
+];
+
+export const shapeOptions = [
+    { value: 'rect', label: 'Rectangle' },
+    { value: 'circle', label: 'Circle' },
+    { value: 'polygon', label: 'Polygon' },
+    { value: 'custom', label: 'Custom Shape' }
+];
+
+export const fillModeOptions = [
+    { value: 'stroke', label: 'Stroke' },
+    { value: 'fill', label: 'Fill' },
+    { value: 'fillStroke', label: 'Fill + Stroke' }
+];
+
+export const gradientTypeOptions = [
+    { value: 'linear', label: 'Linear gradient' },
+    { value: 'radial', label: 'Radial gradient' }
 ];
