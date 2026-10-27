@@ -1,0 +1,3 @@
+# URL-Format v2 mit Migration
+
+Das URL-Sync-Format muss sich durch das Layer-Modell (ADR-0001) ändern, und bestehende Links (Galerie, geteilte Kunstwerke auf GitHub Pages) dürfen nicht sterben. Wir entscheiden: Das neue Format wird mit `?v=2` versioniert; URLs ohne Versionsparameter werden als altes Format geparst und automatisch in einen einzelnen Layer konvertiert. Alternativen waren schlichtes Brechen (abgelehnt: tote Links) oder dauerhaftes Schreiben beider Formate (abgelehnt: bleibende Doppelstruktur). Alle Layer werden immer vollständig synchronisiert; eine URL-Komprimierung wurde als vorzeitige Optimierung abgelehnt.

@@ -1,0 +1,45 @@
+# Geometrica
+
+Interaktiver Generator für geometrische LineArt: Formen werden auf dem Canvas wiederholt, eingefärbt und als PNG exportiert.
+
+## Language
+
+### Komposition
+
+**Form**:
+Eine Pfadgeometrie (Rect, Circle, Polygon oder eigene SVG-Path-Eingabe). Die Form selbst ist nur die Geometrie, ohne Wiederholungs- oder Stilparameter.
+_Avoid_: Shape, Figur, Objekt
+
+**Instanz**:
+Eine einzelne gezeichnete Wiederholung einer Form auf dem Canvas.
+_Avoid_: Kopie, Iteration
+
+**Wiederholung**:
+Die Sequenz von Instanzen einer Form, gesteuert durch amount, distance und rotation.
+_Avoid_: Loop, Serie
+
+**Layer**:
+Eine vollständige Konfiguration aus Form, Wiederholung, Farbe und Füllung. Layer stapeln sich in Z-Ordnung auf dem Canvas; beliebig viele sind möglich.
+_Avoid_: Ebene, Schicht
+
+**Preset**:
+Eine fertige Formauswahl innerhalb eines Layers. Rect, Circle und Polygon sind Presets, keine eigenständigen Modi mehr.
+_Avoid_: Formtyp
+
+### Farbe & Füllung
+
+**Verlauf**:
+Ein Farbgradient, der eine Instanzfläche füllt (linear oder radial), mit Farbstopps aus einem Color-Interpolator.
+_Avoid_: Gradient, Farbschema
+
+**Sequenz-Verlauf**:
+Die Farbverläufe entlang der Wiederholung: die Instanzposition bestimmt die Farbe über den Color-Interpolator.
+_Avoid_: Farbinterpolation über Instanzen
+
+**Color-Interpolator**:
+Eine benannte d3-Farbramppen-Funktion, die eine Position [0..1] auf eine Farbe abbildet.
+_Avoid_: Farbschema, Palette
+
+**Fill-Modus**:
+Pro Layer wählbare Darstellung einer Instanz: Stroke, Fill oder Fill+Stroke.
+_Avoid_: Zeichenmodus

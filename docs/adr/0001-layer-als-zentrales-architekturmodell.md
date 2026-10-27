@@ -1,0 +1,5 @@
+# Layer als zentrales Architekturmodell
+
+Die App hatte drei fixe Formtypen (Rect, Circle, Polygon) mit je eigener Konfiguration und genau einer aktiven Form auf dem Canvas. Wir entscheiden: Ein Layer ist die vollständige Konfiguration aus Form, Wiederholung, Farbe und Füllung; beliebig viele Layer stapeln sich in Z-Ordnung. Rect, Circle, Polygon werden zu Form-Presets innerhalb eines Layers, ergänzt um eigene SVG-Path-Eingaben. Alternativen waren das bisherige Formtyp-Tab-Modell (abgelehnt: keine skalierbare Komposition) oder ein hartes Layer-Limit (abgelehnt: künstliche Einschränkung). Die drei nahezu identischen Drawing-Composables werden dadurch zu einem einheitlichen Renderer mit einem generischen Wiederholungsmodell (amount/distance/rotation) für alle Formen.
+
+Folge-Entscheidungen aus diesem ADR: Der Hintergrund (bgColor, bgBorderRadius) wird ein globales Canvas-Setting statt Layer-Parameter; jeder Layer hat einen eigenen Opazitäts-Slider; Blend-Modi werden bewusst nicht unterstützt; Eckradien bleiben Rect-exklusiv, eigene Paths bekommen nur generische Parameter.
