@@ -1,40 +1,87 @@
-# Geometrica – LineArt Generator
+<p align="center">
+  <a href="https://github.com/sponsors/niekes"><img src="https://img.shields.io/badge/Sponsor_Geometrica-EA4AAA?logo=githubsponsors&logoColor=white&style=for-the-badge" alt="Sponsor Geometrica"></a>
+</p>
 
-[![health](.github/badges/health.svg)](https://github.com/Niekes/geometrica/actions/workflows/ci.yml)
-![coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FNiekes%2Fgeometrica%2Fmaster%2F.github%2Fbadges%2Fcoverage.json)
+<p align="center">
+  <strong>An interactive line-art generator for the browser: geometric shapes, custom SVG paths, layers and gradients.</strong><br>
+  Free and open source, kept alive by one maintainer and the people who sponsor the work.
+</p>
 
-[Geometrica](http://niekes.github.io/geometrica) is an interactive **LineArt Generator** that allows you to create, move, and customize geometric shapes like **circles, squares, polygons, and your own SVG paths** to design unique artworks. Stack shapes in **layers**, repeat them geometrically, fill them with **color gradients**, and create complex patterns perfect for **icons, illustrations, or design elements**.
+<p align="center">
+  <a href="https://github.com/Niekes/geometrica/actions/workflows/ci.yml"><img src="https://github.com/Niekes/geometrica/actions/workflows/ci.yml/badge.svg" alt="Build"></a>
+  <a href="https://github.com/Niekes/geometrica/actions"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Niekes/geometrica/master/.github/badges/coverage.json" alt="Coverage"></a>
+  <a href="https://fallow.tools/docs/explanations/health/"><img src="https://raw.githubusercontent.com/Niekes/geometrica/master/.github/badges/health.svg" alt="fallow health"></a>
+  <a href="https://github.com/Niekes/geometrica/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Niekes/geometrica" alt="License"></a>
+  <img src="https://img.shields.io/badge/TypeScript-Ready-blue" alt="TypeScript">
+  <a href="https://github.com/Niekes/geometrica"><img src="https://img.shields.io/github/stars/Niekes/geometrica" alt="GitHub stars"></a>
+  <a href="https://github.com/sponsors/niekes"><img src="https://img.shields.io/github/sponsors/niekes?logo=GitHub+Sponsors&logoColor=%23EA4AAA&style=flat" alt="GitHub Sponsors"></a>
+</p>
 
-## Features
+<p align="center">
+  <a href="https://niekes.github.io/geometrica/">Live app</a> ·
+  <a href="https://github.com/Niekes/geometrica/blob/master/CONTRIBUTING.md">Contributing</a> ·
+  <a href="https://github.com/Niekes/geometrica/blob/master/AGENTS.md">Architecture &amp; quality gates</a>
+</p>
 
-- Unlimited **layers**, each with its own shape, repetition, and colors
-- Shape presets: rectangle, circle, polygon — plus **custom SVG path shapes**
-- Geometric repetition with amount, distance, and rotation per layer
-- Stroke, fill, or fill + stroke with **linear and radial gradients**
-- Move, scale, and rotate shapes 🟢🔵🟡
-- Adjust border radius and stroke width ✨📏
-- Live preview of your artwork 🎥🖌️
-- Shareable URLs with automatic migration of old links 🔗
-- Export artworks as icons or design assets 🖼️💾
+---
 
-## Technologies
+<table>
+    <tr style="background-color: #f6f8fa">
+        <td><a target="_blank" href="https://niekes.github.io/geometrica/"><img src="assets/examples/gallery-0.png" alt="Layered line art"></a></td>
+        <td><a target="_blank" href="https://niekes.github.io/geometrica/"><img src="assets/examples/gallery-4.png" alt="Repetition pattern"></a></td>
+        <td><a target="_blank" href="https://niekes.github.io/geometrica/"><img src="assets/examples/gallery-7.png" alt="Gradient artwork"></a></td>
+    </tr>
+    <tr style="background-color: #f6f8fa">
+        <td><a target="_blank" href="https://niekes.github.io/geometrica/"><img src="assets/examples/gallery-10.png" alt="Polygon spiral"></a></td>
+        <td><a target="_blank" href="https://niekes.github.io/geometrica/"><img src="assets/examples/gallery-12.png" alt="Custom shape art"></a></td>
+        <td><a target="_blank" href="https://niekes.github.io/geometrica/"><img src="assets/examples/gallery-15.png" alt="Color ramp composition"></a></td>
+    </tr>
+</table>
 
-- **[Vue 3](https://vuejs.org/)**
-- **[VueUse](https://vueuse.org/)**
-- **[TypeScript](https://www.typescriptlang.org/)**
-- **[TailwindCSS](https://tailwindcss.com/)**
-- **[DaisyUI](https://daisyui.com/)**
-- **[HeroIcons](https://heroicons.com/)**
-- **[Vite](https://vite.dev/)**
+More artwork in the in-app [gallery](https://niekes.github.io/geometrica/).
 
-## Installation
+## Sponsor Geometrica
+
+**Geometrica** is free, and it always will be. There is no company behind it — just one maintainer working in spare time — so the cost of keeping it alive is paid for by the people who depend on it.
+
+If Geometrica saves you time, [become a sponsor](https://github.com/sponsors/niekes).
+
+| Tier        | What you get                                                                                |
+| ----------- | ------------------------------------------------------------------------------------------- |
+| **$5/mo**   | Your name in the [sponsors list](#sponsors) and my sincere thanks                           |
+| **$25/mo**  | The above, plus your logo in the README and on the docs site, and priority issue triage     |
+| **$100/mo** | The above, plus direct email access for feature requests and a mention in the release notes |
+
+Where the money goes:
+
+- **Issue triage and bug fixes.** Sponsorship buys a reply within a couple of days instead of whenever I get to it.
+- **An engine that stays correct.** Keeping the renderer, the SVG path parser and the URL state in shape as Vue and the canvas APIs move on.
+- **The artwork pipeline.** Gallery pieces, examples and the shareable-link format.
+- **Time for new work.** More shape presets, better gradient controls, and whatever the community dreams up.
+
+Prefer a one-off? The [sponsor page](https://github.com/sponsors/niekes) also takes one-time contributions.
+
+**Need a company sponsorship or an invoice?** [Get in touch](mailto:s@niekes.com).
+
+## Sponsors
+
+Thank you to the people who make this possible. Sponsors at $25/mo and above get their logo in this README and on the docs site; everyone gets their name below.
+
+<!-- New sponsors go below this line, one per line. -->
+
+## Using Geometrica
+
+No install — it runs in the browser at [niekes.github.io/geometrica](https://niekes.github.io/geometrica/).
+
+To work on it locally:
 
 ```bash
 npm install
-```
-
-### Development
-
-```bash
 npm run dev
 ```
+
+Everything about the codebase, the architecture zones and the quality gates lives in [AGENTS.md](AGENTS.md) and [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=niekes/geometrica&type=date&legend=bottom-right)](https://www.star-history.com/#niekes/geometrica&type=bottom-right)
