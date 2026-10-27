@@ -57,7 +57,8 @@ export default function useScene() {
 
         if (!source) return;
 
-        const layer = structuredClone(source);
+        // structuredClone cannot handle reactive proxies; all layer fields are JSON-safe
+        const layer = JSON.parse(JSON.stringify(source)) as Layer;
         layer.id = crypto.randomUUID();
         layer.name = uniqueName();
 
