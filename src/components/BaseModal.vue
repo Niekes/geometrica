@@ -20,12 +20,13 @@ const close = () => {
 
 <template>
     <dialog ref="dialog" class="modal backdrop-blur-sm" @close="close">
-        <div class="modal-box w-11/12 max-w-5xl">
+        <div class="modal-box flex max-h-[85dvh] w-11/12 max-w-5xl flex-col">
             <h3 class="text-lg font-bold">
                 <slot name="title">Modal Title</slot>
             </h3>
 
-            <div class="py-4">
+            <!-- -mx-1 px-1 and scroll-py-12 keep focus rings clear of the edges and the fade -->
+            <div class="scroll-mask-y -mx-1 min-h-0 scroll-py-12 overflow-y-auto px-1 py-4">
                 <slot>
                     <p>Modal content goes here.</p>
                 </slot>
@@ -47,3 +48,49 @@ const close = () => {
         </form>
     </dialog>
 </template>
+
+<style scoped>
+/* fades the top and bottom edge only while there is more to scroll in that direction */
+@property --scroll-mask-t {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;
+}
+
+@property --scroll-mask-b {
+    syntax: '<length>';
+    inherits: false;
+    initial-value: 0px;
+}
+
+@supports (animation-timeline: scroll()) {
+    .scroll-mask-y {
+        mask-image: linear-gradient(
+            to bottom,
+            transparent,
+            #000 var(--scroll-mask-t),
+            #000 calc(100% - var(--scroll-mask-b)),
+            transparent
+        );
+        animation: scroll-mask-y linear both;
+        animation-timeline: scroll(self block);
+    }
+}
+
+@keyframes scroll-mask-y {
+    0% {
+        --scroll-mask-t: 0rem;
+        --scroll-mask-b: 3rem;
+    }
+    10% {
+        --scroll-mask-t: 3rem;
+    }
+    90% {
+        --scroll-mask-b: 3rem;
+    }
+    100% {
+        --scroll-mask-t: 3rem;
+        --scroll-mask-b: 0rem;
+    }
+}
+</style>

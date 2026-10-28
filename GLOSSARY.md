@@ -98,6 +98,10 @@ _Avoid_: Layer-Opazität
 Ein Programm, das das Kunstwerk auf Zuruf liest und ersetzt, statt dass jemand die Regler bedient.
 _Avoid_: Bot, KI, Assistent
 
+**Galerie**:
+Die kuratierte Sammlung fertiger Kunstwerke, von denen man eines öffnet, um daran weiterzuarbeiten.
+_Avoid_: Gallery, Vorlagen, Beispiele, Presets
+
 ### Architektur
 
 **Zone**:

@@ -34,18 +34,16 @@ const galleryLinks = [
 <template>
     <BaseModal v-model="showGallery">
         <template #title>Gallery</template>
-        <div
-            class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 justify-items-center"
-        >
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             <a
                 v-for="(link, index) in galleryLinks"
                 :key="index"
                 :href="`${baseUrl}?${link}`"
                 style="border-radius: 10%"
-                class="btn btn-neutral btn-sm normal-case justify-start size-48 aspect-square p-0 overflow-hidden"
+                class="btn btn-neutral btn-sm normal-case justify-start w-full h-auto aspect-square p-0 overflow-hidden"
             >
                 <img
-                    class="size-48 hover:opacity-80"
+                    class="w-full hover:opacity-80"
                     :src="`./gallery/${index}.avif`"
                     :alt="`Gallery image number ${index}`"
                 />
