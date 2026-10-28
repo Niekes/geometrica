@@ -22,14 +22,12 @@ const close = () => {
     <dialog ref="dialog" class="modal backdrop-blur-sm" @close="close">
         <div class="modal-box flex max-h-[85dvh] w-11/12 max-w-5xl flex-col">
             <h3 class="text-lg font-bold">
-                <slot name="title">Modal Title</slot>
+                <slot name="title" />
             </h3>
 
             <!-- -mx-1 px-1 and scroll-py-12 keep focus rings clear of the edges and the fade -->
             <div class="scroll-mask-y -mx-1 min-h-0 scroll-py-12 overflow-y-auto px-1 py-4">
-                <slot>
-                    <p>Modal content goes here.</p>
-                </slot>
+                <slot />
             </div>
 
             <div class="modal-action">

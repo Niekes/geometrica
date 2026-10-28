@@ -10,13 +10,13 @@ const logoUrl: string = `${import.meta.env.BASE_URL}logo.webp`;
 <template>
     <div class="navbar bg-base-300 shadow-sm fixed top-0 z-50">
         <div class="navbar-start ml-2 gap-3">
-            <!-- black with a 10% corner radius, like the default background of an artwork -->
+            <!-- black and rounded, like the default background of an artwork -->
             <img
                 :src="logoUrl"
                 alt=""
                 width="40"
                 height="40"
-                class="size-10 rounded-[10%] bg-black"
+                class="size-10 rounded-artwork bg-black"
             />
             <div class="flex flex-col leading-tight">
                 <span class="text-lg font-semibold tracking-tight" v-text="appName" />

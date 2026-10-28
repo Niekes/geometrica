@@ -1,2 +1,7 @@
 @import 'tailwindcss';
 @plugin "daisyui";
+
+/* the corner radius of an artwork's default background, as the logo and the gallery images show it */
+@utility rounded-artwork {
+    border-radius: 10%;
+}

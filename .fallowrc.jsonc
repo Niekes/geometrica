@@ -89,7 +89,6 @@
             "src/assets/**",
             "src/App.vue",
             "src/components/TheNavbar.vue",
-            "src/views/AboutView.vue",
             "index.html"
         ]
     }
