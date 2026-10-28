@@ -3,6 +3,12 @@ import { mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import HomeView from '../../views/HomeView.vue';
 
+// a key arrives at the focused element, or at the body when no control has the focus
+const space = (type: 'keydown' | 'keyup', target: Element = document.body) =>
+    target.dispatchEvent(
+        new KeyboardEvent(type, { code: 'Space', bubbles: true, cancelable: true })
+    );
+
 describe('HomeView', () => {
     it('resolves every component it renders', () => {
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -103,6 +109,139 @@ describe('HomeView', () => {
         wrapper.unmount();
     });
 
+    it('moves the selected layer only while Space is held and frames it meanwhile', async () => {
+        const wrapper = mount(HomeView, {
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+        const surface = wrapper.find('.context__surface');
+        const bounds = () => wrapper.find('.context__bounds');
+        const pointer = (type: string, clientX = 0, clientY = 0) =>
+            surface.element.dispatchEvent(new MouseEvent(type, { clientX, clientY }));
+        const drag = async (dx: number, dy: number) => {
+            pointer('pointerdown');
+            pointer('pointermove', dx, dy);
+            pointer('pointerup');
+            await nextTick();
+        };
+
+        Object.defineProperty(surface.element, 'clientWidth', { value: 1024 });
+        surface.element.setPointerCapture = vi.fn();
+
+        await drag(37, 20);
+
+        expect(surface.html()).toContain('translate(512 512)');
+        expect(bounds().exists()).toBe(false);
+
+        space('keydown');
+        await nextTick();
+
+        expect(bounds().exists()).toBe(true);
+
+        await drag(37, 20);
+
+        expect(surface.html()).toContain('translate(544 532)');
+
+        space('keyup');
+        await nextTick();
+
+        expect(bounds().exists()).toBe(false);
+
+        // letting go of Space midway keeps the drag and its frame up to the end
+        space('keydown');
+        pointer('pointerdown');
+        space('keyup');
+        await nextTick();
+
+        expect(bounds().exists()).toBe(true);
+
+        pointer('pointermove', 32, 0);
+        await nextTick();
+
+        expect(surface.html()).toContain('translate(576 532)');
+        expect(bounds().exists()).toBe(true);
+
+        pointer('pointerup');
+        await nextTick();
+
+        expect(bounds().exists()).toBe(false);
+
+        wrapper.unmount();
+    });
+
+    it('leaves Space to text fields, and to a focused control alongside moving', async () => {
+        const wrapper = mount(HomeView, {
+            attachTo: document.body,
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+        const bounds = () => wrapper.find('.context__bounds');
+        // dispatchEvent answers false once the page kept the key from its default action
+        const pressSpaceOn = async (selector: string) => {
+            const kept = space('keydown', wrapper.find(selector).element);
+
+            await nextTick();
+
+            return !kept;
+        };
+
+        expect(await pressSpaceOn('input[type="number"]')).toBe(false);
+        expect(bounds().exists()).toBe(false);
+
+        // a layer button a click left focused still clicks, but no longer stands in the way
+        expect(await pressSpaceOn('.context button')).toBe(false);
+        expect(bounds().exists()).toBe(true);
+
+        space('keyup');
+
+        // outside a control the page would scroll, and so would the panel around a slider
+        expect(await pressSpaceOn('.context__surface')).toBe(true);
+        expect(await pressSpaceOn('input[type="range"]')).toBe(true);
+
+        space('keyup');
+
+        // an open modal keeps Space for itself, the drawing surface lies behind it; jsdom cannot
+        // show a modal, so an open dialog stands in for one
+        wrapper.find('dialog').element.setAttribute('open', '');
+
+        expect(await pressSpaceOn('.context__surface')).toBe(false);
+        expect(bounds().exists()).toBe(false);
+
+        wrapper.unmount();
+    });
+
+    it('moves the selected layer by touch without Space and frames it while dragging', async () => {
+        const wrapper = mount(HomeView, {
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+        const surface = wrapper.find('.context__surface');
+        const bounds = () => wrapper.find('.context__bounds');
+        const touch = async (type: string, clientX = 0, clientY = 0) => {
+            const event = new MouseEvent(type, { clientX, clientY });
+
+            Object.defineProperty(event, 'pointerType', { value: 'touch' });
+            surface.element.dispatchEvent(event);
+            await nextTick();
+        };
+
+        Object.defineProperty(surface.element, 'clientWidth', { value: 1024 });
+        surface.element.setPointerCapture = vi.fn();
+
+        // a tap neither moves nor frames the layer
+        await touch('pointerdown');
+
+        expect(bounds().exists()).toBe(false);
+
+        await touch('pointermove', 37, 20);
+
+        expect(surface.html()).toContain('translate(544 532)');
+        expect(bounds().exists()).toBe(true);
+
+        await touch('pointerup');
+
+        expect(bounds().exists()).toBe(false);
+
+        wrapper.unmount();
+    });
+
     it('drags the selected layer across the drawing surface and snaps it to the grid', async () => {
         const wrapper = mount(HomeView, {
             global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
@@ -125,6 +264,8 @@ describe('HomeView', () => {
         // jsdom has no layout: a surface 1024 pixels wide maps one pixel to one unit
         Object.defineProperty(surface.element, 'clientWidth', { value: 1024 });
         surface.element.setPointerCapture = vi.fn();
+
+        space('keydown');
 
         // x lands within a quarter cell of 32 and snaps; y moves down, so cy turns negative
         await drag(37, 20);
@@ -177,7 +318,9 @@ describe('HomeView', () => {
 
         // a layer between the grid lines, so its position pulls on its own
         await toggle('Snap').setValue(false);
+        space('keydown');
         await drag(surface.element, 5, 0);
+        space('keyup');
         await toggle('Snap').setValue(true);
 
         expect(markerAt()).toEqual(share(5, 0));
@@ -194,9 +337,26 @@ describe('HomeView', () => {
         expect(markerAt()).toEqual(share(5, 20));
 
         // moving the layer carries the rotation center along
+        space('keydown');
         await drag(surface.element, 27, 0);
+        space('keyup');
 
         expect(markerAt()).toEqual(share(32, 20));
+
+        // a drag of the marker that started framed keeps its frame when Space is let go midway
+        const bounds = () => wrapper.find('.context__bounds');
+
+        space('keydown');
+        pointer(marker().element, 'pointerdown');
+        space('keyup');
+        await nextTick();
+
+        expect(bounds().exists()).toBe(true);
+
+        pointer(surface.element, 'pointerup');
+        await nextTick();
+
+        expect(bounds().exists()).toBe(false);
 
         // the marker has a toggle of its own, apart from the grid
         await toggle('Grid').setValue(false);

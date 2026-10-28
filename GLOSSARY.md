@@ -11,7 +11,7 @@ Alles, was auf der Zeichenfläche komponiert ist: der Hintergrund und alle Layer
 _Avoid_: Szene, Scene, Artwork, Bild, Effekt
 
 **Export**:
-Die SVG-Datei, die aus einem Kunstwerk entsteht: der Hintergrund und alle sichtbaren Layer. Transparenzmuster, Raster und Drehpunkt sind Arbeitshilfen und gehören nie dazu.
+Die SVG-Datei, die aus einem Kunstwerk entsteht: der Hintergrund und alle sichtbaren Layer. Transparenzmuster, Raster, Drehpunkt und Begrenzungsrahmen sind Arbeitshilfen und gehören nie dazu.
 _Avoid_: Download, Speichern
 
 **Zeichenfläche**:
@@ -53,6 +53,10 @@ _Avoid_: Offset, Koordinate
 **Drehpunkt**:
 Der Punkt, um den sich die Instanzen eines Layers entlang der Wiederholung drehen. Jeder Layer hat seinen eigenen. Er ist ein Versatz von der Position und wandert mit, wenn der Layer verschoben wird. Liegt er auf der Position, dreht sich jede Instanz um ihren eigenen Mittelpunkt; liegt er daneben, kreisen die Instanzen um ihn. Auf der Zeichenfläche ist er zu sehen und zu ziehen, solange er eingeblendet ist, unabhängig vom Raster; exportiert wird er nie.
 _Avoid_: Rotation Center, Pivot, Ursprung, Ankerpunkt
+
+**Begrenzungsrahmen**:
+Das Rechteck um alle Instanzen des ausgewählten Layers samt ihrer Kontur. Es zeigt an, dass der Layer gerade verschoben werden kann. Es ist eine Arbeitshilfe und wird nie exportiert.
+_Avoid_: Bounding Box, Auswahlrahmen, Selection
 
 **Instanz**:
 Eine einzelne gezeichnete Wiederholung einer Form auf der Zeichenfläche.

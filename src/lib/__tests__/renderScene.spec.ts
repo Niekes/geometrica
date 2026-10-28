@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { renderScene } from '../renderScene';
+import { layerBounds, renderScene } from '../renderScene';
 import { type Background, buildLayer, defaultBackground } from '../../config/defaults';
 import { type Layer } from '../../types/Layer';
 
@@ -359,5 +359,40 @@ describe('renderScene: surface', () => {
         const svg = render([], { color: '#123456', opacity: 0.25, borderRadius: 0 });
 
         expect(svg.querySelector(':scope > rect')!.getAttribute('fill-opacity')).toBe('0.25');
+    });
+});
+
+describe('layerBounds', () => {
+    it('frames a single instance around its position, with y counted downwards', () => {
+        const layer = makeLayer('rect', { width: 100, height: 60, cx: 10, cy: 20 });
+
+        expect(layerBounds(layer)).toEqual({ minX: 472, minY: 462, maxX: 572, maxY: 522 });
+    });
+
+    it('frames instances turned along the repetition', () => {
+        const layer = makeLayer('rect', {
+            width: 100,
+            height: 60,
+            amount: 2,
+            rotation: 90,
+            distance: 0
+        });
+
+        expect(layerBounds(layer)).toEqual({ minX: 462, minY: 462, maxX: 562, maxY: 562 });
+    });
+
+    it('reaches out by half the stroke width', () => {
+        const layer = makeLayer('rect', {
+            width: 100,
+            height: 60,
+            strokeOpacity: 1,
+            strokeWidth: 10
+        });
+
+        expect(layerBounds(layer)).toEqual({ minX: 457, minY: 477, maxX: 567, maxY: 547 });
+    });
+
+    it('has no frame for a layer without instances', () => {
+        expect(layerBounds(makeLayer('custom', { path: '' }))).toBeNull();
     });
 });

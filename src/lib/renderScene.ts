@@ -4,6 +4,7 @@ import {
     type Command,
     getPathBounds,
     normalizePath,
+    type PathBounds,
     parsePath,
     round,
     serializePath
@@ -27,7 +28,8 @@ export function renderScene({ background, layers }: SceneState): string {
     const fill = backgroundFill(background);
     const rx = round((background.borderRadius / 100) * surfaceSize);
     const surfaceAttributes = `width="${surfaceSize}" height="${surfaceSize}" rx="${rx}"`;
-    const fillOpacity = background.opacity < 1 ? ` fill-opacity="${round(background.opacity)}"` : '';
+    const fillOpacity =
+        background.opacity < 1 ? ` fill-opacity="${round(background.opacity)}"` : '';
 
     // the first layer is the topmost one and is drawn last
     const defs: string[] = [];
@@ -51,14 +53,52 @@ export function backgroundFill(background: Background): string {
     return color(background.color)?.formatHex() ?? defaultBackground.color;
 }
 
-function renderLayer(layer: Layer, idPrefix: string, defs: string[]): string {
+// the frame around every instance as drawn, in surface units with y pointing down
+export function layerBounds(layer: Layer): PathBounds | null {
+    const frame = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity };
+
+    for (const instance of computeInstances(layer)) {
+        const geometry = buildGeometry(layer, instance.shrink);
+        const { x, y, rotation } = placeInstance(layer, instance);
+        const bounds =
+            geometry && getPathBounds(geometry.commands.map((c) => rotateCommand(c, rotation)));
+
+        if (!bounds) continue;
+
+        // ponytail: half the stroke width on every side; sharp miter corners may poke out a little
+        const reach = layer.strokeOpacity > 0 ? instanceStrokeWidth(layer, instance) / 2 : 0;
+
+        frame.minX = Math.min(frame.minX, x + bounds.minX - reach);
+        frame.minY = Math.min(frame.minY, y + bounds.minY - reach);
+        frame.maxX = Math.max(frame.maxX, x + bounds.maxX + reach);
+        frame.maxY = Math.max(frame.maxY, y + bounds.maxY + reach);
+    }
+
+    return frame.minX === Infinity ? null : frame;
+}
+
+// turning around the rotation center swings the instance center along a circle around it,
+// while the polygon offset only turns the shape in place
+function placeInstance(
+    layer: Layer,
+    { angle }: Instance
+): { x: number; y: number; rotation: number } {
     const cx = surfaceSize / 2 + layer.cx;
     const cy = surfaceSize / 2 - layer.cy;
     // the rotation center is an offset from the position; svg counts y downwards
     const ox = layer.rotationCx;
     const oy = -layer.rotationCy;
-    const colorIp = resolveInterpolator(layer);
     const polygonOffset = layer.shape === 'polygon' ? -PI / 2 : 0;
+
+    return {
+        x: round(cx + ox - (ox * Math.cos(angle) - oy * Math.sin(angle))),
+        y: round(cy + oy - (ox * Math.sin(angle) + oy * Math.cos(angle))),
+        rotation: round(((angle + polygonOffset) * 180) / PI)
+    };
+}
+
+function renderLayer(layer: Layer, idPrefix: string, defs: string[]): string {
+    const colorIp = resolveInterpolator(layer);
 
     let markup = '';
 
@@ -77,12 +117,7 @@ function renderLayer(layer: Layer, idPrefix: string, defs: string[]): string {
         }
 
         const instanceOpacity = layer.opacity * sequenceOpacity(layer, instance);
-        const { angle } = instance;
-        const rotation = round(((angle + polygonOffset) * 180) / PI);
-        // turning around the rotation center swings the instance center along a circle around it,
-        // while the polygon offset only turns the shape in place
-        const x = round(cx + ox - (ox * Math.cos(angle) - oy * Math.sin(angle)));
-        const y = round(cy + oy - (ox * Math.sin(angle) + oy * Math.cos(angle)));
+        const { x, y, rotation } = placeInstance(layer, instance);
 
         let attributes = `transform="translate(${x} ${y}) rotate(${rotation})"`;
 
@@ -301,36 +336,44 @@ function buildCustomGeometry(layer: Layer, shrink: number): Geometry | null {
 }
 
 function scaleCommand(command: Command, scale: number): Command {
+    const scaled = mapPoints(command, (x, y) => [x * scale, y * scale]);
+
+    return scaled.cmd === 'A'
+        ? { ...scaled, rx: scaled.rx * scale, ry: scaled.ry * scale }
+        : scaled;
+}
+
+function rotateCommand(command: Command, degrees: number): Command {
+    const cos = Math.cos((degrees * PI) / 180);
+    const sin = Math.sin((degrees * PI) / 180);
+    const rotated = mapPoints(command, (x, y) => [x * cos - y * sin, x * sin + y * cos]);
+
+    // an arc keeps its radii and turns its axis along
+    return rotated.cmd === 'A' ? { ...rotated, rot: rotated.rot + degrees } : rotated;
+}
+
+function mapPoints(command: Command, map: (x: number, y: number) => [number, number]): Command {
     switch (command.cmd) {
         case 'M':
         case 'L':
-            return { ...command, x: command.x * scale, y: command.y * scale };
-        case 'C':
-            return {
-                ...command,
-                x1: command.x1 * scale,
-                y1: command.y1 * scale,
-                x2: command.x2 * scale,
-                y2: command.y2 * scale,
-                x: command.x * scale,
-                y: command.y * scale
-            };
-        case 'Q':
-            return {
-                ...command,
-                x1: command.x1 * scale,
-                y1: command.y1 * scale,
-                x: command.x * scale,
-                y: command.y * scale
-            };
-        case 'A':
-            return {
-                ...command,
-                rx: command.rx * scale,
-                ry: command.ry * scale,
-                x: command.x * scale,
-                y: command.y * scale
-            };
+        case 'A': {
+            const [x, y] = map(command.x, command.y);
+
+            return { ...command, x, y };
+        }
+        case 'C': {
+            const [x1, y1] = map(command.x1, command.y1);
+            const [x2, y2] = map(command.x2, command.y2);
+            const [x, y] = map(command.x, command.y);
+
+            return { ...command, x1, y1, x2, y2, x, y };
+        }
+        case 'Q': {
+            const [x1, y1] = map(command.x1, command.y1);
+            const [x, y] = map(command.x, command.y);
+
+            return { ...command, x1, y1, x, y };
+        }
         case 'Z':
             return command;
     }

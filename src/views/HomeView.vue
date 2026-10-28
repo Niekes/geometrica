@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 import BaseRangeSlider from '../components/BaseRangeSlider.vue';
 import LayerList from '../components/LayerList.vue';
 import LayerControl from '../components/LayerControl.vue';
@@ -12,7 +12,7 @@ import { useWebMcp } from '../composables/useWebMcp';
 import { backgroundRanges } from '../config/ranges';
 import { surfaceSize } from '../config/surface';
 import { lineColor, renderGrid, snapToGrid } from '../lib/renderGrid';
-import { renderScene } from '../lib/renderScene';
+import { layerBounds, renderScene } from '../lib/renderScene';
 
 const scene = useScene();
 
@@ -46,16 +46,58 @@ const view = reactive({ grid: false, snap: true, rotationCenter: true });
 const viewLabels = { grid: 'Grid', snap: 'Snap', rotationCenter: 'Rotation center' };
 const grid = computed(() => renderGrid(scene.background.value));
 
-// the marker of the rotation center keeps its screen size, so it is placed as a share of the surface
+// the marker and the frame keep their screen size, so they are placed as a share of the surface
+const toShare = (d: number) => `${(d / surfaceSize) * 100}%`;
+
 const rotationCenter = computed(() => {
     const { cx, cy, rotationCx, rotationCy } = scene.selectedLayer.value;
-    const toShare = (d: number) => `${((surfaceSize / 2 + d) / surfaceSize) * 100}%`;
 
     return {
-        left: toShare(cx + rotationCx),
-        top: toShare(-(cy + rotationCy)),
+        left: toShare(surfaceSize / 2 + cx + rotationCx),
+        top: toShare(surfaceSize / 2 - (cy + rotationCy)),
         stroke: lineColor(scene.background.value)
     };
+});
+
+// a mouse moves the selected layer only while Space is held, so a stray drag never does
+const spaceHeld = ref(false);
+// a drag keeps the frame it started with up to its end; a touch drag gains it once the layer moves
+const framedDrag = ref(false);
+
+// text fields and an open modal keep Space; a focused button or checkbox keeps its own job too,
+// and a drag on the surface takes the focus from it before Space is up
+function holdSpace(event: KeyboardEvent) {
+    const target = event.target as Element;
+
+    if (event.code !== 'Space' || target.closest('textarea, input[type="number"]')) return;
+    if (document.querySelector('dialog[open]')) return;
+
+    // elsewhere the page or the panel would scroll
+    if (!target.closest('button, summary, input:not([type="range"])')) event.preventDefault();
+
+    spaceHeld.value = true;
+}
+
+// a key released outside the window never reports back, so leaving it lets go as well
+function releaseSpace(event: Event) {
+    if (event instanceof KeyboardEvent && event.code !== 'Space') return;
+
+    spaceHeld.value = false;
+}
+
+const bounds = computed(() => {
+    const layer = scene.selectedLayer.value;
+    const frame = layer.visible ? layerBounds(layer) : null;
+
+    return (
+        frame && {
+            left: toShare(frame.minX),
+            top: toShare(frame.minY),
+            width: toShare(frame.maxX - frame.minX),
+            height: toShare(frame.maxY - frame.minY),
+            borderColor: lineColor(scene.background.value)
+        }
+    );
 });
 
 // dragging the drawing surface moves the selected layer, dragging the marker its rotation center;
@@ -77,7 +119,13 @@ function startDrag(event: PointerEvent) {
     const rotationCenter = (event.target as Element).closest('.context__rotation-center') !== null;
     const { cx, cy, rotationCx, rotationCy } = scene.selectedLayer.value;
 
+    // touch and pen have no Space to hold
+    const freeHand = event.pointerType === 'touch' || event.pointerType === 'pen';
+
+    if (!rotationCenter && !spaceHeld.value && !freeHand) return;
+
     surface.setPointerCapture(event.pointerId);
+    framedDrag.value = spaceHeld.value;
     drag = {
         x: event.clientX,
         y: event.clientY,
@@ -99,6 +147,7 @@ function moveDrag(event: PointerEvent) {
     if (!drag.moved && Math.hypot(dx, dy) < 3) return;
 
     drag.moved = true;
+    if (!drag.rotationCenter) framedDrag.value = true;
 
     const { scale } = drag;
     const layer = scene.selectedLayer.value;
@@ -121,6 +170,7 @@ function moveDrag(event: PointerEvent) {
 
 function endDrag() {
     drag = null;
+    framedDrag.value = false;
 }
 
 const showAgentGuide = ref(false);
@@ -132,6 +182,15 @@ onMounted(() => {
     if (!hasUrlState || scene.layers.value.length === 0) scene.init(scene.layers.value);
 
     setupWatchers();
+    window.addEventListener('keydown', holdSpace);
+    window.addEventListener('keyup', releaseSpace);
+    window.addEventListener('blur', releaseSpace);
+});
+
+onUnmounted(() => {
+    window.removeEventListener('keydown', holdSpace);
+    window.removeEventListener('keyup', releaseSpace);
+    window.removeEventListener('blur', releaseSpace);
 });
 </script>
 
@@ -164,6 +223,7 @@ onMounted(() => {
                 <div class="context__fit">
                     <div
                         class="context__surface"
+                        :class="framedDrag ? 'cursor-grabbing' : spaceHeld && 'cursor-grab'"
                         :style="{ borderRadius: `${scene.background.value.borderRadius}%` }"
                         @pointerdown="startDrag"
                         @pointermove="moveDrag"
@@ -172,6 +232,11 @@ onMounted(() => {
                     >
                         <div v-html="svg" />
                         <div v-if="view.grid" class="context__grid" v-html="grid" />
+                        <div
+                            v-if="(spaceHeld || framedDrag) && bounds"
+                            class="context__bounds"
+                            :style="bounds"
+                        />
                         <svg
                             v-if="view.rotationCenter"
                             class="context__rotation-center"
@@ -225,9 +290,16 @@ onMounted(() => {
                         <legend class="fieldset-legend">View</legend>
                         <div class="flex flex-wrap items-center gap-4">
                             <label v-for="(text, key) in viewLabels" :key="key" class="label">
-                                <input v-model="view[key]" type="checkbox" class="toggle toggle-xs" />
+                                <input
+                                    v-model="view[key]"
+                                    type="checkbox"
+                                    class="toggle toggle-xs"
+                                />
                                 {{ text }}
                             </label>
+                            <span class="label">
+                                Hold <kbd class="kbd kbd-xs">Space</kbd> to move
+                            </span>
                         </div>
                     </fieldset>
                 </div>
@@ -308,7 +380,6 @@ onMounted(() => {
     aspect-ratio: 1;
     /* the transparency pattern lives in CSS, so the exported SVG never contains it */
     background: repeating-conic-gradient(#e5e5e5 0 25%, #fff 0 50%) 0 0 / 16px 16px;
-    cursor: move;
     display: grid;
     filter: drop-shadow(0 4px 6px rgb(0 0 0 / 50%));
     position: relative;
@@ -334,8 +405,16 @@ onMounted(() => {
     width: 100%;
 }
 
+/* the frame may leave the surface, like the marker */
+.context__bounds {
+    border: 1px solid;
+    pointer-events: none;
+    position: absolute;
+}
+
 /* outranks the rule above: a fixed screen size keeps the marker grabbable at any surface size */
 .context__surface .context__rotation-center {
+    cursor: move;
     height: 24px;
     position: absolute;
     transform: translate(-50%, -50%);
