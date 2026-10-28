@@ -390,83 +390,78 @@ function arcParams(x0: number, y0: number, command: Extract<Command, { cmd: 'A' 
     return { cx, cy, startAngle, deltaAngle, phi: (command.rot * Math.PI) / 180, rx, ry };
 }
 
+const sampleCurve = (at: (t: number) => [number, number]): [number, number][] =>
+    Array.from({ length: SAMPLING_STEPS + 1 }, (_, i) => at(i / SAMPLING_STEPS));
+
+// as in SVG, zero radii draw a line, and an arc back onto its start draws nothing;
+// a polygon with sharp corners builds both without a parser that would catch them
+function sampleArc(
+    x0: number,
+    y0: number,
+    command: Extract<Command, { cmd: 'A' }>
+): [number, number][] {
+    if (command.rx === 0 || command.ry === 0 || (command.x === x0 && command.y === y0)) {
+        return [[command.x, command.y]];
+    }
+
+    const { cx, cy, startAngle, deltaAngle, phi, rx, ry } = arcParams(x0, y0, command);
+
+    return sampleCurve((t) => {
+        const ellipseX = rx * Math.cos(startAngle + deltaAngle * t);
+        const ellipseY = ry * Math.sin(startAngle + deltaAngle * t);
+
+        return [
+            cx + ellipseX * Math.cos(phi) - ellipseY * Math.sin(phi),
+            cy + ellipseX * Math.sin(phi) + ellipseY * Math.cos(phi)
+        ];
+    });
+}
+
+// the points a command passes from the current point on, curves sampled along their bulge
+function samplePoints(x0: number, y0: number, command: Command): [number, number][] {
+    switch (command.cmd) {
+        case 'M':
+        case 'L':
+            return [[command.x, command.y]];
+        case 'C':
+            return sampleCurve((t) => [
+                cubicAt(t, x0, command.x1, command.x2, command.x),
+                cubicAt(t, y0, command.y1, command.y2, command.y)
+            ]);
+        case 'Q':
+            return sampleCurve((t) => [
+                quadAt(t, x0, command.x1, command.x),
+                quadAt(t, y0, command.y1, command.y)
+            ]);
+        case 'A':
+            return sampleArc(x0, y0, command);
+        case 'Z':
+            return [];
+    }
+}
+
 export function getPathBounds(commands: Command[]): PathBounds | null {
     if (commands.length === 0) return null;
 
-    let minX = Infinity;
-    let minY = Infinity;
-    let maxX = -Infinity;
-    let maxY = -Infinity;
-
-    const track = (x: number, y: number) => {
-        minX = Math.min(minX, x);
-        minY = Math.min(minY, y);
-        maxX = Math.max(maxX, x);
-        maxY = Math.max(maxY, y);
-    };
-
+    const bounds = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity };
     let cx = 0;
     let cy = 0;
 
     for (const command of commands) {
-        switch (command.cmd) {
-            case 'M':
-            case 'L':
-                track(command.x, command.y);
-                cx = command.x;
-                cy = command.y;
-                break;
-            case 'C':
-                for (let i = 0; i <= SAMPLING_STEPS; i += 1) {
-                    const t = i / SAMPLING_STEPS;
-                    track(
-                        cubicAt(t, cx, command.x1, command.x2, command.x),
-                        cubicAt(t, cy, command.y1, command.y2, command.y)
-                    );
-                }
-                cx = command.x;
-                cy = command.y;
-                break;
-            case 'Q':
-                for (let i = 0; i <= SAMPLING_STEPS; i += 1) {
-                    const t = i / SAMPLING_STEPS;
-                    track(
-                        quadAt(t, cx, command.x1, command.x),
-                        quadAt(t, cy, command.y1, command.y)
-                    );
-                }
-                cx = command.x;
-                cy = command.y;
-                break;
-            case 'A': {
-                const {
-                    cx: arcCx,
-                    cy: arcCy,
-                    startAngle,
-                    deltaAngle,
-                    phi,
-                    rx,
-                    ry
-                } = arcParams(cx, cy, command);
-                for (let i = 0; i <= SAMPLING_STEPS; i += 1) {
-                    const theta = startAngle + (deltaAngle * i) / SAMPLING_STEPS;
-                    const ellipseX = rx * Math.cos(theta);
-                    const ellipseY = ry * Math.sin(theta);
-                    track(
-                        arcCx + ellipseX * Math.cos(phi) - ellipseY * Math.sin(phi),
-                        arcCy + ellipseX * Math.sin(phi) + ellipseY * Math.cos(phi)
-                    );
-                }
-                cx = command.x;
-                cy = command.y;
-                break;
-            }
-            case 'Z':
-                break;
+        for (const [x, y] of samplePoints(cx, cy, command)) {
+            bounds.minX = Math.min(bounds.minX, x);
+            bounds.minY = Math.min(bounds.minY, y);
+            bounds.maxX = Math.max(bounds.maxX, x);
+            bounds.maxY = Math.max(bounds.maxY, y);
+        }
+
+        if (command.cmd !== 'Z') {
+            cx = command.x;
+            cy = command.y;
         }
     }
 
-    return { minX, minY, maxX, maxY };
+    return bounds;
 }
 
 export const round = (n: number): number => Math.round(n * 1e4) / 1e4;

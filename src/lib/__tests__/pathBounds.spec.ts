@@ -88,6 +88,21 @@ describe('getPathBounds', () => {
         expect(bounds).toEqual({ minX: 0, minY: 0, maxX: 10, maxY: 0 });
     });
 
+    it('treats arcs with zero radii as lines where no parser turned them into lines', () => {
+        const bounds = getPathBounds([
+            { cmd: 'M', x: 0, y: 0 },
+            { cmd: 'A', rx: 0, ry: 0, rot: 0, largeArc: 0, sweep: 1, x: 10, y: 10 }
+        ]);
+
+        expect(bounds).toEqual({ minX: 0, minY: 0, maxX: 10, maxY: 10 });
+    });
+
+    it('skips an arc that ends where it starts', () => {
+        const bounds = getPathBounds(parsePath('M0 0 L10 0 A5 5 0 0 1 10 0'));
+
+        expect(bounds).toEqual({ minX: 0, minY: 0, maxX: 10, maxY: 0 });
+    });
+
     it('handles relative h and v commands', () => {
         const bounds = getPathBounds(parsePath('m1 1 h8 v6 h-8 z'));
 

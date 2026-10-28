@@ -324,6 +324,20 @@ describe('renderScene: gradients', () => {
         );
         expect(svg.querySelectorAll('defs > linearGradient')).toHaveLength(4);
     });
+
+    it('spans the gradient of a polygon with sharp corners across its size', () => {
+        const layer = makeLayer('polygon', {
+            sides: 4,
+            size: 100,
+            borderRadius: 0,
+            gradientAngle: 0,
+            applyColorSchemeToEachShape: true
+        });
+        const gradient = render([layer]).querySelector('defs > linearGradient')!;
+
+        expect(gradient.getAttribute('x1')).toBe('-50');
+        expect(gradient.getAttribute('x2')).toBe('50');
+    });
 });
 
 describe('renderScene: surface', () => {
@@ -390,6 +404,17 @@ describe('layerBounds', () => {
         });
 
         expect(layerBounds(layer)).toEqual({ minX: 457, minY: 477, maxX: 567, maxY: 547 });
+    });
+
+    it('frames a polygon with sharp corners', () => {
+        const layer = makeLayer('polygon', { sides: 4, size: 100, borderRadius: 0 });
+
+        expect(layerBounds(layer)).toEqual({
+            minX: expect.closeTo(462),
+            minY: expect.closeTo(462),
+            maxX: expect.closeTo(562),
+            maxY: expect.closeTo(562)
+        });
     });
 
     it('has no frame for a layer without instances', () => {
