@@ -17,20 +17,10 @@ const name = useId();
 <template>
     <fieldset class="flex flex-col gap-1">
         <legend :class="hideLegend ? 'sr-only' : 'mb-1 text-xs'" v-text="legend" />
-        <div class="join w-full">
-            <label
-                v-for="option in options"
-                :key="String(option.value)"
-                class="join-item btn btn-sm relative flex-1 gap-1 px-1 font-normal has-focus-visible:z-10 has-focus-visible:outline-2 has-focus-visible:outline-offset-2"
-                :class="{ 'btn-primary': model === option.value }"
-            >
-                <input
-                    v-model="model"
-                    type="radio"
-                    class="sr-only"
-                    :name="name"
-                    :value="option.value"
-                />
+        <!-- a label.tab hides its radio and marks itself active and focused once the radio is -->
+        <div class="tabs tabs-box tabs-xs">
+            <label v-for="option in options" :key="String(option.value)" class="tab flex-1 gap-1">
+                <input v-model="model" type="radio" :name="name" :value="option.value" />
                 <slot :option="option">{{ option.label }}</slot>
             </label>
         </div>
