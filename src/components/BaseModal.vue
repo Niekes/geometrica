@@ -19,7 +19,8 @@ const close = () => {
 </script>
 
 <template>
-    <dialog ref="dialog" class="modal backdrop-blur-sm" @close="close">
+    <!-- not-open:opacity-0 fades the blur out on close; daisyUI only fades the dim and the box -->
+    <dialog ref="dialog" class="modal backdrop-blur-sm not-open:opacity-0" @close="close">
         <div class="modal-box flex max-h-[85dvh] w-11/12 max-w-5xl flex-col">
             <h3 class="text-lg font-bold">
                 <slot name="title" />
