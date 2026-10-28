@@ -19,6 +19,15 @@ export default defineConfig({
         }),
         vueJsx()
     ],
+    build: {
+        rolldownOptions: {
+            // the agent guide is a page of its own: GitHub Pages serves no fallback for app routes
+            input: {
+                main: fileURLToPath(new URL('./index.html', import.meta.url)),
+                agentGuide: fileURLToPath(new URL('./agent/index.html', import.meta.url))
+            }
+        }
+    },
     server: {
         host: true,
         watch: {

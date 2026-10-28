@@ -92,6 +92,12 @@ _Avoid_: Fill-Modus, Zeichenmodus
 Deckkraft eines ganzen Layers, die Fill-Opacity und Stroke-Opacity gemeinsam abschwächt. Sich überlappende Instanzen desselben Layers addieren sich dabei.
 _Avoid_: Layer-Opazität
 
+### Bedienung
+
+**Agent**:
+Ein Programm, das das Kunstwerk auf Zuruf liest und ersetzt, statt dass jemand die Regler bedient.
+_Avoid_: Bot, KI, Assistent
+
 ### Architektur
 
 **Zone**:

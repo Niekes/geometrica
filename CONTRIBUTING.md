@@ -14,6 +14,9 @@ npm install
 npm run dev        # start the dev server
 ```
 
+To let an AI agent drive your local app, follow the agent guide the dev server
+serves at <http://localhost:5173/geometrica/agent/>.
+
 ## Everyday commands
 
 | Command                 | What it does                                                        |

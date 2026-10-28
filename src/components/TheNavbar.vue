@@ -1,6 +1,8 @@
 <script setup lang="ts">
 const appName: string = import.meta.env.VITE_APP_NAME;
 const appDescription: string = import.meta.env.VITE_APP_DESCRIPTION;
+// a page of its own outside the router, see vite.config.ts
+const agentGuideUrl: string = `${import.meta.env.BASE_URL}agent/`;
 </script>
 
 <template>
@@ -10,7 +12,8 @@ const appDescription: string = import.meta.env.VITE_APP_DESCRIPTION;
 
             <span class="text-sm font-extralight opacity-80" v-text="appDescription" />
         </div>
-        <div class="navbar-end">
+        <div class="navbar-end gap-2">
+            <a class="btn btn-ghost btn-sm" :href="agentGuideUrl">Use with AI</a>
             <a
                 class="btn btn-ghost btn-circle"
                 href="https://github.com/niekes/geometrica"
