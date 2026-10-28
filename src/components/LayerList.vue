@@ -33,7 +33,7 @@ const emit = defineEmits<{
 const renamingId = ref<string | null>(null);
 
 // select() focuses the field and marks the old name for overtyping
-const vSelect = { mounted: (input: HTMLInputElement) => input.select() };
+const vSelectText = { mounted: (input: HTMLInputElement) => input.select() };
 
 function startRename(id: string) {
     emit('select', id);
@@ -91,7 +91,7 @@ function finishRename(event: Event, save: boolean) {
 
                 <input
                     v-if="renamingId === layer.id"
-                    v-select
+                    v-select-text
                     type="text"
                     class="input input-xs min-w-0 flex-1"
                     :aria-label="`Name of ${layer.name}`"
