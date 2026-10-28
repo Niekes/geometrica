@@ -12,7 +12,8 @@ import {
     type Background,
     buildLayer,
     defaultBackground,
-    layerNameMaxLength
+    layerNameMaxLength,
+    normalizeLayerName
 } from '../config/defaults';
 import { backgroundRanges, layerRanges } from '../config/ranges';
 import { surfaceSize } from '../config/surface';
@@ -269,7 +270,11 @@ function toArtwork(input: Record<string, unknown>): Artwork {
         layers: layers.map((layer, index) => {
             const { id: _id, ...defaults } = buildLayer((layer.shape ?? 'rect') as ShapePreset);
 
-            return { ...defaults, name: `Layer ${index + 1}`, ...layer };
+            return {
+                ...defaults,
+                ...layer,
+                name: normalizeLayerName(layer.name, `Layer ${index + 1}`)
+            };
         })
     };
 }

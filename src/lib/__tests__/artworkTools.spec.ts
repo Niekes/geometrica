@@ -80,6 +80,14 @@ describe('set_artwork', () => {
         expect(written).toEqual([]);
     });
 
+    it('trims layer names and names a blank one by its place', async () => {
+        const { run, written } = setup(artwork);
+
+        await run('set_artwork', { layers: [{ name: ' Rays ' }, { name: '  ' }] });
+
+        expect(written[0]!.layers.map((layer) => layer.name)).toEqual(['Rays', 'Layer 2']);
+    });
+
     it('rejects a layer name longer than 40 characters', async () => {
         const { run, written } = setup(artwork);
 

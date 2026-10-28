@@ -154,6 +154,15 @@ describe('useScene', () => {
         expect(scene.layers.value[0]!.name).toBe('Sun rays');
     });
 
+    it('cuts a new layer name to 40 characters', () => {
+        const scene = useScene();
+        scene.init([makeLayer('rect', 'one')]);
+
+        scene.renameLayer('id-one', 'a'.repeat(50));
+
+        expect(scene.layers.value[0]!.name).toBe('a'.repeat(40));
+    });
+
     it('keeps the old name when the new one is blank', () => {
         const scene = useScene();
         scene.init([makeLayer('rect', 'one')]);

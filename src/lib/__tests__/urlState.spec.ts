@@ -102,10 +102,22 @@ describe('parseState', () => {
         expect(parsed!.layers[0]!.path).toBe('');
     });
 
+    it('names a layer by its place when the link gives it only spaces', () => {
+        const parsed = parseState('v=2&l[0][name]=x&l[1][name]=%20%20');
+
+        expect(parsed!.layers[1]!.name).toBe('Layer 2');
+    });
+
     it('cuts a layer name from a link to 40 characters', () => {
         const parsed = parseState(`v=2&l[0][name]=${'a'.repeat(50)}`);
 
         expect(parsed!.layers[0]!.name).toBe('a'.repeat(40));
+    });
+
+    it('cuts a layer name before an emoji rather than through it', () => {
+        const parsed = parseState(`v=2&l[0][name]=${'a'.repeat(39)}%F0%9F%98%80`);
+
+        expect(parsed!.layers[0]!.name).toBe('a'.repeat(39));
     });
 
     it('migrates a legacy rect URL into a single layer with background', () => {

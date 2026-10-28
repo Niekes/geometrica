@@ -1,6 +1,11 @@
 import { computed, ref } from 'vue';
 import { type Layer, type ShapePreset } from '../types/Layer';
-import { type Background, buildLayer, defaultBackground } from '../config/defaults';
+import {
+    type Background,
+    buildLayer,
+    defaultBackground,
+    normalizeLayerName
+} from '../config/defaults';
 
 export default function useScene() {
     const background = ref<Background>({ ...defaultBackground });
@@ -106,10 +111,8 @@ export default function useScene() {
 
     function renameLayer(id: string, name: string) {
         const layer = layers.value.find((l) => l.id === id);
-        const trimmed = name.trim();
 
-        // a blank name would leave the layer without a label in the list
-        if (layer && trimmed) layer.name = trimmed;
+        if (layer) layer.name = normalizeLayerName(name, layer.name);
     }
 
     return {

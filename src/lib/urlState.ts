@@ -4,7 +4,7 @@ import {
     type Background,
     buildLayer,
     defaultBackground,
-    layerNameMaxLength
+    normalizeLayerName
 } from '../config/defaults';
 
 export type SceneState = {
@@ -94,10 +94,7 @@ function coerceLayer(config: Record<string, unknown>, index: number): Layer {
         shape,
         // custom paths only exist in v2 URLs
         path: typeof coerced.path === 'string' ? coerced.path : '',
-        name:
-            typeof coerced.name === 'string' && coerced.name
-                ? coerced.name.slice(0, layerNameMaxLength)
-                : `Layer ${index + 1}`,
+        name: normalizeLayerName(coerced.name, `Layer ${index + 1}`),
         id: `l-${index}`
     };
 }
