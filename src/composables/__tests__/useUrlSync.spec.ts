@@ -109,4 +109,21 @@ describe('useUrlSync', () => {
         expect(layers.value[0]!.name).toBe('popped');
         expect(onLoadCalls).toBeGreaterThan(0);
     });
+
+    it('keeps the way forward after going back, adding no entry for the restored state', async () => {
+        vi.useFakeTimers();
+        const query = serializeState({
+            background: { ...defaultBackground },
+            layers: [makeLayer('popped')]
+        });
+        window.history.replaceState({}, '', `/geometrica/?${query}`);
+        sync.setupWatchers();
+        const entries = window.history.length;
+
+        window.dispatchEvent(new PopStateEvent('popstate'));
+        await nextTick();
+        vi.advanceTimersByTime(300);
+
+        expect(window.history.length).toBe(entries);
+    });
 });

@@ -19,6 +19,10 @@ export function useUrlSync(state: UseUrlSyncOptions) {
 
     function serializeToUrl() {
         const query = serializeState({ background: background.value, layers: layers.value });
+
+        // the back button restores a state the URL already holds; pushing it again cuts off the way forward
+        if (`?${query}` === window.location.search) return;
+
         window.history.pushState({}, '', `${window.location.pathname}?${query}`);
     }
 
