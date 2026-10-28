@@ -54,7 +54,7 @@ const galleryLinks = [
                 <img
                     class="w-full hover:opacity-80"
                     :src="`./gallery/${index}.avif`"
-                    :alt="`Gallery image number ${index}`"
+                    :alt="`Open artwork ${index + 1}`"
                 />
             </a>
         </div>
