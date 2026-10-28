@@ -303,7 +303,7 @@ describe('renderScene: gradients', () => {
 
 describe('renderScene: surface', () => {
     it('draws the background with its corner radius and clips the layers to it', () => {
-        const svg = render([], { color: '#123456', borderRadius: 50 });
+        const svg = render([], { color: '#123456', opacity: 1, borderRadius: 50 });
 
         expect(svg.getAttribute('xmlns')).toBe('http://www.w3.org/2000/svg');
         expect(svg.getAttribute('viewBox')).toBe('0 0 1024 1024');
@@ -311,6 +311,8 @@ describe('renderScene: surface', () => {
         const background = svg.querySelector(':scope > rect')!;
         expect(background.getAttribute('fill')).toBe('#123456');
         expect(background.getAttribute('rx')).toBe('512');
+        // an opaque background keeps the export free of a redundant opacity
+        expect(background.hasAttribute('fill-opacity')).toBe(false);
 
         const clip = svg.querySelector('clipPath#surface rect')!;
         expect(clip.getAttribute('rx')).toBe('512');
@@ -318,9 +320,19 @@ describe('renderScene: surface', () => {
     });
 
     it('falls back to the default color for a background color that is not a color', () => {
-        const svg = render([], { color: '"/><script>alert(1)</script>', borderRadius: 0 });
+        const svg = render([], {
+            color: '"/><script>alert(1)</script>',
+            opacity: 1,
+            borderRadius: 0
+        });
 
         expect(svg.querySelector('script')).toBeNull();
         expect(svg.querySelector(':scope > rect')!.getAttribute('fill')).toBe('#000');
+    });
+
+    it('exports a translucent background with its opacity', () => {
+        const svg = render([], { color: '#123456', opacity: 0.25, borderRadius: 0 });
+
+        expect(svg.querySelector(':scope > rect')!.getAttribute('fill-opacity')).toBe('0.25');
     });
 });

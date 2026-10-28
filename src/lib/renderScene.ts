@@ -10,7 +10,7 @@ import {
 } from './pathBounds';
 import { type SceneState } from './urlState';
 import { colorInterPolators } from '../config/colorInterPolators';
-import { defaultBackground } from '../config/defaults';
+import { type Background, defaultBackground } from '../config/defaults';
 import { surfaceSize } from '../config/surface';
 import { type Layer } from '../types/Layer';
 
@@ -24,10 +24,10 @@ type Geometry = {
 };
 
 export function renderScene({ background, layers }: SceneState): string {
-    // the background color comes from the URL and ends up in the DOM: only a parsed color passes
-    const fill = color(background.color)?.formatHex() ?? defaultBackground.color;
+    const fill = backgroundFill(background);
     const rx = round((background.borderRadius / 100) * surfaceSize);
     const surfaceAttributes = `width="${surfaceSize}" height="${surfaceSize}" rx="${rx}"`;
+    const fillOpacity = background.opacity < 1 ? ` fill-opacity="${round(background.opacity)}"` : '';
 
     // the first layer is the topmost one and is drawn last
     const defs: string[] = [];
@@ -40,10 +40,15 @@ export function renderScene({ background, layers }: SceneState): string {
     return (
         `<svg xmlns="http://www.w3.org/2000/svg" width="${surfaceSize}" height="${surfaceSize}" viewBox="0 0 ${surfaceSize} ${surfaceSize}">` +
         `<defs><clipPath id="surface"><rect ${surfaceAttributes}/></clipPath>${defs.join('')}</defs>` +
-        `<rect ${surfaceAttributes} fill="${fill}"/>` +
+        `<rect ${surfaceAttributes} fill="${fill}"${fillOpacity}/>` +
         `<g clip-path="url(#surface)">${content}</g>` +
         `</svg>`
     );
+}
+
+// the background color comes from the URL and ends up in the DOM: only a parsed color passes
+export function backgroundFill(background: Background): string {
+    return color(background.color)?.formatHex() ?? defaultBackground.color;
 }
 
 function renderLayer(layer: Layer, idPrefix: string, defs: string[]): string {

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
+import BaseRangeSlider from '../components/BaseRangeSlider.vue';
 import LayerList from '../components/LayerList.vue';
 import LayerControl from '../components/LayerControl.vue';
 import TheGallery from '../components/TheGallery.vue';
 import useScene from '../composables/useScene';
 import { useUrlSync } from '../composables/useUrlSync';
+import { renderGrid } from '../lib/renderGrid';
 import { renderScene } from '../lib/renderScene';
 
 const scene = useScene();
@@ -30,6 +32,11 @@ function download() {
     // revoking synchronously can cancel the download in some browsers
     setTimeout(() => URL.revokeObjectURL(link.href));
 }
+
+// the grid is part of the working view only: it is not stored in the URL and never exported
+const showGrid = ref(true);
+const grid = computed(() => renderGrid(scene.background.value));
+const toPercent = (d: number) => `${(d * 100).toFixed(0)}%`;
 
 const showGallery = ref(false);
 
@@ -76,6 +83,14 @@ onMounted(() => {
                     class="w-full h-8 cursor-pointer bg-transparent"
                     v-model="scene.background.value.color"
                 />
+                <BaseRangeSlider
+                    v-model.number="scene.background.value.opacity"
+                    :min="0"
+                    :max="1"
+                    :step="0.01"
+                    label="Opacity"
+                    :format="toPercent"
+                />
                 <label class="w-full text-xs" for="bg-radius">
                     Radius ({{ scene.background.value.borderRadius }}%)
                 </label>
@@ -88,6 +103,10 @@ onMounted(() => {
                     class="range range-xs w-full"
                     v-model.number="scene.background.value.borderRadius"
                 />
+                <label class="inline-flex items-center gap-2 cursor-pointer text-xs">
+                    <input type="checkbox" class="checkbox checkbox-sm" v-model="showGrid" />
+                    Grid
+                </label>
             </div>
 
             <button class="btn btn-primary btn-block mt-4" @click="download">Download</button>
@@ -97,7 +116,10 @@ onMounted(() => {
         </div>
 
         <div class="context">
-            <div class="context__surface" v-html="svg" />
+            <div class="context__surface">
+                <div v-html="svg" />
+                <div v-if="showGrid" class="context__grid" v-html="grid" />
+            </div>
         </div>
 
         <TheGallery v-model="showGallery" />
@@ -133,12 +155,24 @@ onMounted(() => {
 
 .context__surface {
     aspect-ratio: 1;
+    /* the transparency pattern lives in CSS, so the exported SVG never contains it */
+    background: repeating-conic-gradient(#e5e5e5 0 25%, #fff 0 50%) 0 0 / 16px 16px;
+    display: grid;
     filter: drop-shadow(0 4px 6px rgb(0 0 0 / 50%));
     height: 75%;
     max-width: 75%;
 }
 
+.context__surface > * {
+    grid-area: 1 / 1;
+}
+
+.context__grid {
+    pointer-events: none;
+}
+
 .context__surface :deep(svg) {
+    display: block;
     height: 100%;
     width: 100%;
 }

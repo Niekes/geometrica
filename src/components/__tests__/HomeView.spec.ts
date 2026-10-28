@@ -39,4 +39,49 @@ describe('HomeView', () => {
 
         wrapper.unmount();
     });
+
+    it('shows the grid on the drawing surface but keeps it out of the download', async () => {
+        const createObjectURL = vi.fn((_blob: Blob) => 'blob:geometrica');
+        vi.stubGlobal('URL', { createObjectURL, revokeObjectURL: vi.fn() });
+        const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+        const wrapper = mount(HomeView, {
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+
+        expect(wrapper.find('.context').html()).toContain('non-scaling-stroke');
+
+        await wrapper
+            .findAll('button')
+            .find((b) => b.text() === 'Download')!
+            .trigger('click');
+
+        const exported = await createObjectURL.mock.calls[0]![0].text();
+
+        expect(exported).toMatch(/^<svg/);
+        expect(exported).not.toContain('non-scaling-stroke');
+
+        click.mockRestore();
+        vi.unstubAllGlobals();
+        wrapper.unmount();
+    });
+
+    it('hides the grid when unchecking Grid', async () => {
+        const wrapper = mount(HomeView, {
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+        const checkbox = wrapper
+            .findAll('label')
+            .find((label) => label.text() === 'Grid')!
+            .find('input');
+
+        await checkbox.setValue(false);
+
+        expect(wrapper.find('.context__grid').exists()).toBe(false);
+
+        await checkbox.setValue(true);
+
+        expect(wrapper.find('.context__grid').exists()).toBe(true);
+
+        wrapper.unmount();
+    });
 });

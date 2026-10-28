@@ -3,11 +3,13 @@ import { type Layer, type ShapePreset } from '../types/Layer';
 
 export type Background = {
     color: string;
+    opacity: number;
     borderRadius: number;
 };
 
 export const defaultBackground: Background = Object.freeze({
     color: '#000',
+    opacity: 1,
     borderRadius: 10
 });
 

@@ -30,7 +30,7 @@ describe('serializeState / parseState roundtrip (v2)', () => {
             makeLayer(1, { shape: 'circle', radiusX: 300, radiusY: 200, calcStrokeWidth: ['flip'] })
         ];
         const state = {
-            background: { color: '#123456', borderRadius: 25 },
+            background: { color: '#123456', opacity: 0.4, borderRadius: 25 },
             layers
         };
 
@@ -50,7 +50,8 @@ describe('parseState', () => {
         );
 
         expect(parsed).not.toBeNull();
-        expect(parsed!.background).toEqual({ color: '#ff0000', borderRadius: 15 });
+        // links from before the background opacity load an opaque background
+        expect(parsed!.background).toEqual({ color: '#ff0000', opacity: 1, borderRadius: 15 });
         expect(parsed!.layers.length).toBe(1);
         const layer = parsed!.layers[0]!;
         expect(layer.shape).toBe('polygon');
@@ -100,7 +101,7 @@ describe('parseState', () => {
         );
 
         expect(parsed).not.toBeNull();
-        expect(parsed!.background).toEqual({ color: '#000', borderRadius: 10 });
+        expect(parsed!.background).toEqual({ color: '#000', opacity: 1, borderRadius: 10 });
         expect(parsed!.layers.length).toBe(1);
         const layer = parsed!.layers[0]!;
         expect(layer.shape).toBe('rect');

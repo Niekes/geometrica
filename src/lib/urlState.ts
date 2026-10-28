@@ -61,6 +61,7 @@ function coerceBackground(config: Record<string, unknown> | undefined): Backgrou
 
     return {
         color: typeof bg.color === 'string' ? bg.color : defaultBackground.color,
+        opacity: bg.opacity !== undefined ? Number(bg.opacity) : defaultBackground.opacity,
         borderRadius:
             bg.borderRadius !== undefined ? Number(bg.borderRadius) : defaultBackground.borderRadius
     };

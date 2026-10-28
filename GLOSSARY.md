@@ -7,12 +7,28 @@ Interaktiver Generator für geometrische LineArt: Formen werden auf der Zeichenf
 ### Komposition
 
 **Zeichenfläche**:
-Die quadratische Fläche, auf der Layer komponiert werden. Was auf ihr sichtbar ist, ist genau das, was exportiert wird.
-_Avoid_: Canvas, Stage, Artboard
+Die quadratische Fläche, auf der Layer komponiert werden. Exportiert wird alles, was auf ihr gezeichnet ist; Transparenzmuster und Raster sind reine Arbeitshilfen.
+_Avoid_: Canvas, Stage, Artboard, Bearbeitungsfläche, Zeichenunterlage
 
 **Hintergrund**:
-Farbe und Eckradius der Zeichenfläche. Er gehört zu keinem Layer und ist Teil des Exports; Instanzen werden an seiner Form abgeschnitten.
+Farbe, Deckkraft und Eckradius der Zeichenfläche. Er gehört zu keinem Layer und ist Teil des Exports; Instanzen werden an seiner Form abgeschnitten.
 _Avoid_: bgColor, Canvas-Hintergrund
+
+**Hintergrund-Opacity**:
+Deckkraft des Hintergrunds, stufenlos von 0 (transparent) bis 1.
+_Avoid_: Alpha, Hintergrund-Transparenz
+
+**Transparenzmuster**:
+Das Schachbrettmuster hinter der Zeichenfläche, das transparente Stellen des Exports sichtbar macht. Es wird nicht exportiert.
+_Avoid_: Checkerboard, Schachbrett
+
+**Raster**:
+Hilfslinien und Keylines über der Zeichenfläche zum Ausrichten von Formen. Es skaliert mit der Zeichenfläche und wird nicht exportiert.
+_Avoid_: Gitter
+
+**Keyline**:
+Eine Hilfsform des Rasters nach den Material-Icon-Richtlinien: Kreis, Innenkreis, Quadrat, Hochformat- oder Querformat-Rechteck.
+_Avoid_: Hilfsform, Schlüssellinie
 
 **Form**:
 Eine Pfadgeometrie (Rect, Circle, Polygon oder eigene SVG-Path-Eingabe). Die Form selbst ist nur die Geometrie, ohne Wiederholungs- oder Stilparameter.

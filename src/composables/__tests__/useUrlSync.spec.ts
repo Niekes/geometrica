@@ -47,7 +47,7 @@ describe('useUrlSync', () => {
             {},
             '',
             `/geometrica/?${serializeState({
-                background: { color: '#123456', borderRadius: 20 },
+                background: { color: '#123456', opacity: 1, borderRadius: 20 },
                 layers: [makeLayer('from-url')]
             })}`
         );
@@ -64,7 +64,7 @@ describe('useUrlSync', () => {
 
     it('serializes the current state to the URL', () => {
         layers.value = [makeLayer('one')];
-        background.value = { color: '#abcdef', borderRadius: 5 };
+        background.value = { color: '#abcdef', opacity: 1, borderRadius: 5 };
 
         sync.serializeToUrl();
 
