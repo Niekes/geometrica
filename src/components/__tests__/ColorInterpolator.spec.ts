@@ -9,13 +9,13 @@ describe('ColorInterpolator', () => {
         const wrapper = shallowMount(ColorInterpolator, {
             props: { modelValue: 'interpolateMagma' }
         });
-        const options = wrapper.findAll('button[aria-pressed]');
+        const options = wrapper.findAll('button[aria-current]');
 
         expect(options).toHaveLength(colorInterPolators.length);
         expect(options[0]!.text()).toBe('Magma');
         expect(options[0]!.find('span').attributes('style')).toContain('linear-gradient');
-        expect(options[0]!.attributes('aria-pressed')).toBe('true');
-        expect(options[1]!.attributes('aria-pressed')).toBe('false');
+        expect(options[0]!.attributes('aria-current')).toBe('true');
+        expect(options[1]!.attributes('aria-current')).toBe('false');
     });
 
     it('offers every d3 ramp next to the custom ones, each mapping t to a color', () => {
@@ -32,7 +32,7 @@ describe('ColorInterpolator', () => {
             props: { modelValue: 'interpolateMagma' }
         });
 
-        await wrapper.findAll('button[aria-pressed]')[1]!.trigger('click');
+        await wrapper.findAll('button[aria-current]')[1]!.trigger('click');
 
         expect(wrapper.emitted('update:modelValue')![0]).toEqual([colorInterPolators[1]!.name]);
     });

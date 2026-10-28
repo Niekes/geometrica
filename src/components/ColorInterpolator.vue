@@ -50,30 +50,28 @@ function choose(name: ColorInterPolator) {
             <ChevronDownIcon class="size-4" />
         </button>
 
-        <div
+        <!-- flex-nowrap makes the long menu scroll instead of wrapping into a second column -->
+        <ul
             :id="`${id}-list`"
             ref="list"
             popover
-            class="dropdown max-h-96 w-72 overflow-y-auto rounded-box border border-base-300 bg-base-100 p-1 shadow-lg"
+            class="dropdown menu menu-sm max-h-96 w-72 flex-nowrap overflow-y-auto rounded-box border border-base-300 bg-base-100 shadow-lg"
             :style="{ positionAnchor: `--${id}` }"
         >
-            <button
-                v-for="interpolator in colorInterPolators"
-                :key="interpolator.name"
-                type="button"
-                class="flex w-full items-center gap-2 rounded-field px-2 py-1.5 hover:bg-base-200 focus-visible:outline-2 aria-pressed:bg-base-200 aria-pressed:font-semibold"
-                :aria-pressed="interpolator.name === model"
-                @click="choose(interpolator.name)"
-            >
-                <span
-                    class="h-4 flex-1 rounded-selector"
-                    :style="{ background: ramp(interpolator.fn) }"
-                />
-                <span
-                    class="w-24 truncate text-left text-xs"
-                    v-text="rampName(interpolator.name)"
-                />
-            </button>
-        </div>
+            <li v-for="interpolator in colorInterPolators" :key="interpolator.name">
+                <!-- a menu item lays out like an icon and a label, so the ramp gets an icon's fixed width -->
+                <button
+                    type="button"
+                    :aria-current="interpolator.name === model"
+                    @click="choose(interpolator.name)"
+                >
+                    <span
+                        class="h-4 w-36 rounded-selector"
+                        :style="{ background: ramp(interpolator.fn) }"
+                    />
+                    <span class="truncate" v-text="rampName(interpolator.name)" />
+                </button>
+            </li>
+        </ul>
     </div>
 </template>
