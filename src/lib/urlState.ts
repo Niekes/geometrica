@@ -24,6 +24,8 @@ const NUMERIC_FIELDS = [
     'radiusX',
     'radiusY',
     'rotation',
+    'rotationCx',
+    'rotationCy',
     'sides',
     'size',
     'strokeOpacity',

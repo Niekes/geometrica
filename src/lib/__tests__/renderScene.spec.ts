@@ -154,6 +154,31 @@ describe('renderScene: repetition', () => {
         ]);
     });
 
+    it('swings the instances around the rotation center, offset from the position', () => {
+        // the rotation center lies 100 right of and 100 above the center of the surface
+        const layer = makeLayer('rect', {
+            amount: 3,
+            rotation: 180,
+            rotationCx: 100,
+            rotationCy: 100
+        });
+        const transforms = paths(render([layer])).map((p) => p.getAttribute('transform'));
+
+        expect(transforms).toEqual([
+            'translate(512 512) rotate(0)',
+            'translate(512 312) rotate(90)',
+            'translate(712 312) rotate(180)'
+        ]);
+    });
+
+    it('turns a polygon upright in place, not around the rotation center', () => {
+        const layer = makeLayer('polygon', { rotationCx: 100, rotationCy: 100 });
+
+        expect(paths(render([layer]))[0]!.getAttribute('transform')).toBe(
+            'translate(512 512) rotate(-90)'
+        );
+    });
+
     it('interpolates the opacity along the sequence on top of the layer opacity', () => {
         const layer = makeLayer('rect', {
             amount: 2,

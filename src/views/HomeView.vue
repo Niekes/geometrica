@@ -7,7 +7,7 @@ import TheGallery from '../components/TheGallery.vue';
 import useScene from '../composables/useScene';
 import { useUrlSync } from '../composables/useUrlSync';
 import { surfaceSize } from '../config/surface';
-import { renderGrid, snapToGrid } from '../lib/renderGrid';
+import { lineColor, renderGrid, snapToGrid } from '../lib/renderGrid';
 import { renderScene } from '../lib/renderScene';
 
 const scene = useScene();
@@ -39,24 +39,46 @@ const showGrid = ref(true);
 const grid = computed(() => renderGrid(scene.background.value));
 const toPercent = (d: number) => `${(d * 100).toFixed(0)}%`;
 
-// dragging the drawing surface moves the selected layer; the jitter of a click never moves it
-let drag: { x: number; y: number; cx: number; cy: number; scale: number; moved: boolean } | null =
-    null;
+// the marker of the rotation center keeps its screen size, so it is placed as a share of the surface
+const rotationCenter = computed(() => {
+    const { cx, cy, rotationCx, rotationCy } = scene.selectedLayer.value;
+    const toShare = (d: number) => `${((surfaceSize / 2 + d) / surfaceSize) * 100}%`;
+
+    return {
+        left: toShare(cx + rotationCx),
+        top: toShare(-(cy + rotationCy)),
+        stroke: lineColor(scene.background.value)
+    };
+});
+
+// dragging the drawing surface moves the selected layer, dragging the marker its rotation center;
+// the jitter of a click never moves either. cx and cy hold where the dragged point started.
+let drag: {
+    x: number;
+    y: number;
+    cx: number;
+    cy: number;
+    scale: number;
+    moved: boolean;
+    rotationCenter: boolean;
+} | null = null;
 
 function startDrag(event: PointerEvent) {
     if (event.button !== 0) return;
 
     const surface = event.currentTarget as HTMLElement;
-    const { cx, cy } = scene.selectedLayer.value;
+    const rotationCenter = (event.target as Element).closest('.context__rotation-center') !== null;
+    const { cx, cy, rotationCx, rotationCy } = scene.selectedLayer.value;
 
     surface.setPointerCapture(event.pointerId);
     drag = {
         x: event.clientX,
         y: event.clientY,
-        cx,
-        cy,
+        cx: rotationCenter ? cx + rotationCx : cx,
+        cy: rotationCenter ? cy + rotationCy : cy,
         scale: surfaceSize / surface.clientWidth,
-        moved: false
+        moved: false,
+        rotationCenter
     };
 }
 
@@ -72,16 +94,23 @@ function moveDrag(event: PointerEvent) {
     drag.moved = true;
 
     const { scale } = drag;
-    const place = (start: number, delta: number) => {
+    const layer = scene.selectedLayer.value;
+    const place = (start: number, delta: number, anchor: number) => {
         const half = surfaceSize / 2;
         const position = Math.max(-half, Math.min(half, Math.round(start + delta * scale)));
 
         // the grid shows where a layer snaps to, so without it the layer moves freely
-        return showGrid.value ? snapToGrid(position) : position;
+        return showGrid.value ? snapToGrid(position, anchor) : position;
     };
 
-    scene.selectedLayer.value.cx = place(drag.cx, dx);
-    scene.selectedLayer.value.cy = place(drag.cy, dy);
+    if (drag.rotationCenter) {
+        // the rotation center is stored as an offset from the position, but snaps on the surface
+        layer.rotationCx = place(drag.cx, dx, layer.cx) - layer.cx;
+        layer.rotationCy = place(drag.cy, dy, layer.cy) - layer.cy;
+    } else {
+        layer.cx = place(drag.cx, dx, 0);
+        layer.cy = place(drag.cy, dy, 0);
+    }
 }
 
 function endDrag() {
@@ -175,6 +204,20 @@ onMounted(() => {
             >
                 <div v-html="svg" />
                 <div v-if="showGrid" class="context__grid" v-html="grid" />
+                <svg
+                    v-if="showGrid"
+                    class="context__rotation-center"
+                    :style="rotationCenter"
+                    viewBox="-12 -12 24 24"
+                    fill="none"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                >
+                    <circle r="2" />
+                    <!-- three quarters of a turn, with an arrowhead pointing along it -->
+                    <path d="M8 0 A8 8 0 1 1 0 -8 M-3 -11 L0 -8 L-3 -5" />
+                </svg>
             </div>
         </div>
 
@@ -218,6 +261,7 @@ onMounted(() => {
     filter: drop-shadow(0 4px 6px rgb(0 0 0 / 50%));
     height: 75%;
     max-width: 75%;
+    position: relative;
     /* touch input drags the layer instead of scrolling the page */
     touch-action: none;
 }
@@ -234,5 +278,13 @@ onMounted(() => {
     display: block;
     height: 100%;
     width: 100%;
+}
+
+/* outranks the rule above: a fixed screen size keeps the marker grabbable at any surface size */
+.context__surface .context__rotation-center {
+    height: 24px;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 24px;
 }
 </style>

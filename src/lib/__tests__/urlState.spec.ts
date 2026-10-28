@@ -27,7 +27,14 @@ describe('serializeState / parseState roundtrip (v2)', () => {
                 visible: false,
                 calcOpacity: ['interpolate', 'flip']
             }),
-            makeLayer(1, { shape: 'circle', radiusX: 300, radiusY: 200, calcStrokeWidth: ['flip'] })
+            makeLayer(1, {
+                shape: 'circle',
+                radiusX: 300,
+                radiusY: 200,
+                rotationCx: -40,
+                rotationCy: 12,
+                calcStrokeWidth: ['flip']
+            })
         ];
         const state = {
             background: { color: '#123456', opacity: 0.4, borderRadius: 25 },

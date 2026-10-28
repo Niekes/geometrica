@@ -48,11 +48,16 @@ function keylineRect(width: number, height: number): string {
 }
 
 // positions count from the center, which lies on a grid line, so the lines sit at multiples of a
-// cell; the pull reaches a quarter cell, so positions between the lines stay reachable
-export function snapToGrid(position: number): number {
+// cell; the pull reaches a quarter cell, so positions between the lines stay reachable. The anchor
+// pulls first, so a rotation center finds back onto its layer's position between the lines
+export function snapToGrid(position: number, anchor = 0): number {
+    const pull = cell / 4;
+
+    if (Math.abs(position - anchor) < pull) return anchor;
+
     const nearest = Math.round(position / cell) * cell;
 
-    return Math.abs(position - nearest) < cell / 4 ? nearest : position;
+    return Math.abs(position - nearest) < pull ? nearest : position;
 }
 
 export function renderGrid(background: Background): string {
@@ -64,7 +69,7 @@ export function renderGrid(background: Background): string {
 }
 
 // a translucent background shows the light transparency pattern, so it is mixed over white
-function lineColor(background: Background): string {
+export function lineColor(background: Background): string {
     const mixed = interpolateRgb('#fff', backgroundFill(background))(background.opacity);
 
     return lab(mixed).l > 50 ? '#000' : '#fff';

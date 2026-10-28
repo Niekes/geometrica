@@ -52,8 +52,11 @@ export function backgroundFill(background: Background): string {
 }
 
 function renderLayer(layer: Layer, idPrefix: string, defs: string[]): string {
-    const cx = round(surfaceSize / 2 + layer.cx);
-    const cy = round(surfaceSize / 2 - layer.cy);
+    const cx = surfaceSize / 2 + layer.cx;
+    const cy = surfaceSize / 2 - layer.cy;
+    // the rotation center is an offset from the position; svg counts y downwards
+    const ox = layer.rotationCx;
+    const oy = -layer.rotationCy;
     const colorIp = resolveInterpolator(layer);
     const polygonOffset = layer.shape === 'polygon' ? -PI / 2 : 0;
 
@@ -74,9 +77,14 @@ function renderLayer(layer: Layer, idPrefix: string, defs: string[]): string {
         }
 
         const instanceOpacity = layer.opacity * sequenceOpacity(layer, instance);
-        const rotation = round(((instance.angle + polygonOffset) * 180) / PI);
+        const { angle } = instance;
+        const rotation = round(((angle + polygonOffset) * 180) / PI);
+        // turning around the rotation center swings the instance center along a circle around it,
+        // while the polygon offset only turns the shape in place
+        const x = round(cx + ox - (ox * Math.cos(angle) - oy * Math.sin(angle)));
+        const y = round(cy + oy - (ox * Math.sin(angle) + oy * Math.cos(angle)));
 
-        let attributes = `transform="translate(${cx} ${cy}) rotate(${rotation})"`;
+        let attributes = `transform="translate(${x} ${y}) rotate(${rotation})"`;
 
         // a zero opacity drops the paint entirely, so exports carry no invisible fills or strokes
         attributes +=

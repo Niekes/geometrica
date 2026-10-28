@@ -30,6 +30,8 @@ export function buildLayer(shape: ShapePreset): Layer {
         rotation: 0,
         cx: 0,
         cy: 0,
+        rotationCx: 0,
+        rotationCy: 0,
         strokeWidth: 3,
         colorInterPolator: 'interpolateMagma',
         applyColorSchemeToEachShape: false,

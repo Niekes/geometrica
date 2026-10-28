@@ -127,4 +127,63 @@ describe('HomeView', () => {
 
         wrapper.unmount();
     });
+
+    it('drags the rotation center without moving the layer and snaps it to the position', async () => {
+        const wrapper = mount(HomeView, {
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+        const surface = wrapper.find('.context__surface');
+        const marker = () => wrapper.find<SVGElement>('.context__rotation-center');
+        const grid = wrapper
+            .findAll('label')
+            .find((label) => label.text() === 'Grid')!
+            .find('input');
+        // the pointer goes down on the marker and bubbles to the surface, which captures the rest
+        const pointer = (target: Element, type: string, clientX = 0, clientY = 0) =>
+            target.dispatchEvent(new MouseEvent(type, { bubbles: true, clientX, clientY }));
+        const drag = async (target: Element, dx: number, dy: number) => {
+            pointer(target, 'pointerdown');
+            pointer(surface.element, 'pointermove', dx, dy);
+            pointer(surface.element, 'pointerup');
+            await nextTick();
+        };
+        // the marker sits at a share of the surface, counted from its center with y pointing up
+        const markerAt = () => [marker().element.style.left, marker().element.style.top];
+        const share = (x: number, y: number) => [
+            `${((512 + x) / 1024) * 100}%`,
+            `${((512 - y) / 1024) * 100}%`
+        ];
+
+        Object.defineProperty(surface.element, 'clientWidth', { value: 1024 });
+        surface.element.setPointerCapture = vi.fn();
+
+        // a layer between the grid lines, so its position pulls on its own
+        await grid.setValue(false);
+        await drag(surface.element, 5, 0);
+        await grid.setValue(true);
+
+        expect(markerAt()).toEqual(share(5, 0));
+
+        // x lands within a quarter cell of 32 and snaps; y moves up and stays free
+        await drag(marker().element, 30, -20);
+
+        expect(markerAt()).toEqual(share(32, 20));
+        expect(surface.html()).toContain('translate(517 512)');
+
+        // 7 lies near the grid line at 0, but the position at 5 pulls first
+        await drag(marker().element, -25, 0);
+
+        expect(markerAt()).toEqual(share(5, 20));
+
+        // moving the layer carries the rotation center along
+        await drag(surface.element, 27, 0);
+
+        expect(markerAt()).toEqual(share(32, 20));
+
+        await grid.setValue(false);
+
+        expect(marker().exists()).toBe(false);
+
+        wrapper.unmount();
+    });
 });

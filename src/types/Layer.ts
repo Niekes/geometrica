@@ -20,6 +20,8 @@ export type Layer = {
     rotation: number;
     cx: number;
     cy: number;
+    rotationCx: number;
+    rotationCy: number;
     strokeWidth: number;
     colorInterPolator: ColorInterPolator;
     applyColorSchemeToEachShape: boolean;

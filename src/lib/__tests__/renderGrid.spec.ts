@@ -103,4 +103,10 @@ describe('snapToGrid', () => {
         expect(snapToGrid(48)).toBe(48);
         expect(snapToGrid(-23)).toBe(-23);
     });
+
+    it('snaps to an anchor between the grid lines before it snaps to a line', () => {
+        expect(snapToGrid(7, 5)).toBe(5);
+        expect(snapToGrid(37, 5)).toBe(32);
+        expect(snapToGrid(20, 5)).toBe(20);
+    });
 });

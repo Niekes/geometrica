@@ -72,6 +72,23 @@ const positionControls: Control[] = [
         label: 'CY',
         name: 'cy',
         format: (d: number) => `${d}px`
+    },
+    // an offset from the position: from any position it reaches every point of the surface
+    {
+        min: -surfaceSize,
+        max: surfaceSize,
+        step: 1,
+        label: 'Rotation CX',
+        name: 'rotationCx',
+        format: (d: number) => `${d}px`
+    },
+    {
+        min: -surfaceSize,
+        max: surfaceSize,
+        step: 1,
+        label: 'Rotation CY',
+        name: 'rotationCy',
+        format: (d: number) => `${d}px`
     }
 ];
 
