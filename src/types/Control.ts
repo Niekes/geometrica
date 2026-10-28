@@ -6,5 +6,7 @@ export type Range = {
 
 export type BaseControl = Range & {
     label: string;
-    format?: (value: number) => string;
+    // the field shows the value times the scale, in this unit
+    scale?: number;
+    unit?: string;
 };

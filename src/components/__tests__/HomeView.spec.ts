@@ -20,7 +20,7 @@ describe('HomeView', () => {
         wrapper.unmount();
     });
 
-    it('adds a duplicated layer when clicking Add Layer', async () => {
+    it('adds a layer when clicking Add layer', async () => {
         const wrapper = mount(HomeView, {
             global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
         });
@@ -29,10 +29,7 @@ describe('HomeView', () => {
 
         expect(wrapper.text()).toContain('Layer 1');
 
-        await wrapper
-            .findAll('button')
-            .find((b) => b.text().includes('Add Layer'))!
-            .trigger('click');
+        await wrapper.find('button[aria-label="Add layer"]').trigger('click');
         await new Promise((r) => setTimeout(r, 50));
 
         expect(wrapper.text()).toContain('Layer 2');
@@ -49,11 +46,17 @@ describe('HomeView', () => {
             global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
         });
 
+        await wrapper
+            .findAll('label')
+            .find((label) => label.text() === 'Grid')!
+            .find('input')
+            .setValue(true);
+
         expect(wrapper.find('.context').html()).toContain('non-scaling-stroke');
 
         await wrapper
             .findAll('button')
-            .find((b) => b.text() === 'Download')!
+            .find((b) => b.text() === 'Export SVG')!
             .trigger('click');
 
         const exported = await createObjectURL.mock.calls[0]![0].text();
@@ -66,7 +69,7 @@ describe('HomeView', () => {
         wrapper.unmount();
     });
 
-    it('hides the grid when unchecking Grid', async () => {
+    it('starts with the grid hidden and shows it when checking Grid', async () => {
         const wrapper = mount(HomeView, {
             global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
         });
@@ -75,13 +78,27 @@ describe('HomeView', () => {
             .find((label) => label.text() === 'Grid')!
             .find('input');
 
-        await checkbox.setValue(false);
-
         expect(wrapper.find('.context__grid').exists()).toBe(false);
 
         await checkbox.setValue(true);
 
         expect(wrapper.find('.context__grid').exists()).toBe(true);
+
+        await checkbox.setValue(false);
+
+        expect(wrapper.find('.context__grid').exists()).toBe(false);
+
+        wrapper.unmount();
+    });
+
+    it('rounds the transparency pattern with the corner radius of the background', () => {
+        const wrapper = mount(HomeView, {
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+
+        expect(wrapper.find('.context__surface').attributes('style')).toContain(
+            'border-radius: 10%'
+        );
 
         wrapper.unmount();
     });
@@ -91,9 +108,9 @@ describe('HomeView', () => {
             global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
         });
         const surface = wrapper.find('.context__surface');
-        const grid = wrapper
+        const snap = wrapper
             .findAll('label')
-            .find((label) => label.text() === 'Grid')!
+            .find((label) => label.text() === 'Snap')!
             .find('input');
         // jsdom lacks PointerEvent; a MouseEvent carries the same coordinates and button
         const pointer = (type: string, clientX = 0, clientY = 0) =>
@@ -114,13 +131,13 @@ describe('HomeView', () => {
 
         expect(surface.html()).toContain('translate(544 532)');
 
-        await grid.setValue(false);
+        await snap.setValue(false);
         await drag(5, 0);
 
         expect(surface.html()).toContain('translate(549 532)');
 
         // the jitter of a click moves nothing, so it does not snap the layer either
-        await grid.setValue(true);
+        await snap.setValue(true);
         await drag(1, 1);
 
         expect(surface.html()).toContain('translate(549 532)');
@@ -134,10 +151,11 @@ describe('HomeView', () => {
         });
         const surface = wrapper.find('.context__surface');
         const marker = () => wrapper.find<SVGElement>('.context__rotation-center');
-        const grid = wrapper
-            .findAll('label')
-            .find((label) => label.text() === 'Grid')!
-            .find('input');
+        const toggle = (text: string) =>
+            wrapper
+                .findAll('label')
+                .find((label) => label.text() === text)!
+                .find('input');
         // the pointer goes down on the marker and bubbles to the surface, which captures the rest
         const pointer = (target: Element, type: string, clientX = 0, clientY = 0) =>
             target.dispatchEvent(new MouseEvent(type, { bubbles: true, clientX, clientY }));
@@ -158,9 +176,9 @@ describe('HomeView', () => {
         surface.element.setPointerCapture = vi.fn();
 
         // a layer between the grid lines, so its position pulls on its own
-        await grid.setValue(false);
+        await toggle('Snap').setValue(false);
         await drag(surface.element, 5, 0);
-        await grid.setValue(true);
+        await toggle('Snap').setValue(true);
 
         expect(markerAt()).toEqual(share(5, 0));
 
@@ -180,7 +198,12 @@ describe('HomeView', () => {
 
         expect(markerAt()).toEqual(share(32, 20));
 
-        await grid.setValue(false);
+        // the marker has a toggle of its own, apart from the grid
+        await toggle('Grid').setValue(false);
+
+        expect(marker().exists()).toBe(true);
+
+        await toggle('Rotation center').setValue(false);
 
         expect(marker().exists()).toBe(false);
 

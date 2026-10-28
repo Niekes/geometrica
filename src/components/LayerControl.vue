@@ -1,242 +1,165 @@
 <script setup lang="ts">
 // Vue
-import { computed, ref } from 'vue';
-
-// Icons
-import { LockClosedIcon, LockOpenIcon } from '@heroicons/vue/24/outline';
+import { computed } from 'vue';
 
 // Types
-import type { Layer } from '@/types/Layer';
+import type { Layer, ShapePreset } from '@/types/Layer';
 import type { BaseControl } from '@/types/Control';
 
 // Components
-import BaseRadioButton from '@/components/BaseRadioButton.vue';
+import BaseAccordion from '@/components/BaseAccordion.vue';
 import BaseCheckBox from '@/components/BaseCheckBox.vue';
 import BaseRangeSlider from '@/components/BaseRangeSlider.vue';
-import BaseAccordion from '@/components/BaseAccordion.vue';
-import LayerSizeControl from '@/components/LayerSizeControl.vue';
+import BaseSegmented from '@/components/BaseSegmented.vue';
 import LayerColorControl from '@/components/LayerColorControl.vue';
-import LayerPathControl from '@/components/LayerPathControl.vue';
+import LayerShapeControl from '@/components/LayerShapeControl.vue';
 
 // Config
-import { useLinkedSliders } from '@/composables/useLinkedSliders';
 import { buildLayer } from '@/config/defaults';
 import { layerRanges } from '@/config/ranges';
-import { calcStrokeWidthOptions, shapeOptions } from '@/config/controlOptions';
+import { calcOpacityOptions, calcStrokeWidthOptions, shapeOptions } from '@/config/controlOptions';
 
 const layer = defineModel<Layer>({ required: true });
 
 type Control = BaseControl & { name: keyof Layer };
 
-const defaults = computed<Layer>(() => buildLayer(layer.value.shape));
+const percent = { scale: 100, unit: '%' };
 
-const generalControls: Control[] = [
-    {
-        ...layerRanges.amount,
-        label: 'Amount',
-        name: 'amount'
-    },
-    {
-        ...layerRanges.distance,
-        label: 'Distance',
-        name: 'distance',
-        format: (d: number) => d.toFixed(1)
-    },
-    {
-        ...layerRanges.rotation,
-        label: 'Rotation',
-        name: 'rotation',
-        format: (d: number) => `${d}°`
-    }
+const repetitionControls: Control[] = [
+    { ...layerRanges.amount, label: 'Amount', name: 'amount' },
+    { ...layerRanges.distance, label: 'Distance', name: 'distance' },
+    { ...layerRanges.rotation, label: 'Rotation', name: 'rotation', unit: '°' },
+    { ...layerRanges.rotationCx, label: 'Rotation center X', name: 'rotationCx', unit: 'px' },
+    { ...layerRanges.rotationCy, label: 'Rotation center Y', name: 'rotationCy', unit: 'px' }
 ];
 
 const positionControls: Control[] = [
-    {
-        ...layerRanges.cx,
-        label: 'CX',
-        name: 'cx',
-        format: (d: number) => `${d}px`
-    },
-    {
-        ...layerRanges.cy,
-        label: 'CY',
-        name: 'cy',
-        format: (d: number) => `${d}px`
-    },
-    {
-        ...layerRanges.rotationCx,
-        label: 'Rotation CX',
-        name: 'rotationCx',
-        format: (d: number) => `${d}px`
-    },
-    {
-        ...layerRanges.rotationCy,
-        label: 'Rotation CY',
-        name: 'rotationCy',
-        format: (d: number) => `${d}px`
-    }
+    { ...layerRanges.cx, label: 'X', name: 'cx', unit: 'px' },
+    { ...layerRanges.cy, label: 'Y', name: 'cy', unit: 'px' }
 ];
 
-const toBorderPercent = (d: number) => `${(d * 50).toFixed(1)}%`;
+// one outline per preset, on a 20 unit square
+const shapeIcons: Record<ShapePreset, string> = {
+    rect: 'M4 4h12v12H4z',
+    circle: 'M10 3a7 7 0 1 0 0 14a7 7 0 1 0 0-14z',
+    polygon: 'M10 3.5l6.66 4.84-2.55 7.82H5.89L3.34 8.34z',
+    custom: 'M3 15C6 3 9 17 12 9s4-5 5-4'
+};
 
-const borderRadiusControls: Control[] = [
-    {
-        ...layerRanges.borderRadiusTl,
-        label: 'Border Radius Top Left',
-        name: 'borderRadiusTl',
-        format: toBorderPercent
-    },
-    {
-        ...layerRanges.borderRadiusTr,
-        label: 'Border Radius Top Right',
-        name: 'borderRadiusTr',
-        format: toBorderPercent
-    },
-    {
-        ...layerRanges.borderRadiusBl,
-        label: 'Border Radius Bottom Left',
-        name: 'borderRadiusBl',
-        format: toBorderPercent
-    },
-    {
-        ...layerRanges.borderRadiusBr,
-        label: 'Border Radius Bottom Right',
-        name: 'borderRadiusBr',
-        format: toBorderPercent
-    }
-];
-
-const isBorderRadiusLocked = ref(true);
-
-useLinkedSliders(
-    layer,
-    ['borderRadiusTl', 'borderRadiusTr', 'borderRadiusBl', 'borderRadiusBr'],
-    isBorderRadiusLocked,
-    () => layer.value.shape === 'rect'
+// reversing alone leaves the opacity as it is, so it waits for the fade
+const fadeOptions = computed(() =>
+    calcOpacityOptions.map((option) => ({
+        ...option,
+        disabled: option.value === 'flip' && !layer.value.calcOpacity.includes('interpolate')
+    }))
 );
 
 const isStrokeRelevant = computed(() => layer.value.strokeOpacity > 0);
 
-function resetFields(controls: Control[]) {
-    controls.forEach((ctrl) => {
-        (layer.value[ctrl.name] as number) = defaults.value[ctrl.name] as number;
-    });
+// a reset keeps what identifies the layer, and the path a custom shape is drawn from
+function resetLayer() {
+    const { id, name, visible, shape, path } = layer.value;
+
+    Object.assign(layer.value, buildLayer(shape), { id, name, visible, path });
 }
 </script>
 
 <template>
-    <div class="flex flex-col gap-4">
-        <BaseRadioButton :options="shapeOptions" v-model="layer.shape" />
-
-        <BaseAccordion v-if="layer.shape === 'custom'">
-            <template #title> Custom Shape </template>
-            <template #content>
-                <LayerPathControl v-model="layer" />
-            </template>
-        </BaseAccordion>
-
-        <BaseAccordion>
-            <template #title> General </template>
-            <template #content>
-                <BaseRangeSlider
-                    v-for="ctrl in generalControls"
-                    :key="ctrl.name"
-                    v-model.number="layer[ctrl.name] as number"
-                    :min="ctrl.min"
-                    :max="ctrl.max"
-                    :step="ctrl.step"
-                    :label="ctrl.label"
-                    :format="ctrl.format"
-                />
-            </template>
-        </BaseAccordion>
-
-        <BaseAccordion>
-            <template #title> Size </template>
-            <template #content>
-                <LayerSizeControl v-model="layer" />
-            </template>
-        </BaseAccordion>
-
-        <BaseAccordion v-if="layer.shape === 'rect'">
-            <template #title> Border Radius </template>
-            <template #content>
-                <button
-                    class="btn btn-sm btn-square self-end"
-                    @click="isBorderRadiusLocked = !isBorderRadiusLocked"
-                >
-                    <LockClosedIcon v-if="isBorderRadiusLocked" class="size-4" />
-                    <LockOpenIcon v-if="!isBorderRadiusLocked" class="size-4" />
+    <div class="flex flex-col">
+        <header class="flex flex-col gap-3 border-b border-base-300 py-4">
+            <div class="flex items-center justify-between gap-2">
+                <h2 class="truncate text-base font-semibold" v-text="layer.name" />
+                <button type="button" class="btn btn-ghost btn-xs" @click="resetLayer">
+                    Reset
                 </button>
+            </div>
 
+            <BaseSegmented v-model="layer.shape" legend="Shape" :options="shapeOptions" hide-legend>
+                <template #default="{ option }">
+                    <svg
+                        viewBox="0 0 20 20"
+                        class="size-4 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        aria-hidden="true"
+                    >
+                        <path :d="shapeIcons[option.value]" />
+                    </svg>
+                    {{ option.label }}
+                </template>
+            </BaseSegmented>
+
+            <BaseRangeSlider
+                v-model.number="layer.opacity"
+                v-bind="{ ...layerRanges.opacity, ...percent }"
+                label="Layer opacity"
+            />
+        </header>
+
+        <BaseAccordion title="Shape" open>
+            <LayerShapeControl v-model="layer" />
+        </BaseAccordion>
+
+        <BaseAccordion title="Repetition" open>
+            <BaseRangeSlider
+                v-for="ctrl in repetitionControls"
+                :key="ctrl.name"
+                v-model.number="layer[ctrl.name] as number"
+                :min="ctrl.min"
+                :max="ctrl.max"
+                :step="ctrl.step"
+                :label="ctrl.label"
+                :unit="ctrl.unit"
+            />
+            <BaseCheckBox :options="fadeOptions" v-model="layer.calcOpacity" />
+        </BaseAccordion>
+
+        <BaseAccordion title="Position">
+            <BaseRangeSlider
+                v-for="ctrl in positionControls"
+                :key="ctrl.name"
+                v-model.number="layer[ctrl.name] as number"
+                :min="ctrl.min"
+                :max="ctrl.max"
+                :step="ctrl.step"
+                :label="ctrl.label"
+                :unit="ctrl.unit"
+            />
+        </BaseAccordion>
+
+        <BaseAccordion title="Color">
+            <LayerColorControl v-model="layer" />
+        </BaseAccordion>
+
+        <BaseAccordion title="Fill">
+            <BaseRangeSlider
+                v-model.number="layer.fillOpacity"
+                v-bind="{ ...layerRanges.fillOpacity, ...percent }"
+                label="Fill opacity"
+            />
+        </BaseAccordion>
+
+        <BaseAccordion title="Stroke">
+            <BaseRangeSlider
+                v-model.number="layer.strokeOpacity"
+                v-bind="{ ...layerRanges.strokeOpacity, ...percent }"
+                label="Stroke opacity"
+            />
+            <fieldset class="flex flex-col gap-3" :disabled="!isStrokeRelevant">
                 <BaseRangeSlider
-                    v-for="ctrl in borderRadiusControls"
-                    :key="ctrl.name"
-                    v-model.number="layer[ctrl.name] as number"
-                    :min="ctrl.min"
-                    :max="ctrl.max"
-                    :step="ctrl.step"
-                    :label="ctrl.label"
-                    :format="ctrl.format"
+                    v-model.number="layer.strokeWidth"
+                    v-bind="layerRanges.strokeWidth"
+                    label="Stroke width"
+                    unit="px"
                 />
-            </template>
+                <BaseCheckBox :options="calcStrokeWidthOptions" v-model="layer.calcStrokeWidth" />
+            </fieldset>
+            <p v-if="!isStrokeRelevant" class="text-xs text-base-content/70">
+                Raise the stroke opacity to draw a stroke.
+            </p>
         </BaseAccordion>
-
-        <BaseAccordion>
-            <template #title> Fill &amp; Color </template>
-            <template #content>
-                <LayerColorControl v-model="layer" />
-            </template>
-        </BaseAccordion>
-
-        <BaseAccordion>
-            <template #title> Stroke </template>
-            <template #content>
-                <fieldset class="flex flex-col gap-2" :disabled="!isStrokeRelevant">
-                    <BaseRangeSlider
-                        v-model.number="layer.strokeWidth"
-                        v-bind="layerRanges.strokeWidth"
-                        label="Stroke Width"
-                        :format="(d: number) => d.toFixed(1)"
-                    />
-
-                    <BaseCheckBox
-                        :options="calcStrokeWidthOptions"
-                        v-model="layer.calcStrokeWidth"
-                    />
-                </fieldset>
-            </template>
-        </BaseAccordion>
-
-        <BaseAccordion>
-            <template #title> Position </template>
-            <template #content>
-                <BaseRangeSlider
-                    v-for="ctrl in positionControls"
-                    :key="ctrl.name"
-                    v-model.number="layer[ctrl.name] as number"
-                    :min="ctrl.min"
-                    :max="ctrl.max"
-                    :step="ctrl.step"
-                    :label="ctrl.label"
-                    :format="ctrl.format"
-                />
-            </template>
-        </BaseAccordion>
-
-        <button
-            class="btn btn-xs self-end"
-            @click="
-                resetFields(generalControls);
-                resetFields(borderRadiusControls);
-                resetFields(positionControls);
-                layer.opacity = defaults.opacity;
-                layer.fillOpacity = defaults.fillOpacity;
-                layer.strokeOpacity = defaults.strokeOpacity;
-                layer.strokeWidth = defaults.strokeWidth;
-            "
-        >
-            Reset Layer
-        </button>
     </div>
 </template>

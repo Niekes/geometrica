@@ -3,21 +3,35 @@ const appName: string = import.meta.env.VITE_APP_NAME;
 const appDescription: string = import.meta.env.VITE_APP_DESCRIPTION;
 // a page of its own outside the router, see vite.config.ts
 const agentGuideUrl: string = `${import.meta.env.BASE_URL}agent/`;
+// the logo is an artwork made with Geometrica, kept apart from the gallery so reordering it never swaps the logo
+const logoUrl: string = `${import.meta.env.BASE_URL}logo.webp`;
 </script>
 
 <template>
     <div class="navbar bg-base-300 shadow-sm fixed top-0 z-50">
-        <div class="navbar-start gap-2">
-            <span class="text-xl ml-2" v-text="appName" />
-
-            <span class="text-sm font-extralight opacity-80" v-text="appDescription" />
+        <div class="navbar-start ml-2 gap-3">
+            <!-- black with a 10% corner radius, like the default background of an artwork -->
+            <img
+                :src="logoUrl"
+                alt=""
+                width="40"
+                height="40"
+                class="size-10 rounded-[10%] bg-black"
+            />
+            <div class="flex flex-col leading-tight">
+                <span class="text-lg font-semibold tracking-tight" v-text="appName" />
+                <span class="text-xs text-base-content/70" v-text="appDescription" />
+            </div>
         </div>
         <div class="navbar-end gap-2">
             <a class="btn btn-ghost btn-sm" :href="agentGuideUrl">Use with AI</a>
+            <!-- the actions of the current view -->
+            <slot />
             <a
                 class="btn btn-ghost btn-circle"
                 href="https://github.com/niekes/geometrica"
                 target="_blank"
+                aria-label="Geometrica on GitHub"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" class="size-6">
                     <g class="text-black dark:text-white">

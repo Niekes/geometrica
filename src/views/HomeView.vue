@@ -4,6 +4,7 @@ import BaseRangeSlider from '../components/BaseRangeSlider.vue';
 import LayerList from '../components/LayerList.vue';
 import LayerControl from '../components/LayerControl.vue';
 import TheGallery from '../components/TheGallery.vue';
+import TheNavbar from '../components/TheNavbar.vue';
 import useScene from '../composables/useScene';
 import { useUrlSync } from '../composables/useUrlSync';
 import { useWebMcp } from '../composables/useWebMcp';
@@ -38,10 +39,12 @@ function download() {
     setTimeout(() => URL.revokeObjectURL(link.href));
 }
 
-// the grid is part of the working view only: it is not stored in the URL and never exported
-const showGrid = ref(true);
+// the grid, snapping and the rotation center belong to the working view only:
+// they are not stored in the URL and never exported
+const showGrid = ref(false);
+const snap = ref(true);
+const showRotationCenter = ref(true);
 const grid = computed(() => renderGrid(scene.background.value));
-const toPercent = (d: number) => `${(d * 100).toFixed(0)}%`;
 
 // the marker of the rotation center keeps its screen size, so it is placed as a share of the surface
 const rotationCenter = computed(() => {
@@ -103,8 +106,7 @@ function moveDrag(event: PointerEvent) {
         const half = surfaceSize / 2;
         const position = Math.max(-half, Math.min(half, Math.round(start + delta * scale)));
 
-        // the grid shows where a layer snaps to, so without it the layer moves freely
-        return showGrid.value ? snapToGrid(position, anchor) : position;
+        return snap.value ? snapToGrid(position, anchor) : position;
     };
 
     if (drag.rotationCenter) {
@@ -133,9 +135,108 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="home grid">
-        <div class="bg-base-200 p-4 w-full justify-items-center overflow-scroll">
+    <div class="home">
+        <TheNavbar>
+            <button type="button" class="btn btn-ghost btn-sm" @click="showGallery = true">
+                Gallery
+            </button>
+            <button type="button" class="btn btn-primary btn-sm" @click="download">
+                Export SVG
+            </button>
+        </TheNavbar>
+
+        <aside class="panel bg-base-200" aria-label="Layer properties">
+            <LayerControl
+                v-if="scene.selectedLayer.value"
+                v-model="scene.selectedLayer.value"
+                :key="scene.selectedLayer.value?.id"
+            />
+        </aside>
+
+        <main class="context">
+            <div class="context__stage">
+                <div class="context__fit">
+                    <div
+                        class="context__surface"
+                        :style="{ borderRadius: `${scene.background.value.borderRadius}%` }"
+                        @pointerdown="startDrag"
+                        @pointermove="moveDrag"
+                        @pointerup="endDrag"
+                        @pointercancel="endDrag"
+                    >
+                        <div v-html="svg" />
+                        <div v-if="showGrid" class="context__grid" v-html="grid" />
+                        <svg
+                            v-if="showRotationCenter"
+                            class="context__rotation-center"
+                            :style="rotationCenter"
+                            viewBox="-12 -12 24 24"
+                            fill="none"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <circle r="2" />
+                            <!-- three quarters of a turn, with an arrowhead pointing along it -->
+                            <path d="M8 0 A8 8 0 1 1 0 -8 M-3 -11 L0 -8 L-3 -5" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="context__bar">
+                    <!-- exported with the artwork -->
+                    <fieldset class="flex flex-wrap items-end gap-4">
+                        <legend class="mb-2 text-xs font-semibold">Background</legend>
+                        <label class="flex flex-col gap-1 text-xs">
+                            Color
+                            <input
+                                v-model="scene.background.value.color"
+                                type="color"
+                                class="h-7 w-12 cursor-pointer rounded-field"
+                            />
+                        </label>
+                        <BaseRangeSlider
+                            v-model.number="scene.background.value.opacity"
+                            v-bind="backgroundRanges.opacity"
+                            class="w-44"
+                            label="Opacity"
+                            :scale="100"
+                            unit="%"
+                        />
+                        <BaseRangeSlider
+                            v-model.number="scene.background.value.borderRadius"
+                            v-bind="backgroundRanges.borderRadius"
+                            class="w-44"
+                            label="Corner radius"
+                            unit="%"
+                        />
+                    </fieldset>
+
+                    <!-- working aids, never exported -->
+                    <fieldset class="flex flex-wrap items-center gap-4">
+                        <legend class="mb-2 text-xs font-semibold">View</legend>
+                        <label class="flex cursor-pointer items-center gap-2 text-xs">
+                            <input v-model="showGrid" type="checkbox" class="toggle toggle-xs" />
+                            Grid
+                        </label>
+                        <label class="flex cursor-pointer items-center gap-2 text-xs">
+                            <input v-model="snap" type="checkbox" class="toggle toggle-xs" />
+                            Snap
+                        </label>
+                        <label class="flex cursor-pointer items-center gap-2 text-xs">
+                            <input
+                                v-model="showRotationCenter"
+                                type="checkbox"
+                                class="toggle toggle-xs"
+                            />
+                            Rotation center
+                        </label>
+                    </fieldset>
+                </div>
+            </div>
+
             <LayerList
+                class="context__layers rounded-box border border-base-300 bg-base-100 shadow-sm"
                 :layers="scene.layers.value"
                 :selected-id="scene.selectedLayerId.value"
                 @select="(id: string) => (scene.selectedLayerId.value = id)"
@@ -145,81 +246,7 @@ onMounted(() => {
                 @move="scene.moveLayer"
                 @toggle-visibility="scene.toggleVisibility"
             />
-
-            <div class="divider"></div>
-
-            <LayerControl
-                v-if="scene.selectedLayer.value"
-                v-model="scene.selectedLayer.value"
-                :key="scene.selectedLayer.value?.id"
-            />
-
-            <div class="divider"></div>
-
-            <div class="w-full flex flex-col gap-2">
-                <label class="text-xs font-semibold uppercase opacity-60" for="bg-color">
-                    Background
-                </label>
-                <input
-                    id="bg-color"
-                    type="color"
-                    class="w-full h-8 cursor-pointer bg-transparent"
-                    v-model="scene.background.value.color"
-                />
-                <BaseRangeSlider
-                    v-model.number="scene.background.value.opacity"
-                    v-bind="backgroundRanges.opacity"
-                    label="Opacity"
-                    :format="toPercent"
-                />
-                <label class="w-full text-xs" for="bg-radius">
-                    Radius ({{ scene.background.value.borderRadius }}%)
-                </label>
-                <input
-                    id="bg-radius"
-                    type="range"
-                    v-bind="backgroundRanges.borderRadius"
-                    class="range range-xs w-full"
-                    v-model.number="scene.background.value.borderRadius"
-                />
-                <label class="inline-flex items-center gap-2 cursor-pointer text-xs">
-                    <input type="checkbox" class="checkbox checkbox-sm" v-model="showGrid" />
-                    Grid
-                </label>
-            </div>
-
-            <button class="btn btn-primary btn-block mt-4" @click="download">Download</button>
-            <button class="btn btn-neutral btn-block mt-4" @click="showGallery = true">
-                Gallery
-            </button>
-        </div>
-
-        <div class="context">
-            <div
-                class="context__surface"
-                @pointerdown="startDrag"
-                @pointermove="moveDrag"
-                @pointerup="endDrag"
-                @pointercancel="endDrag"
-            >
-                <div v-html="svg" />
-                <div v-if="showGrid" class="context__grid" v-html="grid" />
-                <svg
-                    v-if="showGrid"
-                    class="context__rotation-center"
-                    :style="rotationCenter"
-                    viewBox="-12 -12 24 24"
-                    fill="none"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                >
-                    <circle r="2" />
-                    <!-- three quarters of a turn, with an arrowhead pointing along it -->
-                    <path d="M8 0 A8 8 0 1 1 0 -8 M-3 -11 L0 -8 L-3 -5" />
-                </svg>
-            </div>
-        </div>
+        </main>
 
         <TheGallery v-model="showGallery" />
     </div>
@@ -229,27 +256,52 @@ onMounted(() => {
 .home {
     --navbar-height: 4rem;
 
+    display: grid;
+    grid-template-columns: 22rem minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
     margin-top: var(--navbar-height);
     height: calc(100vh - var(--navbar-height));
     height: calc(100dvh - var(--navbar-height));
-    grid-template-areas: 'control context';
-    grid-template-columns: minmax(0, 24rem) 1fr;
-    grid-template-rows: minmax(0, 1fr);
 }
 
-.control {
-    grid-area: control;
-}
-
-.control__shapes {
-    grid-area: shapes;
+.panel {
+    overflow-y: auto;
+    padding: 0 1rem 1rem;
 }
 
 .context {
-    align-items: center;
     display: flex;
-    grid-area: context;
+    gap: 1rem;
+    min-width: 0;
+    padding: 1.5rem;
+}
+
+.context__stage {
+    display: grid;
+    flex: 1;
+    gap: 1.25rem;
+    grid-template-rows: minmax(0, 1fr) auto;
+    min-width: 0;
+}
+
+/* the surface takes the largest square that fits, beside the bar below it */
+.context__fit {
+    container-type: size;
+    display: grid;
+    place-items: center;
+}
+
+.context__bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2.5rem;
     justify-content: center;
+}
+
+.context__layers {
+    align-self: flex-start;
+    flex-shrink: 0;
+    width: 15rem;
 }
 
 .context__surface {
@@ -259,18 +311,20 @@ onMounted(() => {
     cursor: move;
     display: grid;
     filter: drop-shadow(0 4px 6px rgb(0 0 0 / 50%));
-    height: 75%;
-    max-width: 75%;
     position: relative;
     /* touch input drags the layer instead of scrolling the page */
     touch-action: none;
+    width: min(100cqw, 100cqh);
 }
 
 .context__surface > * {
     grid-area: 1 / 1;
 }
 
+/* the grid follows the rounded corners of the surface, the rotation center may leave it */
 .context__grid {
+    border-radius: inherit;
+    overflow: hidden;
     pointer-events: none;
 }
 

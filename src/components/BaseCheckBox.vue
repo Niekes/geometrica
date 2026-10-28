@@ -2,6 +2,7 @@
 type Option = {
     value: string | boolean;
     label: string;
+    disabled?: boolean;
 };
 
 const props = defineProps<{
@@ -30,7 +31,7 @@ const onChange = (value: string | boolean) => {
         <label
             v-for="opt in options"
             :key="opt.value.toString()"
-            class="inline-flex items-center gap-2 cursor-pointer"
+            class="inline-flex cursor-pointer items-center gap-2 text-xs has-disabled:cursor-not-allowed has-disabled:text-base-content/50"
         >
             <input
                 type="checkbox"
@@ -40,6 +41,7 @@ const onChange = (value: string | boolean) => {
                         ? modelValue.includes(opt.value)
                         : modelValue === opt.value
                 "
+                :disabled="opt.disabled"
                 @change="onChange(opt.value)"
             />
             <span>{{ opt.label }}</span>

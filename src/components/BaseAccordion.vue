@@ -1,41 +1,36 @@
-<script setup lang="ts">
-import { ref } from 'vue';
+<script lang="ts">
+import { reactive } from 'vue';
 
+// the panel remounts for every layer, so the open sections live outside of it
+const openSections = reactive<Record<string, boolean>>({});
+</script>
+
+<script setup lang="ts">
 import { ChevronDownIcon } from '@heroicons/vue/24/outline';
 
-const open = ref(false);
+const props = defineProps<{
+    title: string;
+    open?: boolean;
+}>();
 
-const toggle = () => {
-    open.value = !open.value;
-};
+openSections[props.title] ??= props.open ?? false;
+
+function onToggle(event: Event) {
+    openSections[props.title] = (event.target as HTMLDetailsElement).open;
+}
 </script>
 
 <template>
-    <div class="accordion bg-base-100 border border-gray-300 dark:border-gray-950 p-3 rounded-md">
-        <!-- Header / Title -->
-        <div
-            class="accordion-header cursor-pointer select-none flex justify-between items-center font-semibold"
-            @click="toggle"
+    <details class="group border-b border-base-300" :open="openSections[title]" @toggle="onToggle">
+        <summary
+            class="flex cursor-pointer list-none items-center justify-between rounded-field py-3 text-sm font-semibold select-none focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden"
         >
-            <slot name="title" />
-            <!-- Arrow -->
-            <ChevronDownIcon
-                class="transition-transform duration-300 size-4"
-                :class="{ 'rotate-180': open }"
-            />
-        </div>
+            {{ title }}
+            <ChevronDownIcon class="size-4 transition-transform group-open:rotate-180" />
+        </summary>
 
-        <!-- Content -->
-        <div
-            class="accordion-grid grid grid-rows-[0fr] transition-[grid-template-rows] pt-0 duration-500 ease-in-out overflow-hidden"
-            :class="{ 'grid-rows-[1fr]': open }"
-        >
-            <div
-                class="accordion-inner overflow-hidden transition-[padding] flex flex-col gap-2"
-                :class="{ 'pt-4': open }"
-            >
-                <slot name="content" />
-            </div>
+        <div class="flex flex-col gap-3 pb-4">
+            <slot />
         </div>
-    </div>
+    </details>
 </template>

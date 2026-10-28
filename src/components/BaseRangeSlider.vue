@@ -1,9 +1,6 @@
 <script setup lang="ts">
 // Vue
-import { computed } from 'vue';
-
-// Icons
-import { PlusIcon, MinusIcon } from '@heroicons/vue/24/outline';
+import { computed, useId } from 'vue';
 
 // Model
 const modelValue = defineModel<number | string>({ default: 0 });
@@ -15,12 +12,14 @@ const props = defineProps({
     mid: { type: Number, default: 0 },
     step: { type: Number, default: 1 },
     label: { type: String, required: true },
-    format: { type: Function, default: (d: number) => d }
+    // the field shows the value times the scale, e.g. 100 for a share shown in percent
+    scale: { type: Number, default: 1 },
+    unit: { type: String, default: '' }
 });
 
 // Vars
-const thumbSize = 16;
-const trackBgHeight = 8;
+const id = useId();
+const thumbSize = '1rem';
 
 // Computed
 const numericValue = computed<number>({
@@ -33,134 +32,115 @@ const numericValue = computed<number>({
         return v ?? 0;
     },
     set(v) {
-        const min = props.min;
-        const max = props.max;
-        const clamped = Math.min(max, Math.max(min, v));
-        modelValue.value = clamped;
+        // the steps count from min, like the native slider's; rounding keeps float noise like 0.30000000000000004 out of the URL
+        const stepped = props.min + Math.round((v - props.min) / props.step) * props.step;
+
+        modelValue.value = Number(Math.min(props.max, Math.max(props.min, stepped)).toFixed(6));
     }
 });
 
-const percent = computed(() => (numericValue.value - props.min) / (props.max - props.min));
+const fieldStep = computed(() => props.step * props.scale);
 
-const midPercent = computed(() => (props.mid - props.min) / (props.max - props.min));
+// as many decimals as the step needs: 0.5 shows one, 1 none
+const decimals = computed(() => Math.max(0, Math.ceil(-Math.log10(fieldStep.value) - 1e-9)));
 
-// Emits
-defineEmits(['update:modelValue', 'input']);
+const fieldValue = computed(() => (numericValue.value * props.scale).toFixed(decimals.value));
+
+// a slider below zero fills from the middle, so the fill shows the sign of the value
+const isBipolar = computed(() => props.min < 0);
+
+const share = (v: number) => (v - props.min) / (props.max - props.min);
+
+// the fill is the path the thumb sweeps from mid to the value, so both round ends sit where a thumb would
+const fill = computed(() => {
+    const [from, to] = [props.mid, numericValue.value].sort((a, b) => a - b) as [number, number];
+
+    return {
+        left: `calc(${share(from)} * (100% - ${thumbSize}))`,
+        width: `calc(${share(to) - share(from)} * (100% - ${thumbSize}) + ${thumbSize})`
+    };
+});
+
+function readField(event: Event): number {
+    return (event.target as HTMLInputElement).valueAsNumber / props.scale;
+}
+
+// half-typed values such as "-" or ones out of range wait for the change event
+function onFieldInput(event: Event) {
+    const value = readField(event);
+
+    if (Number.isNaN(value) || value < props.min || value > props.max) return;
+
+    numericValue.value = value;
+}
+
+function onFieldChange(event: Event) {
+    const value = readField(event);
+
+    if (!Number.isNaN(value)) numericValue.value = value;
+
+    // a rejected or clamped value leaves the model as it was, so Vue would not rewrite the field
+    (event.target as HTMLInputElement).value = fieldValue.value;
+}
+
+const arrowDirections: Record<string, number> = {
+    ArrowUp: 1,
+    ArrowRight: 1,
+    ArrowDown: -1,
+    ArrowLeft: -1
+};
+
+// Shift with an arrow key moves ten steps; in the text field left and right only move the caret
+function onKeydown(event: KeyboardEvent) {
+    const direction = arrowDirections[event.key];
+    const isField = (event.target as HTMLInputElement).type === 'number';
+
+    if (!event.shiftKey || !direction) return;
+    if (isField && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) return;
+
+    event.preventDefault();
+    numericValue.value += direction * props.step * 10;
+}
 </script>
 
 <template>
-    <template v-if="min < 0">
-        <div class="w-full flex flex-col gap-1">
-            <label
-                class="flex w-full text-xs justify-center"
-                v-text="`${label} (${format(numericValue)})`"
-            />
-
-            <div class="flex items-center gap-2">
-                <button
-                    :disabled="numericValue === props.min"
-                    class="btn btn-xs"
-                    @click="numericValue -= props.step"
-                >
-                    <MinusIcon class="size-3" />
-                </button>
-
-                <div
-                    class="relative w-full flex flex-col select-none"
-                    :style="{
-                        height: `${thumbSize}px`
-                    }"
-                >
-                    <div
-                        class="pointer-events-none absolute left-0 w-full rounded-full"
-                        :style="{
-                            top: '50%',
-                            height: `${trackBgHeight}px`,
-                            transform: 'translateY(-50%)',
-                            backgroundColor: 'color-mix(in oklab, currentColor 10%, #0000)'
-                        }"
-                    />
-
-                    <div
-                        class="pointer-events-none bg-black dark:bg-white absolute"
-                        :class="{
-                            'rounded-r-full':
-                                numericValue >= props.mid && (percent - midPercent) * 100 > 15,
-                            'rounded-l-full':
-                                numericValue < props.mid && (midPercent - percent) * 100 > 15
-                        }"
-                        :style="{
-                            top: '50%',
-                            height: `${thumbSize}px`,
-                            transform: 'translateY(-50%)',
-                            left:
-                                numericValue >= props.mid
-                                    ? `${midPercent * 100}%`
-                                    : `${percent * 100}%`,
-                            width:
-                                numericValue >= props.mid
-                                    ? `${(percent - midPercent) * 100}%`
-                                    : `${(midPercent - percent) * 100}%`
-                        }"
-                    />
-
-                    <input
-                        type="range"
-                        :min="props.min"
-                        :max="props.max"
-                        :step="props.step"
-                        v-model="numericValue"
-                        class="range range-white w-full absolute my-auto top-0 bottom-0"
-                        :style="{
-                            '--range-thumb-size': `${thumbSize}px`,
-                            '--range-bg': 'transparent',
-                            '--range-fill': 0,
-                            '--range-track-height': `${trackBgHeight}px`
-                        }"
-                    />
-                </div>
-                <button
-                    :disabled="numericValue === props.max"
-                    class="btn btn-xs"
-                    @click="numericValue += props.step"
-                >
-                    <PlusIcon class="size-3" />
-                </button>
-            </div>
-        </div>
-    </template>
-    <template v-else>
-        <div class="w-full flex flex-col gap-1">
-            <label
-                class="flex w-full text-xs justify-center"
-                v-text="`${label} (${format(numericValue)})`"
-            />
-            <div class="flex items-center gap-2">
-                <button
-                    :disabled="numericValue === props.min"
-                    class="btn btn-xs"
-                    @click="numericValue -= props.step"
-                >
-                    <MinusIcon class="size-3" />
-                </button>
-
+    <div class="flex flex-col gap-1">
+        <div class="flex items-center justify-between gap-2">
+            <label :for="id" class="truncate text-xs" v-text="label" />
+            <span class="flex shrink-0 items-center gap-1 text-xs">
                 <input
-                    type="range"
-                    class="range range-xs w-full flex"
-                    v-model="numericValue"
-                    :min="props.min"
-                    :max="props.max"
-                    :step="props.step"
+                    type="number"
+                    class="input input-xs w-16 text-right tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                    :aria-label="label"
+                    :value="fieldValue"
+                    :min="min * scale"
+                    :max="max * scale"
+                    :step="fieldStep"
+                    @input="onFieldInput"
+                    @change="onFieldChange"
+                    @keydown="onKeydown"
                 />
-
-                <button
-                    :disabled="numericValue === props.max"
-                    class="btn btn-xs"
-                    @click="numericValue += props.step"
-                >
-                    <PlusIcon class="size-3" />
-                </button>
-            </div>
+                <span class="w-3 text-base-content/70" v-text="unit" />
+            </span>
         </div>
-    </template>
+
+        <div class="relative flex items-center">
+            <div
+                v-if="isBipolar"
+                class="pointer-events-none absolute rounded-selector bg-current"
+                :style="{ ...fill, height: thumbSize }"
+            />
+            <input
+                :id="id"
+                v-model.number="numericValue"
+                type="range"
+                class="range range-xs relative w-full"
+                :style="{ '--range-thumb-size': thumbSize, '--range-fill': isBipolar ? 0 : 1 }"
+                :min="min"
+                :max="max"
+                :step="step"
+                @keydown="onKeydown"
+            />
+        </div>
+    </div>
 </template>

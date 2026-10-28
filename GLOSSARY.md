@@ -10,6 +10,10 @@ Interaktiver Generator für geometrische LineArt: Formen werden auf der Zeichenf
 Alles, was auf der Zeichenfläche komponiert ist: der Hintergrund und alle Layer in ihrer Z-Ordnung. Ein Kunstwerk wird als SVG exportiert und als Link geteilt.
 _Avoid_: Szene, Scene, Artwork, Bild, Effekt
 
+**Export**:
+Die SVG-Datei, die aus einem Kunstwerk entsteht: der Hintergrund und alle sichtbaren Layer. Transparenzmuster, Raster und Drehpunkt sind Arbeitshilfen und gehören nie dazu.
+_Avoid_: Download, Speichern
+
 **Zeichenfläche**:
 Die quadratische Fläche, auf der Layer komponiert werden. Exportiert wird alles, was auf ihr gezeichnet ist; Transparenzmuster und Raster sind reine Arbeitshilfen.
 _Avoid_: Canvas, Stage, Artboard, Bearbeitungsfläche, Zeichenunterlage
@@ -35,7 +39,7 @@ Eine Hilfsform des Rasters nach den Material-Icon-Richtlinien: Kreis, Innenkreis
 _Avoid_: Hilfsform, Schlüssellinie
 
 **Einrasten**:
-Das Ausrichten der Position oder des Drehpunkts eines Layers an den Rasterlinien, während er auf der Zeichenfläche verschoben wird. Der Drehpunkt rastet zusätzlich auf der Position ein. Es wirkt nur, solange das Raster eingeblendet ist.
+Das Ausrichten der Position oder des Drehpunkts eines Layers an den Rasterlinien, während er auf der Zeichenfläche verschoben wird. Der Drehpunkt rastet zusätzlich auf der Position ein. Es lässt sich unabhängig vom Raster ein- und ausschalten.
 _Avoid_: Snapping, Snap
 
 **Form**:
@@ -47,7 +51,7 @@ Der Versatz des Form-Mittelpunkts vom Mittelpunkt der Zeichenfläche. Alle Insta
 _Avoid_: Offset, Koordinate
 
 **Drehpunkt**:
-Der Punkt, um den sich die Instanzen eines Layers entlang der Wiederholung drehen. Jeder Layer hat seinen eigenen. Er ist ein Versatz von der Position und wandert mit, wenn der Layer verschoben wird. Liegt er auf der Position, dreht sich jede Instanz um ihren eigenen Mittelpunkt; liegt er daneben, kreisen die Instanzen um ihn. Auf der Zeichenfläche ist er nur zu sehen und zu ziehen, solange das Raster eingeblendet ist; exportiert wird er nie.
+Der Punkt, um den sich die Instanzen eines Layers entlang der Wiederholung drehen. Jeder Layer hat seinen eigenen. Er ist ein Versatz von der Position und wandert mit, wenn der Layer verschoben wird. Liegt er auf der Position, dreht sich jede Instanz um ihren eigenen Mittelpunkt; liegt er daneben, kreisen die Instanzen um ihn. Auf der Zeichenfläche ist er zu sehen und zu ziehen, solange er eingeblendet ist, unabhängig vom Raster; exportiert wird er nie.
 _Avoid_: Rotation Center, Pivot, Ursprung, Ankerpunkt
 
 **Instanz**:
