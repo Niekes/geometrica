@@ -4,7 +4,6 @@ interface ImportMetaEnv {
     readonly VITE_APP_NAME: string;
     readonly VITE_APP_EMAIL: string;
     readonly VITE_APP_DESCRIPTION: string;
-    readonly VITE_APP_DESCRIPTION_EXTENDED: string;
     // where the app is served, ending in a slash; .env.production and .env.development set it
     readonly VITE_APP_URL: string;
     // more env variables...
