@@ -63,13 +63,11 @@
             "requireAllFiles": true,
             "allowUnmatched": [
                 "src/main.ts",
-                "src/agentGuide.ts",
                 "src/router/**",
                 "src/App.vue",
                 "src/assets/**",
                 "env.d.ts",
                 "index.html",
-                "agent/index.html",
                 "eslint.config.js",
                 "vite.config.ts",
                 "vitest.config.ts"

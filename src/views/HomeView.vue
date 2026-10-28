@@ -3,6 +3,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import BaseRangeSlider from '../components/BaseRangeSlider.vue';
 import LayerList from '../components/LayerList.vue';
 import LayerControl from '../components/LayerControl.vue';
+import TheAgentGuide from '../components/TheAgentGuide.vue';
 import TheGallery from '../components/TheGallery.vue';
 import TheNavbar from '../components/TheNavbar.vue';
 import useScene from '../composables/useScene';
@@ -122,6 +123,7 @@ function endDrag() {
     drag = null;
 }
 
+const showAgentGuide = ref(false);
 const showGallery = ref(false);
 
 onMounted(() => {
@@ -136,6 +138,9 @@ onMounted(() => {
 <template>
     <div class="home">
         <TheNavbar>
+            <button type="button" class="btn btn-ghost btn-sm" @click="showAgentGuide = true">
+                Use with AI
+            </button>
             <button type="button" class="btn btn-ghost btn-sm" @click="showGallery = true">
                 Gallery
             </button>
@@ -241,6 +246,7 @@ onMounted(() => {
             />
         </main>
 
+        <TheAgentGuide v-model="showAgentGuide" />
         <TheGallery v-model="showGallery" />
     </div>
 </template>

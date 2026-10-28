@@ -87,7 +87,7 @@ No install — it runs in the browser at [niekes.github.io/geometrica](https://n
 
 ### With an AI agent
 
-Describe the effect you want and let an AI agent compose the layers: the [agent guide](https://niekes.github.io/geometrica/agent/) connects Claude Code through [WebMCP](https://webmachinelearning.github.io/webmcp/) in two steps.
+Describe the effect you want and let an AI agent compose the layers: **Use with AI** in the [app](https://niekes.github.io/geometrica/) connects Claude Code through [WebMCP](https://webmachinelearning.github.io/webmcp/) in two steps.
 
 To work on it locally:
 

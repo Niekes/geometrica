@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
+// prose reads best at daisyUI's own width, a grid of images wants the room
+defineProps<{ wide?: boolean }>();
+
 const isOpen = defineModel<boolean>({ default: false });
 const dialog = ref<HTMLDialogElement | null>(null);
 
@@ -20,7 +23,10 @@ const close = () => {
 
 <template>
     <dialog ref="dialog" class="modal backdrop-blur-sm" @close="close">
-        <div class="modal-box flex max-h-[85dvh] w-11/12 max-w-5xl flex-col">
+        <div
+            class="modal-box flex max-h-[85dvh] flex-col"
+            :class="{ 'w-11/12 max-w-5xl': wide }"
+        >
             <h3 class="text-lg font-bold">
                 <slot name="title" />
             </h3>

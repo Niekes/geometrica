@@ -1,8 +1,6 @@
 <script setup lang="ts">
 const appName: string = import.meta.env.VITE_APP_NAME;
 const appDescription: string = import.meta.env.VITE_APP_DESCRIPTION;
-// a page of its own outside the router, see vite.config.ts
-const agentGuideUrl: string = `${import.meta.env.BASE_URL}agent/`;
 // the logo is an artwork made with Geometrica, kept apart from the gallery so reordering it never swaps the logo
 const logoUrl: string = `${import.meta.env.BASE_URL}logo.webp`;
 </script>
@@ -24,7 +22,6 @@ const logoUrl: string = `${import.meta.env.BASE_URL}logo.webp`;
             </div>
         </div>
         <div class="navbar-end gap-2">
-            <a class="btn btn-ghost btn-sm" :href="agentGuideUrl">Use with AI</a>
             <!-- the actions of the current view -->
             <slot />
             <a
