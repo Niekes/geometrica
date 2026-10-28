@@ -11,6 +11,7 @@ import type { BaseControl } from '@/types/Control';
 
 // Components
 import BaseRadioButton from '@/components/BaseRadioButton.vue';
+import BaseCheckBox from '@/components/BaseCheckBox.vue';
 import BaseRangeSlider from '@/components/BaseRangeSlider.vue';
 import BaseAccordion from '@/components/BaseAccordion.vue';
 import LayerSizeControl from '@/components/LayerSizeControl.vue';
