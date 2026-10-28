@@ -11,3 +11,19 @@ interface ImportMetaEnv {
 interface ImportMeta {
     readonly env: ImportMetaEnv;
 }
+
+// the part of WebMCP (https://webmachinelearning.github.io/webmcp/) the app uses; Chrome ships it
+// behind chrome://flags/#enable-webmcp-testing, or --enable-features=WebMCP on the command line
+interface ModelContextTool {
+    name: string;
+    description: string;
+    inputSchema?: object;
+    annotations?: { readOnlyHint?: boolean };
+    execute(input: Record<string, unknown>): Promise<unknown>;
+}
+
+interface Document {
+    modelContext?: {
+        registerTool(tool: ModelContextTool, options?: { signal?: AbortSignal }): unknown;
+    };
+}

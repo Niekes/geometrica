@@ -6,6 +6,7 @@ import LayerControl from '../components/LayerControl.vue';
 import TheGallery from '../components/TheGallery.vue';
 import useScene from '../composables/useScene';
 import { useUrlSync } from '../composables/useUrlSync';
+import { useWebMcp } from '../composables/useWebMcp';
 import { backgroundRanges } from '../config/ranges';
 import { surfaceSize } from '../config/surface';
 import { lineColor, renderGrid, snapToGrid } from '../lib/renderGrid';
@@ -18,6 +19,8 @@ const { initFromUrl, setupWatchers } = useUrlSync({
     background: scene.background,
     onLoad: () => scene.selectFirstLayer()
 });
+
+useWebMcp(scene);
 
 // ponytail: every change rebuilds and reparses the whole SVG (ADR-0004); throttle or render via a Vue template if 1000+ instances lag
 const svg = computed(() =>

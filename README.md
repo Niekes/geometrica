@@ -73,6 +73,20 @@ Thank you to the people who make this possible. Sponsors at $25/mo and above get
 
 No install — it runs in the browser at [niekes.github.io/geometrica](https://niekes.github.io/geometrica/).
 
+### With an AI agent
+
+Geometrica offers its artwork to AI agents in the browser through [WebMCP](https://webmachinelearning.github.io/webmcp/): an agent reads the artwork with `get_artwork` and replaces it with `set_artwork`, so you describe the effect you want and the agent composes the layers. WebMCP is still experimental and needs Chrome 150 or later. To use it from Claude Code:
+
+1. Add the Chrome DevTools MCP server with its WebMCP tools turned on:
+
+    ```bash
+    claude mcp add chrome-devtools -- npx -y chrome-devtools-mcp@latest --categoryExperimentalWebmcp=true --chromeArg=--enable-features=WebMCP
+    ```
+
+2. Ask Claude to open [niekes.github.io/geometrica](https://niekes.github.io/geometrica/) and describe what you want, for example _"a tunnel of twenty rounded squares spiralling inwards in magma colors"_.
+
+The browser's back button undoes the agent's changes, except the first one after opening the app without a link.
+
 To work on it locally:
 
 ```bash

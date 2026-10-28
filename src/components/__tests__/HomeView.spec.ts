@@ -186,4 +186,37 @@ describe('HomeView', () => {
 
         wrapper.unmount();
     });
+
+    it('draws the artwork an agent sets, untouched by the locked sliders of the panel', async () => {
+        const tools: ModelContextTool[] = [];
+
+        Object.defineProperty(document, 'modelContext', {
+            configurable: true,
+            value: { registerTool: (tool: ModelContextTool) => tools.push(tool) }
+        });
+
+        const wrapper = mount(HomeView, {
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+        const run = (name: string, input: Record<string, unknown> = {}) =>
+            tools.find((tool) => tool.name === name)!.execute(input);
+
+        await new Promise((r) => setTimeout(r, 50));
+        await run('set_artwork', {
+            layers: [{ shape: 'rect', width: 600, height: 200, borderRadiusTl: 1 }]
+        });
+        await new Promise((r) => setTimeout(r, 50));
+
+        const { layers } = (await run('get_artwork')) as { layers: Record<string, number>[] };
+
+        expect(layers[0]).toMatchObject({
+            width: 600,
+            height: 200,
+            borderRadiusTl: 1,
+            borderRadiusTr: 0
+        });
+
+        wrapper.unmount();
+        delete (document as { modelContext?: unknown }).modelContext;
+    });
 });
