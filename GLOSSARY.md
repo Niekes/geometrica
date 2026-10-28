@@ -31,7 +31,7 @@ Eine Hilfsform des Rasters nach den Material-Icon-Richtlinien: Kreis, Innenkreis
 _Avoid_: Hilfsform, Schlüssellinie
 
 **Form**:
-Eine Pfadgeometrie (Rect, Circle, Polygon oder eigene SVG-Path-Eingabe). Die Form selbst ist nur die Geometrie, ohne Wiederholungs- oder Stilparameter.
+Eine Pfadgeometrie (Rect, Circle, Polygon oder eine eigene Form aus eingefügten SVG-Pfaden). Mehrere eingefügte Pfade bilden zusammen eine Form. Die Form selbst ist nur die Geometrie, ohne Wiederholungs- oder Stilparameter.
 _Avoid_: Shape, Figur, Objekt
 
 **Instanz**:

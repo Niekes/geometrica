@@ -16,9 +16,7 @@ import BaseRangeSlider from '@/components/BaseRangeSlider.vue';
 import BaseAccordion from '@/components/BaseAccordion.vue';
 import LayerSizeControl from '@/components/LayerSizeControl.vue';
 import LayerColorControl from '@/components/LayerColorControl.vue';
-
-// Lib
-import { normalizePath } from '@/lib/pathBounds';
+import LayerPathControl from '@/components/LayerPathControl.vue';
 
 // Config
 import { surfaceSize } from '@/config/surface';
@@ -125,13 +123,6 @@ useLinkedSliders(
 
 const isStrokeRelevant = computed(() => layer.value.strokeOpacity > 0);
 
-const isCustomPathValid = computed(() => {
-    if (layer.value.shape !== 'custom') return true;
-    if (!layer.value.path) return false;
-
-    return normalizePath(layer.value.path, layer.value.size) !== null;
-});
-
 function resetFields(controls: Control[]) {
     controls.forEach((ctrl) => {
         (layer.value[ctrl.name] as number) = defaults.value[ctrl.name] as number;
@@ -146,20 +137,7 @@ function resetFields(controls: Control[]) {
         <BaseAccordion v-if="layer.shape === 'custom'">
             <template #title> Custom Shape </template>
             <template #content>
-                <label class="text-xs font-semibold" for="custom-path">SVG Path</label>
-                <textarea
-                    id="custom-path"
-                    v-model="layer.path"
-                    class="textarea textarea-xs w-full font-mono"
-                    rows="3"
-                    placeholder="M0 0 L100 0 L100 100 L0 100 Z"
-                />
-                <p v-if="layer.path && !isCustomPathValid" class="text-xs text-error">
-                    Invalid path data. Use SVG path syntax, e.g. M, L, C, Q, A, Z.
-                </p>
-                <p v-else-if="!layer.path" class="text-xs opacity-60">
-                    Paste any SVG path data (d attribute).
-                </p>
+                <LayerPathControl v-model="layer" />
             </template>
         </BaseAccordion>
 
