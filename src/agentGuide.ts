@@ -1,6 +1,7 @@
 import './assets/css/main.css';
 
-// the markup names the live app; served by the dev server, the steps point at the local one
+// the markup names VITE_APP_URL for readers without JavaScript; a browser shows where the page
+// really runs, such as another dev server port or a fork
 const appUrl = `${window.location.origin}${import.meta.env.BASE_URL}`;
 
 document.querySelectorAll('[data-app-url]').forEach((element) => {
