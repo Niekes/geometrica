@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { flushPromises, mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import HomeView from '../../views/HomeView.vue';
 
@@ -230,6 +230,44 @@ describe('HomeView', () => {
 
         expect(wrapper.find('input[aria-label="Name of Layer 1"]').exists()).toBe(false);
         expect(layerButton().text()).toBe('Sun rays');
+
+        wrapper.unmount();
+    });
+
+    it('hands the keyboard back to the layer after renaming, without clicking it', async () => {
+        const wrapper = mount(HomeView, {
+            attachTo: document.body,
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+        const layerButton = () => wrapper.find('[aria-label="Layers"] button[aria-current="true"]');
+
+        await layerButton().trigger('dblclick');
+        await wrapper.find('input[aria-label="Name of Layer 1"]').setValue('Sun rays');
+
+        // dispatchEvent answers false once the page kept Enter from clicking the focused layer
+        const enter = new KeyboardEvent('keydown', {
+            key: 'Enter',
+            bubbles: true,
+            cancelable: true
+        });
+        const kept = !wrapper
+            .find('input[aria-label="Name of Layer 1"]')
+            .element.dispatchEvent(enter);
+        await flushPromises();
+
+        expect(kept).toBe(true);
+        expect(document.activeElement).toBe(layerButton().element);
+
+        // Escape drops the new name and hands the keyboard back as well
+        await layerButton().trigger('keydown', { key: 'F2' });
+        await wrapper.find('input[aria-label="Name of Sun rays"]').setValue('discarded');
+        await wrapper
+            .find('input[aria-label="Name of Sun rays"]')
+            .trigger('keydown', { key: 'Escape' });
+        await flushPromises();
+
+        expect(layerButton().text()).toBe('Sun rays');
+        expect(document.activeElement).toBe(layerButton().element);
 
         wrapper.unmount();
     });
