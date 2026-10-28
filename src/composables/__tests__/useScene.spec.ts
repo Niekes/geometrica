@@ -168,17 +168,24 @@ describe('useScene', () => {
         scene.init([makeLayer('rect', 'one')]);
 
         scene.renameLayer('id-one', `${'a'.repeat(38)} 😀`);
-        expect(scene.layers.value[0]!.name).toBe('a'.repeat(38));
 
-        scene.renameLayer('id-one', '\uD83D');
         expect(scene.layers.value[0]!.name).toBe('a'.repeat(38));
+    });
+
+    it('drops half an emoji wherever it stands, keeping whole ones', () => {
+        const scene = useScene();
+        scene.init([makeLayer('rect', 'one')]);
+
+        scene.renameLayer('id-one', '\uDE00Sun\uD83D rays 😀');
+
+        expect(scene.layers.value[0]!.name).toBe('Sun rays 😀');
     });
 
     it('keeps the old name when the new one is blank', () => {
         const scene = useScene();
         scene.init([makeLayer('rect', 'one')]);
 
-        scene.renameLayer('id-one', '   ');
+        for (const blank of ['   ', '\uD83D', '\uDE00']) scene.renameLayer('id-one', blank);
 
         expect(scene.layers.value[0]!.name).toBe('one');
     });
