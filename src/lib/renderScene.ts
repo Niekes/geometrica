@@ -2,6 +2,7 @@ import { color } from 'd3';
 import { computeInstances, type Instance } from './computeInstances';
 import {
     type Command,
+    flattenPath,
     getPathBounds,
     normalizePath,
     type PathBounds,
@@ -17,6 +18,8 @@ import { type Layer } from '../types/Layer';
 
 const PI = Math.PI;
 const TAU = PI * 2;
+// keeps the sharp corners of existing artworks; SVG would default to 4
+const MITER_LIMIT = 10;
 
 type Geometry = {
     commands: Command[];
@@ -56,25 +59,75 @@ export function backgroundFill(background: Background): string {
 // the frame around every instance as drawn, in surface units with y pointing down
 export function layerBounds(layer: Layer): PathBounds | null {
     const frame = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity };
+    const include = ([x, y]: [number, number], reach: number) => {
+        frame.minX = Math.min(frame.minX, x - reach);
+        frame.minY = Math.min(frame.minY, y - reach);
+        frame.maxX = Math.max(frame.maxX, x + reach);
+        frame.maxY = Math.max(frame.maxY, y + reach);
+    };
 
     for (const instance of computeInstances(layer)) {
         const geometry = buildGeometry(layer, instance.shrink);
+
+        if (!geometry) continue;
+
         const { x, y, rotation } = placeInstance(layer, instance);
-        const bounds =
-            geometry && getPathBounds(geometry.commands.map((c) => rotateCommand(c, rotation)));
+        const width = layer.strokeOpacity > 0 ? instanceStrokeWidth(layer, instance) : 0;
+        const turned = geometry.commands.map((command) => rotateCommand(command, rotation));
 
-        if (!bounds) continue;
+        for (const subpath of flattenPath(turned)) {
+            const points = subpath.points.map(([px, py]): [number, number] => [x + px, y + py]);
 
-        // ponytail: half the stroke width on every side; sharp miter corners may poke out a little
-        const reach = layer.strokeOpacity > 0 ? instanceStrokeWidth(layer, instance) / 2 : 0;
-
-        frame.minX = Math.min(frame.minX, x + bounds.minX - reach);
-        frame.minY = Math.min(frame.minY, y + bounds.minY - reach);
-        frame.maxX = Math.max(frame.maxX, x + bounds.maxX + reach);
-        frame.maxY = Math.max(frame.maxY, y + bounds.maxY + reach);
+            // a stroke reaches half its width beyond the path, and further at a sharp corner
+            points.forEach((point) => include(point, width / 2));
+            miterTips(points, subpath.closed, width).forEach((tip) => include(tip, 0));
+        }
     }
 
     return frame.minX === Infinity ? null : frame;
+}
+
+// ponytail: sampled curve points count as corners, so a cusp within a curve gets a tip it lacks
+function miterTips(points: [number, number][], closed: boolean, width: number): [number, number][] {
+    const run = points.filter((p, i) => i === 0 || !samePoint(p, points[i - 1]!));
+
+    if (closed && samePoint(run[0]!, run[run.length - 1]!)) run.pop();
+
+    // a closed subpath turns a corner at every point, an open one between its ends
+    const ring = closed ? [run[run.length - 1]!, ...run, run[0]!] : run;
+
+    return ring.slice(1, -1).flatMap((p, i) => miterTip(ring[i]!, p, ring[i + 2]!, width));
+}
+
+// a sharp corner juts out along its bisector by the width over twice the sine of half its angle,
+// until SVG bevels it past the miter limit; a bevel stays within half the width
+function miterTip(
+    from: [number, number],
+    [px, py]: [number, number],
+    to: [number, number],
+    width: number
+): [number, number][] {
+    const [ux, uy] = direction(from, [px, py]);
+    const [vx, vy] = direction([px, py], to);
+    // twice the sine of half the corner angle, and the length of the outward bisector
+    const sine2 = Math.hypot(ux + vx, uy + vy);
+    const outward = Math.hypot(ux - vx, uy - vy);
+
+    if (outward === 0 || 2 / sine2 > MITER_LIMIT) return [];
+
+    return [
+        [px + ((ux - vx) / outward) * (width / sine2), py + ((uy - vy) / outward) * (width / sine2)]
+    ];
+}
+
+// sampled arcs miss their endpoints by a rounding error, which must not read as a corner
+const samePoint = ([ax, ay]: [number, number], [bx, by]: [number, number]): boolean =>
+    Math.hypot(ax - bx, ay - by) < 1e-6;
+
+function direction([ax, ay]: [number, number], [bx, by]: [number, number]): [number, number] {
+    const length = Math.hypot(bx - ax, by - ay);
+
+    return [(bx - ax) / length, (by - ay) / length];
 }
 
 // turning around the rotation center swings the instance center along a circle around it,
@@ -127,9 +180,8 @@ function renderLayer(layer: Layer, idPrefix: string, defs: string[]): string {
                 ? ` fill="${paint}" fill-opacity="${round(instanceOpacity * layer.fillOpacity)}"`
                 : ' fill="none"';
 
-        // miter limit 10 keeps the sharp corners of existing artworks; SVG would default to 4
         if (layer.strokeOpacity > 0) {
-            attributes += ` stroke="${paint}" stroke-opacity="${round(instanceOpacity * layer.strokeOpacity)}" stroke-width="${round(instanceStrokeWidth(layer, instance))}" stroke-miterlimit="10"`;
+            attributes += ` stroke="${paint}" stroke-opacity="${round(instanceOpacity * layer.strokeOpacity)}" stroke-width="${round(instanceStrokeWidth(layer, instance))}" stroke-miterlimit="${MITER_LIMIT}"`;
         }
 
         markup += `<path d="${serializePath(geometry.commands)}" ${attributes}/>`;

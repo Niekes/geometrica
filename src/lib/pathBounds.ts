@@ -440,25 +440,48 @@ function samplePoints(x0: number, y0: number, command: Command): [number, number
     }
 }
 
-export function getPathBounds(commands: Command[]): PathBounds | null {
-    if (commands.length === 0) return null;
+export type Subpath = { points: [number, number][]; closed: boolean };
 
-    const bounds = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity };
-    let cx = 0;
-    let cy = 0;
+// every subpath as the points it passes, so a stroke can find its corners; as in SVG, a path
+// goes on from the start of a subpath it closed
+export function flattenPath(commands: Command[]): Subpath[] {
+    const subpaths: Subpath[] = [];
+    let current: Subpath | undefined;
+    let [x, y] = [0, 0];
 
     for (const command of commands) {
-        for (const [x, y] of samplePoints(cx, cy, command)) {
-            bounds.minX = Math.min(bounds.minX, x);
-            bounds.minY = Math.min(bounds.minY, y);
-            bounds.maxX = Math.max(bounds.maxX, x);
-            bounds.maxY = Math.max(bounds.maxY, y);
+        if (command.cmd === 'Z') {
+            if (current) [x, y] = current.points[0]!;
+            if (current) current.closed = true;
+            current = undefined;
+            continue;
         }
 
-        if (command.cmd !== 'Z') {
-            cx = command.x;
-            cy = command.y;
+        if (command.cmd === 'M' || !current) {
+            current = { points: command.cmd === 'M' ? [] : [[x, y]], closed: false };
+            subpaths.push(current);
         }
+
+        current.points.push(...samplePoints(x, y, command));
+        x = command.x;
+        y = command.y;
+    }
+
+    return subpaths;
+}
+
+export function getPathBounds(commands: Command[]): PathBounds | null {
+    const points = flattenPath(commands).flatMap((subpath) => subpath.points);
+
+    if (points.length === 0) return null;
+
+    const bounds = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity };
+
+    for (const [x, y] of points) {
+        bounds.minX = Math.min(bounds.minX, x);
+        bounds.minY = Math.min(bounds.minY, y);
+        bounds.maxX = Math.max(bounds.maxX, x);
+        bounds.maxY = Math.max(bounds.maxY, y);
     }
 
     return bounds;

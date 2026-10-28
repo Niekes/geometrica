@@ -417,6 +417,35 @@ describe('layerBounds', () => {
         });
     });
 
+    it('reaches out to the miter tips of sharp stroked corners', () => {
+        // a square on its tip: each 90° corner juts out by the width over √2, not half the width
+        const layer = makeLayer('polygon', {
+            sides: 4,
+            size: 100,
+            borderRadius: 0,
+            strokeOpacity: 1,
+            strokeWidth: 10
+        });
+
+        expect(layerBounds(layer)).toEqual({
+            minX: expect.closeTo(512 - 50 - 10 / Math.SQRT2),
+            minY: expect.closeTo(512 - 50 - 10 / Math.SQRT2),
+            maxX: expect.closeTo(512 + 50 + 10 / Math.SQRT2),
+            maxY: expect.closeTo(512 + 50 + 10 / Math.SQRT2)
+        });
+    });
+
+    it('stops at half the width where the miter limit bevels a spike', () => {
+        const layer = makeLayer('custom', {
+            path: 'M0 0 L100 1 L0 2 Z',
+            size: 100,
+            strokeOpacity: 1,
+            strokeWidth: 4
+        });
+
+        expect(layerBounds(layer)!.maxX).toBeCloseTo(564);
+    });
+
     it('has no frame for a layer without instances', () => {
         expect(layerBounds(makeLayer('custom', { path: '' }))).toBeNull();
     });
