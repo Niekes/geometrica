@@ -19,9 +19,9 @@ import LayerColorControl from '@/components/LayerColorControl.vue';
 import LayerPathControl from '@/components/LayerPathControl.vue';
 
 // Config
-import { surfaceSize } from '@/config/surface';
 import { useLinkedSliders } from '@/composables/useLinkedSliders';
 import { buildLayer } from '@/config/defaults';
+import { layerRanges } from '@/config/ranges';
 import { calcStrokeWidthOptions, shapeOptions } from '@/config/controlOptions';
 
 const layer = defineModel<Layer>({ required: true });
@@ -32,24 +32,18 @@ const defaults = computed<Layer>(() => buildLayer(layer.value.shape));
 
 const generalControls: Control[] = [
     {
-        min: 1,
-        max: 1000,
-        step: 1,
+        ...layerRanges.amount,
         label: 'Amount',
         name: 'amount'
     },
     {
-        min: -64,
-        max: 64,
-        step: 0.1,
+        ...layerRanges.distance,
         label: 'Distance',
         name: 'distance',
         format: (d: number) => d.toFixed(1)
     },
     {
-        min: -1440,
-        max: 1440,
-        step: 1,
+        ...layerRanges.rotation,
         label: 'Rotation',
         name: 'rotation',
         format: (d: number) => `${d}°`
@@ -58,34 +52,25 @@ const generalControls: Control[] = [
 
 const positionControls: Control[] = [
     {
-        min: -surfaceSize / 2,
-        max: surfaceSize / 2,
-        step: 1,
+        ...layerRanges.cx,
         label: 'CX',
         name: 'cx',
         format: (d: number) => `${d}px`
     },
     {
-        min: -surfaceSize / 2,
-        max: surfaceSize / 2,
-        step: 1,
+        ...layerRanges.cy,
         label: 'CY',
         name: 'cy',
         format: (d: number) => `${d}px`
     },
-    // an offset from the position: from any position it reaches every point of the surface
     {
-        min: -surfaceSize,
-        max: surfaceSize,
-        step: 1,
+        ...layerRanges.rotationCx,
         label: 'Rotation CX',
         name: 'rotationCx',
         format: (d: number) => `${d}px`
     },
     {
-        min: -surfaceSize,
-        max: surfaceSize,
-        step: 1,
+        ...layerRanges.rotationCy,
         label: 'Rotation CY',
         name: 'rotationCy',
         format: (d: number) => `${d}px`
@@ -96,33 +81,25 @@ const toBorderPercent = (d: number) => `${(d * 50).toFixed(1)}%`;
 
 const borderRadiusControls: Control[] = [
     {
-        min: 0,
-        max: 1,
-        step: 0.01,
+        ...layerRanges.borderRadiusTl,
         label: 'Border Radius Top Left',
         name: 'borderRadiusTl',
         format: toBorderPercent
     },
     {
-        min: 0,
-        max: 1,
-        step: 0.01,
+        ...layerRanges.borderRadiusTr,
         label: 'Border Radius Top Right',
         name: 'borderRadiusTr',
         format: toBorderPercent
     },
     {
-        min: 0,
-        max: 1,
-        step: 0.01,
+        ...layerRanges.borderRadiusBl,
         label: 'Border Radius Bottom Left',
         name: 'borderRadiusBl',
         format: toBorderPercent
     },
     {
-        min: 0,
-        max: 1,
-        step: 0.01,
+        ...layerRanges.borderRadiusBr,
         label: 'Border Radius Bottom Right',
         name: 'borderRadiusBr',
         format: toBorderPercent
@@ -218,9 +195,7 @@ function resetFields(controls: Control[]) {
                 <fieldset class="flex flex-col gap-2" :disabled="!isStrokeRelevant">
                     <BaseRangeSlider
                         v-model.number="layer.strokeWidth"
-                        :min="0.1"
-                        :max="surfaceSize / 2"
-                        :step="0.1"
+                        v-bind="layerRanges.strokeWidth"
                         label="Stroke Width"
                         :format="(d: number) => d.toFixed(1)"
                     />

@@ -9,7 +9,7 @@ import BaseRangeSlider from '@/components/BaseRangeSlider.vue';
 import { type Layer } from '@/types/Layer';
 
 // Config
-import { surfaceSize } from '@/config/surface';
+import { layerRanges } from '@/config/ranges';
 import { useLinkedSliders } from '@/composables/useLinkedSliders';
 
 const layer = defineModel<Layer>({ required: true });
@@ -35,17 +35,13 @@ useLinkedSliders(layer, ['radiusX', 'radiusY'], isSizeLocked, () => layer.value.
     <template v-if="layer.shape === 'rect'">
         <BaseRangeSlider
             v-model.number="layer.width"
-            :min="1"
-            :max="surfaceSize"
-            :step="1"
+            v-bind="layerRanges.width"
             label="Width"
             :format="px"
         />
         <BaseRangeSlider
             v-model.number="layer.height"
-            :min="1"
-            :max="surfaceSize"
-            :step="1"
+            v-bind="layerRanges.height"
             label="Height"
             :format="px"
         />
@@ -54,37 +50,29 @@ useLinkedSliders(layer, ['radiusX', 'radiusY'], isSizeLocked, () => layer.value.
     <template v-if="layer.shape === 'circle'">
         <BaseRangeSlider
             v-model.number="layer.radiusX"
-            :min="1"
-            :max="surfaceSize"
-            :step="1"
+            v-bind="layerRanges.radiusX"
             label="Radius X"
             :format="px"
         />
         <BaseRangeSlider
             v-model.number="layer.radiusY"
-            :min="1"
-            :max="surfaceSize"
-            :step="1"
+            v-bind="layerRanges.radiusY"
             label="Radius Y"
             :format="px"
         />
     </template>
 
     <template v-if="layer.shape === 'polygon'">
-        <BaseRangeSlider v-model.number="layer.sides" :min="3" :max="32" :step="1" label="Sides" />
+        <BaseRangeSlider v-model.number="layer.sides" v-bind="layerRanges.sides" label="Sides" />
         <BaseRangeSlider
             v-model.number="layer.size"
-            :min="1"
-            :max="surfaceSize"
-            :step="1"
+            v-bind="layerRanges.size"
             label="Size"
             :format="px"
         />
         <BaseRangeSlider
             v-model.number="layer.borderRadius"
-            :min="0"
-            :max="1"
-            :step="0.01"
+            v-bind="layerRanges.borderRadius"
             label="Border Radius"
             :format="(d: number) => `${(d * 50).toFixed(1)}%`"
         />
@@ -93,9 +81,7 @@ useLinkedSliders(layer, ['radiusX', 'radiusY'], isSizeLocked, () => layer.value.
     <BaseRangeSlider
         v-if="layer.shape === 'custom'"
         v-model.number="layer.size"
-        :min="1"
-        :max="surfaceSize"
-        :step="1"
+        v-bind="layerRanges.size"
         label="Size"
         :format="px"
     />

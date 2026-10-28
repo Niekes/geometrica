@@ -16,6 +16,7 @@ import {
     calcOpacityOptions,
     gradientTypeOptions
 } from '@/config/controlOptions';
+import { layerRanges } from '@/config/ranges';
 
 const layer = defineModel<Layer>({ required: true });
 
@@ -26,25 +27,19 @@ const toPercent = (d: number) => `${(d * 100).toFixed(0)}%`;
 // the layer opacity scales the fill and the stroke opacity of every instance
 const opacityControls: Control[] = [
     {
-        min: 0,
-        max: 1,
-        step: 0.01,
+        ...layerRanges.opacity,
         label: 'Layer Opacity',
         name: 'opacity',
         format: toPercent
     },
     {
-        min: 0,
-        max: 1,
-        step: 0.01,
+        ...layerRanges.fillOpacity,
         label: 'Fill Opacity',
         name: 'fillOpacity',
         format: toPercent
     },
     {
-        min: 0,
-        max: 1,
-        step: 0.01,
+        ...layerRanges.strokeOpacity,
         label: 'Stroke Opacity',
         name: 'strokeOpacity',
         format: toPercent
@@ -80,9 +75,7 @@ const setColorInterPolator = (interpolator: { name: Layer['colorInterPolator'] }
         <BaseRangeSlider
             v-if="layer.gradientType === 'linear'"
             v-model.number="layer.gradientAngle"
-            :min="0"
-            :max="360"
-            :step="1"
+            v-bind="layerRanges.gradientAngle"
             label="Gradient Angle"
             :format="(d: number) => `${d}°`"
         />

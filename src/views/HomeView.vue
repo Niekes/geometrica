@@ -6,6 +6,7 @@ import LayerControl from '../components/LayerControl.vue';
 import TheGallery from '../components/TheGallery.vue';
 import useScene from '../composables/useScene';
 import { useUrlSync } from '../composables/useUrlSync';
+import { backgroundRanges } from '../config/ranges';
 import { surfaceSize } from '../config/surface';
 import { lineColor, renderGrid, snapToGrid } from '../lib/renderGrid';
 import { renderScene } from '../lib/renderScene';
@@ -164,9 +165,7 @@ onMounted(() => {
                 />
                 <BaseRangeSlider
                     v-model.number="scene.background.value.opacity"
-                    :min="0"
-                    :max="1"
-                    :step="0.01"
+                    v-bind="backgroundRanges.opacity"
                     label="Opacity"
                     :format="toPercent"
                 />
@@ -176,9 +175,7 @@ onMounted(() => {
                 <input
                     id="bg-radius"
                     type="range"
-                    min="0"
-                    max="50"
-                    step="1"
+                    v-bind="backgroundRanges.borderRadius"
                     class="range range-xs w-full"
                     v-model.number="scene.background.value.borderRadius"
                 />
