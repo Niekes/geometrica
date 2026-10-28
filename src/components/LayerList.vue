@@ -43,9 +43,13 @@ function startRename(id: string) {
 function finishRename(event: Event, save: boolean) {
     const id = renamingId.value;
 
-    // removing the field after Enter or Escape blurs it once more; while an input method composes,
-    // Enter and Escape belong to the composition
-    if (!id || (event as KeyboardEvent).isComposing) return;
+    // while an input method composes, Enter and Escape belong to the composition; Safari ends it
+    // before the confirming Enter and marks only that key's code
+    const composing =
+        event instanceof KeyboardEvent && (event.isComposing || event.keyCode === 229);
+
+    // removing the field after Enter or Escape blurs it once more
+    if (!id || composing) return;
 
     renamingId.value = null;
     if (save) emit('rename', id, (event.target as HTMLInputElement).value);

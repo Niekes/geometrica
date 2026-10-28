@@ -246,6 +246,8 @@ describe('HomeView', () => {
         await input.setValue('東京');
         await input.trigger('keydown', { key: 'Enter', isComposing: true });
         await input.trigger('keydown', { key: 'Escape', isComposing: true });
+        // Safari ends the composition before the Enter that confirms it and marks only its key code
+        await input.trigger('keydown', { key: 'Enter', keyCode: 229 });
 
         expect(wrapper.find('input[aria-label="Name of Layer 1"]').exists()).toBe(true);
 
