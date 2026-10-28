@@ -69,11 +69,20 @@
             <section class="flex flex-col gap-2">
                 <h2 class="text-lg font-semibold">1. Connect Claude Code</h2>
                 <p>Run this once in a terminal:</p>
-                <div class="bg-base-300 rounded-box flex items-start gap-2 p-4">
-                    <pre
-                        class="grow text-sm break-all whitespace-pre-wrap"
-                    ><code id="install">claude mcp add --scope user chrome-devtools -- npx -y chrome-devtools-mcp@latest --categoryExperimentalWebmcp=true --chromeArg=--enable-features=WebMCP</code></pre>
-                    <button class="btn btn-sm" data-copy="install" aria-live="polite">Copy</button>
+                <!-- the button sits outside the code, so it stays put while a long line scrolls -->
+                <div class="relative">
+                    <div class="mockup-code">
+                        <pre
+                            data-prefix="$"
+                        ><code id="install">claude mcp add --scope user chrome-devtools -- npx -y chrome-devtools-mcp@latest --categoryExperimentalWebmcp=true --chromeArg=--enable-features=WebMCP</code></pre>
+                    </div>
+                    <button
+                        class="btn btn-sm absolute top-2 right-2"
+                        data-copy="install"
+                        aria-live="polite"
+                    >
+                        Copy
+                    </button>
                 </div>
                 <p>
                     In a running session, run <code>/mcp</code> to connect, or restart Claude Code.
@@ -87,11 +96,19 @@
             <section class="flex flex-col gap-2">
                 <h2 class="text-lg font-semibold">2. Ask for an artwork</h2>
                 <p>Tell Claude Code where Geometrica is and what you want:</p>
-                <div class="bg-base-300 rounded-box flex items-start gap-2 p-4">
-                    <pre
-                        class="grow text-sm whitespace-pre-wrap"
-                    ><code id="prompt">Open <span data-app-url>%VITE_APP_URL%</span> and draw a tunnel of twenty rounded squares spiralling inwards in magma colors.</code></pre>
-                    <button class="btn btn-sm" data-copy="prompt" aria-live="polite">Copy</button>
+                <div class="relative">
+                    <div class="mockup-code">
+                        <pre
+                            data-prefix=">"
+                        ><code id="prompt">Open <span data-app-url>%VITE_APP_URL%</span> and draw a tunnel of twenty rounded squares spiralling inwards in magma colors.</code></pre>
+                    </div>
+                    <button
+                        class="btn btn-sm absolute top-2 right-2"
+                        data-copy="prompt"
+                        aria-live="polite"
+                    >
+                        Copy
+                    </button>
                 </div>
                 <p>
                     The browser's back button undoes the agent's changes, except the first one after
