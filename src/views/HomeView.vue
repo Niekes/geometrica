@@ -266,9 +266,10 @@ onMounted(() => {
     height: calc(100dvh - var(--navbar-height));
 }
 
+/* no side padding: the sections bring their own */
 .panel {
     overflow-y: auto;
-    padding: 0 1rem 1rem;
+    padding-bottom: 1rem;
 }
 
 .context {

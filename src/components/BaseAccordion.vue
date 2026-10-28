@@ -6,8 +6,6 @@ const openSections = reactive<Record<string, boolean>>({});
 </script>
 
 <script setup lang="ts">
-import { ChevronDownIcon } from '@heroicons/vue/24/outline';
-
 const props = defineProps<{
     title: string;
     open?: boolean;
@@ -21,15 +19,14 @@ function onToggle(event: Event) {
 </script>
 
 <template>
-    <details class="group border-b border-base-300" :open="openSections[title]" @toggle="onToggle">
-        <summary
-            class="flex cursor-pointer list-none items-center justify-between rounded-field py-3 text-sm font-semibold select-none focus-visible:outline-2 focus-visible:outline-offset-2 [&::-webkit-details-marker]:hidden"
-        >
-            {{ title }}
-            <ChevronDownIcon class="size-4 transition-transform group-open:rotate-180" />
-        </summary>
+    <details
+        class="collapse collapse-arrow rounded-none border-b border-base-300"
+        :open="openSections[title]"
+        @toggle="onToggle"
+    >
+        <summary class="collapse-title text-sm font-semibold" v-text="title" />
 
-        <div class="flex flex-col gap-3 pb-4">
+        <div class="collapse-content flex flex-col gap-3">
             <slot />
         </div>
     </details>

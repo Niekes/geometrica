@@ -66,7 +66,8 @@ function resetLayer() {
 
 <template>
     <div class="flex flex-col">
-        <header class="flex flex-col gap-3 border-b border-base-300 py-4">
+        <!-- px-4 lines the header up with the collapse padding of the sections below -->
+        <header class="flex flex-col gap-3 border-b border-base-300 px-4 py-4">
             <div class="flex items-center justify-between gap-2">
                 <h2 class="truncate text-base font-semibold" v-text="layer.name" />
                 <button type="button" class="btn btn-ghost btn-xs" @click="resetLayer">
