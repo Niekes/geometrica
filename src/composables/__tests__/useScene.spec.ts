@@ -163,6 +163,17 @@ describe('useScene', () => {
         expect(scene.layers.value[0]!.name).toBe('a'.repeat(40));
     });
 
+    it('drops what the cut leaves dangling: a space at the end, half an emoji', () => {
+        const scene = useScene();
+        scene.init([makeLayer('rect', 'one')]);
+
+        scene.renameLayer('id-one', `${'a'.repeat(38)} 😀`);
+        expect(scene.layers.value[0]!.name).toBe('a'.repeat(38));
+
+        scene.renameLayer('id-one', '\uD83D');
+        expect(scene.layers.value[0]!.name).toBe('a'.repeat(38));
+    });
+
     it('keeps the old name when the new one is blank', () => {
         const scene = useScene();
         scene.init([makeLayer('rect', 'one')]);

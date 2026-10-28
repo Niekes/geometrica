@@ -16,14 +16,19 @@ export const defaultBackground: Background = Object.freeze({
 // every character of a name ends up in the shared link
 export const layerNameMaxLength = 40;
 
-// a blank name would leave the layer without a label in the list
+// the rename field, the link and the agent share this rule; a blank name would leave the layer
+// without a label in the list
 export function normalizeLayerName(name: unknown, fallback: string): string {
-    const trimmed = typeof name === 'string' ? name.trim() : '';
+    if (typeof name !== 'string') return fallback;
 
     // the cut counts UTF-16 units like the maxlength of a text field, but drops half an emoji
-    return trimmed
-        ? trimmed.slice(0, layerNameMaxLength).replace(/[\uD800-\uDBFF]$/, '')
-        : fallback;
+    const cut = name
+        .trim()
+        .slice(0, layerNameMaxLength)
+        .replace(/[\uD800-\uDBFF]$/, '')
+        .trim();
+
+    return cut || fallback;
 }
 
 export function buildLayer(shape: ShapePreset): Layer {
