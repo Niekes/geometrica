@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'vitest';
+import { stringify as qsStringify } from 'qs';
 import { serializeState, parseState } from '../urlState';
 import { buildLayer, defaultBackground } from '../../config/defaults';
 import { type Layer } from '../../types/Layer';
@@ -47,6 +48,43 @@ describe('serializeState / parseState roundtrip (v2)', () => {
         expect(parsed).not.toBeNull();
         expect(parsed!.background).toEqual(state.background);
         expect(parsed!.layers).toEqual(layers);
+    });
+
+    it('roundtrips layer names with emojis through the c parameter', () => {
+        const state = {
+            background: defaultBackground,
+            layers: [makeLayer(0, { name: 'Kreise 😀', shape: 'circle', radiusX: 100 })]
+        };
+
+        const parsed = parseState(serializeState(state));
+
+        expect(parsed).not.toBeNull();
+        expect(parsed!.layers[0]!.name).toBe('Kreise 😀');
+    });
+});
+
+describe('serializeState (c parameter)', () => {
+    it('compresses the v2 query into a single c parameter', () => {
+        const layers = Array.from({ length: 8 }, (_, index) =>
+            makeLayer(index, {
+                shape: index % 2 ? 'circle' : 'rect',
+                size: 100 + index * 40,
+                rotation: index * 22.5,
+                calcOpacity: ['interpolate', 'flip']
+            })
+        );
+        const state = { background: defaultBackground, layers };
+
+        const query = serializeState(state);
+        const raw = qsStringify({
+            v: 2,
+            bg: state.background,
+            l: layers.map(({ id: _id, ...rest }) => rest)
+        });
+
+        expect(query).toMatch(/^c=/);
+        expect(query.length).toBeLessThan(raw.length / 2);
+        expect(parseState(query)!.layers).toHaveLength(8);
     });
 });
 
@@ -100,6 +138,13 @@ describe('parseState', () => {
         expect(parsed!.background).toEqual(defaultBackground);
         expect(parsed!.layers[0]!.name).toBe('x');
         expect(parsed!.layers[0]!.path).toBe('');
+    });
+
+    it('loads an empty layer list from a v2 URL without layers', () => {
+        const parsed = parseState('v=2');
+
+        expect(parsed).not.toBeNull();
+        expect(parsed!.layers).toEqual([]);
     });
 
     it('names a layer by its place when the link gives it only spaces', () => {
@@ -168,5 +213,10 @@ describe('parseState', () => {
     it('returns null for an empty or unknown query string', () => {
         expect(parseState('')).toBeNull();
         expect(parseState('foo=bar')).toBeNull();
+    });
+
+    it('returns null for an undecompressable c parameter', () => {
+        expect(parseState('c=qqqq')).toBeNull();
+        expect(parseState('c=')).toBeNull();
     });
 });

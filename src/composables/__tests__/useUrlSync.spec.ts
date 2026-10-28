@@ -3,7 +3,7 @@ import { ref, nextTick, type Ref } from 'vue';
 import { useUrlSync } from '../useUrlSync';
 import { buildLayer, defaultBackground, type Background } from '../../config/defaults';
 import { type Layer } from '../../types/Layer';
-import { serializeState } from '../../lib/urlState';
+import { parseState, serializeState } from '../../lib/urlState';
 
 function makeLayer(name: string): Layer {
     return { ...buildLayer('rect'), id: `id-${name}`, name };
@@ -43,7 +43,7 @@ describe('useUrlSync', () => {
         expect(onLoadCalls).toBe(0);
     });
 
-    it('loads layers and background from a v2 URL and calls onLoad', () => {
+    it('loads layers and background from a c URL and calls onLoad', () => {
         window.history.replaceState(
             {},
             '',
@@ -69,8 +69,8 @@ describe('useUrlSync', () => {
 
         sync.serializeToUrl();
 
-        expect(window.location.search).toContain('v=2');
-        expect(window.location.search).toContain('one');
+        expect(window.location.search).toMatch(/^\?c=/);
+        expect(parseState(window.location.search.substring(1))!.layers[0]!.name).toBe('one');
     });
 
     it('pushes the state to the URL once watched state stops changing', async () => {
@@ -90,7 +90,8 @@ describe('useUrlSync', () => {
 
         vi.advanceTimersByTime(300);
 
-        expect(window.location.search).toContain('amount%5D=7');
+        expect(window.location.search).toMatch(/^\?c=/);
+        expect(parseState(window.location.search.substring(1))!.layers[0]!.amount).toBe(7);
         expect(window.history.length).toBe(entries + 1);
     });
 

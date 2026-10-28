@@ -1,4 +1,5 @@
 import { parse as qsParse, stringify as qsStringify } from 'qs';
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string';
 import { type Layer, type ShapePreset } from '../types/Layer';
 import {
     type Background,
@@ -102,7 +103,10 @@ function coerceLayer(config: Record<string, unknown>, index: number): Layer {
 export function serializeState(state: SceneState): string {
     const layers = state.layers.map(({ id: _id, ...rest }) => rest);
 
-    return qsStringify({ v: 2, bg: state.background, l: layers });
+    // the v2 query stays the canonical format; c only carries it compressed (ADR-0005)
+    const inner = qsStringify({ v: 2, bg: state.background, l: layers });
+
+    return `c=${compressToEncodedURIComponent(inner)}`;
 }
 
 export function parseState(queryString: string): SceneState | null {
@@ -110,6 +114,18 @@ export function parseState(queryString: string): SceneState | null {
 
     const params = qsParse(queryString);
 
+    if (typeof params.c === 'string') {
+        const inner = decompressFromEncodedURIComponent(params.c);
+
+        if (!inner) return null;
+
+        return parseParams(qsParse(inner));
+    }
+
+    return parseParams(params);
+}
+
+function parseParams(params: Record<string, unknown>): SceneState | null {
     if (params.v === '2') {
         const rawLayers = Array.isArray(params.l) ? params.l : [];
 
