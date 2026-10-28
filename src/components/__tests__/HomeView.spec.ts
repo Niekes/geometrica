@@ -38,7 +38,7 @@ describe('HomeView', () => {
         wrapper.unmount();
     });
 
-    it('shows the grid on the drawing surface but keeps it out of the download', async () => {
+    it('shows the grid on the drawing surface but keeps it out of the export', async () => {
         const createObjectURL = vi.fn((_blob: Blob) => 'blob:geometrica');
         vi.stubGlobal('URL', { createObjectURL, revokeObjectURL: vi.fn() });
         const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});

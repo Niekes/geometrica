@@ -28,7 +28,7 @@ const svg = computed(() =>
     renderScene({ background: scene.background.value, layers: scene.layers.value })
 );
 
-function download() {
+function exportSvg() {
     const link: HTMLAnchorElement = document.createElement('a');
     const date: Date = new Date();
 
@@ -140,9 +140,11 @@ onMounted(() => {
             <button type="button" class="btn btn-ghost btn-sm" @click="showGallery = true">
                 Gallery
             </button>
-            <button type="button" class="btn btn-primary btn-sm" @click="download">
-                Export SVG
-            </button>
+            <div class="aura text-primary">
+                <button type="button" class="btn btn-primary btn-sm" @click="exportSvg">
+                    Export SVG
+                </button>
+            </div>
         </TheNavbar>
 
         <aside class="panel bg-base-200" aria-label="Layer properties">
