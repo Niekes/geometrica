@@ -145,6 +145,24 @@ describe('useScene', () => {
         expect(scene.layers.value[0]!.visible).toBe(true);
     });
 
+    it('renames a layer without its surrounding spaces', () => {
+        const scene = useScene();
+        scene.init([makeLayer('rect', 'one')]);
+
+        scene.renameLayer('id-one', '  Sun rays ');
+
+        expect(scene.layers.value[0]!.name).toBe('Sun rays');
+    });
+
+    it('keeps the old name when the new one is blank', () => {
+        const scene = useScene();
+        scene.init([makeLayer('rect', 'one')]);
+
+        scene.renameLayer('id-one', '   ');
+
+        expect(scene.layers.value[0]!.name).toBe('one');
+    });
+
     it('replaces a layer through the selectedLayer setter', () => {
         const scene = useScene();
         scene.init([]);

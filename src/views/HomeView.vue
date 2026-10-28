@@ -69,7 +69,8 @@ const framedDrag = ref(false);
 function holdSpace(event: KeyboardEvent) {
     const target = event.target as Element;
 
-    if (event.code !== 'Space' || target.closest('textarea, input[type="number"]')) return;
+    if (event.code !== 'Space') return;
+    if (target.closest('textarea, input[type="number"], input[type="text"]')) return;
     if (document.querySelector('dialog[open]')) return;
 
     // elsewhere the page or the panel would scroll
@@ -315,6 +316,7 @@ onUnmounted(() => {
                 @remove="scene.removeLayer"
                 @move="scene.moveLayer"
                 @toggle-visibility="scene.toggleVisibility"
+                @rename="scene.renameLayer"
             />
         </main>
 

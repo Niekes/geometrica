@@ -1,6 +1,11 @@
 import { parse as qsParse, stringify as qsStringify } from 'qs';
 import { type Layer, type ShapePreset } from '../types/Layer';
-import { type Background, buildLayer, defaultBackground } from '../config/defaults';
+import {
+    type Background,
+    buildLayer,
+    defaultBackground,
+    layerNameMaxLength
+} from '../config/defaults';
 
 export type SceneState = {
     background: Background;
@@ -90,7 +95,9 @@ function coerceLayer(config: Record<string, unknown>, index: number): Layer {
         // custom paths only exist in v2 URLs
         path: typeof coerced.path === 'string' ? coerced.path : '',
         name:
-            typeof coerced.name === 'string' && coerced.name ? coerced.name : `Layer ${index + 1}`,
+            typeof coerced.name === 'string' && coerced.name
+                ? coerced.name.slice(0, layerNameMaxLength)
+                : `Layer ${index + 1}`,
         id: `l-${index}`
     };
 }

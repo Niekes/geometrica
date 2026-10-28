@@ -104,6 +104,14 @@ export default function useScene() {
         if (layer) layer.visible = !layer.visible;
     }
 
+    function renameLayer(id: string, name: string) {
+        const layer = layers.value.find((l) => l.id === id);
+        const trimmed = name.trim();
+
+        // a blank name would leave the layer without a label in the list
+        if (layer && trimmed) layer.name = trimmed;
+    }
+
     return {
         background,
         layers,
@@ -115,6 +123,7 @@ export default function useScene() {
         duplicateLayer,
         removeLayer,
         moveLayer,
-        toggleVisibility
+        toggleVisibility,
+        renameLayer
     };
 }

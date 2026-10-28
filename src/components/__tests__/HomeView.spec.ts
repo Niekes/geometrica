@@ -208,6 +208,32 @@ describe('HomeView', () => {
         wrapper.unmount();
     });
 
+    it('renames a layer in the list, with spaces in its name', async () => {
+        const wrapper = mount(HomeView, {
+            attachTo: document.body,
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+
+        const layerButton = () => wrapper.find('[aria-label="Layers"] button[aria-current="true"]');
+
+        await layerButton().trigger('dblclick');
+
+        const input = wrapper.find('input[aria-label="Name of Layer 1"]');
+        space('keydown', input.element);
+        await nextTick();
+
+        // typing a space must not switch to moving the layer
+        expect(wrapper.find('.context__bounds').exists()).toBe(false);
+
+        await input.setValue('Sun rays');
+        await input.trigger('keydown', { key: 'Enter' });
+
+        expect(wrapper.find('input[aria-label="Name of Layer 1"]').exists()).toBe(false);
+        expect(layerButton().text()).toBe('Sun rays');
+
+        wrapper.unmount();
+    });
+
     it('moves the selected layer by touch without Space and frames it while dragging', async () => {
         const wrapper = mount(HomeView, {
             global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }

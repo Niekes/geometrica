@@ -80,6 +80,15 @@ describe('set_artwork', () => {
         expect(written).toEqual([]);
     });
 
+    it('rejects a layer name longer than 40 characters', async () => {
+        const { run, written } = setup(artwork);
+
+        await expect(run('set_artwork', { layers: [{ name: 'a'.repeat(41) }] })).rejects.toThrow(
+            'layers[0].name must be at most 40 characters'
+        );
+        expect(written).toEqual([]);
+    });
+
     it('names every unknown field, wrong type and unknown option at once', async () => {
         const { run, written } = setup(artwork);
 

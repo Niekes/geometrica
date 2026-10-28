@@ -13,6 +13,9 @@ export const defaultBackground: Background = Object.freeze({
     borderRadius: 10
 });
 
+// every character of a name ends up in the shared link
+export const layerNameMaxLength = 40;
+
 export function buildLayer(shape: ShapePreset): Layer {
     const layer: Layer = {
         id: '',

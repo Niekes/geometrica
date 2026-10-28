@@ -102,6 +102,12 @@ describe('parseState', () => {
         expect(parsed!.layers[0]!.path).toBe('');
     });
 
+    it('cuts a layer name from a link to 40 characters', () => {
+        const parsed = parseState(`v=2&l[0][name]=${'a'.repeat(50)}`);
+
+        expect(parsed!.layers[0]!.name).toBe('a'.repeat(40));
+    });
+
     it('migrates a legacy rect URL into a single layer with background', () => {
         const parsed = parseState(
             'shape=rect&rect[amount]=8&rect[distance]=10&rect[width]=100&rect[height]=50&rect[strokeWidth]=2&rect[bgColor]=%23000&rect[bgBorderRadius]=10&rect[applyColorSchemeToEachShape]=true&rect[calcOpacity]=interpolate'

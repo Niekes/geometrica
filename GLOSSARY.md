@@ -67,7 +67,7 @@ Die Sequenz von Instanzen einer Form, gesteuert durch amount, distance und rotat
 _Avoid_: Loop, Serie
 
 **Layer**:
-Eine vollständige Konfiguration aus Form, Wiederholung, Farbe und Füllung. Layer stapeln sich in Z-Ordnung auf der Zeichenfläche; beliebig viele sind möglich.
+Eine vollständige Konfiguration aus Form, Wiederholung, Farbe und Füllung. Layer stapeln sich in Z-Ordnung auf der Zeichenfläche; beliebig viele sind möglich. Jeder Layer trägt einen frei wählbaren Namen, der ihn in der Layer-Liste bezeichnet. Der Name reist im geteilten Link mit, wird aber nicht exportiert.
 _Avoid_: Ebene, Schicht
 
 **Preset**:

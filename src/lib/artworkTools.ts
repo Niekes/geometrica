@@ -8,7 +8,12 @@ import {
     gradientTypeOptions,
     shapeOptions
 } from '../config/controlOptions';
-import { type Background, buildLayer, defaultBackground } from '../config/defaults';
+import {
+    type Background,
+    buildLayer,
+    defaultBackground,
+    layerNameMaxLength
+} from '../config/defaults';
 import { backgroundRanges, layerRanges } from '../config/ranges';
 import { surfaceSize } from '../config/surface';
 import { type Range } from '../types/Control';
@@ -29,7 +34,7 @@ type Schema = { description?: string } & (
     | { type: 'number'; minimum: number; maximum: number }
     | { type: 'integer'; minimum: number; maximum: number }
     | { type: 'boolean' }
-    | { type: 'string'; enum?: string[] }
+    | { type: 'string'; enum?: string[]; maxLength?: number }
     | { type: 'array'; items: Schema; minItems?: number }
     | {
           type: 'object';
@@ -56,7 +61,11 @@ const corner = (name: string) =>
     `Rounding of the ${name} corner of the rect shape, 0 (sharp) to 1 (fully round).`;
 
 const layerProperties: Record<keyof Artwork['layers'][number], Schema> = {
-    name: { type: 'string', description: 'Label of the layer in the layer list.' },
+    name: {
+        type: 'string',
+        maxLength: layerNameMaxLength,
+        description: 'Label of the layer in the layer list.'
+    },
     visible: { type: 'boolean', description: 'A hidden layer is not drawn.' },
     shape: oneOf(shapeOptions, 'The shape preset; "custom" draws the SVG path in path.'),
     path: {
@@ -204,6 +213,10 @@ const checks: { [T in Schema['type']]: Check<T> } = {
         typeof value === 'boolean' ? [] : [`${path} must be true or false`],
     string: (value, schema, path) => {
         if (typeof value !== 'string') return [`${path} must be a string`];
+
+        if (schema.maxLength !== undefined && value.length > schema.maxLength) {
+            return [`${path} must be at most ${schema.maxLength} characters`];
+        }
 
         return !schema.enum || schema.enum.includes(value)
             ? []

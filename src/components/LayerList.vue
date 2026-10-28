@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { nextTick, ref } from 'vue';
 import type { Layer } from '@/types/Layer';
+import { layerNameMaxLength } from '@/config/defaults';
 
 import BaseIconButton from '@/components/BaseIconButton.vue';
 
@@ -25,7 +27,31 @@ const emit = defineEmits<{
     (e: 'remove', id: string): void;
     (e: 'move', id: string, direction: -1 | 1): void;
     (e: 'toggle-visibility', id: string): void;
+    (e: 'rename', id: string, name: string): void;
 }>();
+
+const renamingId = ref<string | null>(null);
+
+// select() focuses the field and marks the old name for overtyping
+const vSelect = { mounted: (input: HTMLInputElement) => input.select() };
+
+function startRename(id: string) {
+    emit('select', id);
+    renamingId.value = id;
+}
+
+function finishRename(event: Event, save: boolean) {
+    const id = renamingId.value;
+
+    // removing the field after Enter or Escape blurs it once more
+    if (!id) return;
+
+    renamingId.value = null;
+    if (save) emit('rename', id, (event.target as HTMLInputElement).value);
+
+    // the field is gone, so the keyboard picks up at the layer again; Enter must not click it
+    if (event.type === 'keydown') nextTick(() => document.getElementById(`layer-${id}`)?.focus());
+}
 </script>
 
 <template>
@@ -59,12 +85,28 @@ const emit = defineEmits<{
                     @click="emit('toggle-visibility', layer.id)"
                 />
 
+                <input
+                    v-if="renamingId === layer.id"
+                    v-select
+                    type="text"
+                    class="input input-xs min-w-0 flex-1"
+                    :aria-label="`Name of ${layer.name}`"
+                    :value="layer.name"
+                    :maxlength="layerNameMaxLength"
+                    @keydown.enter.prevent="finishRename($event, true)"
+                    @keydown.esc="finishRename($event, false)"
+                    @blur="finishRename($event, true)"
+                />
                 <button
+                    v-else
+                    :id="`layer-${layer.id}`"
                     type="button"
                     class="btn btn-xs btn-ghost min-w-0 flex-1 justify-start px-1 font-normal"
                     :class="{ 'text-base-content/50 line-through': !layer.visible }"
                     :aria-current="layer.id === props.selectedId"
                     @click="emit('select', layer.id)"
+                    @dblclick="startRename(layer.id)"
+                    @keydown.f2="startRename(layer.id)"
                 >
                     <span class="truncate" v-text="layer.name" />
                 </button>
