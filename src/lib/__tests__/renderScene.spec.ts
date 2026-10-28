@@ -7,7 +7,8 @@ function makeLayer(shape: Layer['shape'], overrides: Partial<Layer> = {}): Layer
     return {
         ...buildLayer(shape),
         amount: 1,
-        fillMode: 'fill',
+        fillOpacity: 1,
+        strokeOpacity: 0,
         // magma(1) is the bright end of the ramp
         flipColorInterpolator: true,
         ...overrides
@@ -29,7 +30,7 @@ function paths(svg: Element): Element[] {
     return [...svg.querySelectorAll('g > path')];
 }
 
-describe('renderScene: fill modes', () => {
+describe('renderScene: fill and stroke', () => {
     it('fills a single rect instance with the sequence color', () => {
         const [path, ...rest] = paths(render([makeLayer('rect', { width: 60, height: 60 })]));
 
@@ -40,8 +41,8 @@ describe('renderScene: fill modes', () => {
         expect(path!.hasAttribute('stroke')).toBe(false);
     });
 
-    it('strokes instead of filling in stroke mode', () => {
-        const layer = makeLayer('rect', { fillMode: 'stroke', strokeWidth: 5 });
+    it('strokes without a fill at zero fill opacity', () => {
+        const layer = makeLayer('rect', { fillOpacity: 0, strokeOpacity: 1, strokeWidth: 5 });
         const [path] = paths(render([layer]));
 
         expect(path!.getAttribute('fill')).toBe('none');
@@ -52,11 +53,19 @@ describe('renderScene: fill modes', () => {
         expect(path!.getAttribute('stroke-miterlimit')).toBe('10');
     });
 
-    it('fills and strokes in fillStroke mode', () => {
-        const [path] = paths(render([makeLayer('rect', { fillMode: 'fillStroke' })]));
+    it('fills and strokes with the same color', () => {
+        const [path] = paths(render([makeLayer('rect', { fillOpacity: 1, strokeOpacity: 1 })]));
 
         expect(path!.getAttribute('fill')).toBe(MAGMA_BRIGHT);
         expect(path!.getAttribute('stroke')).toBe(MAGMA_BRIGHT);
+    });
+
+    it('draws fill and stroke with their own opacity on top of the layer opacity', () => {
+        const layer = makeLayer('rect', { opacity: 0.5, fillOpacity: 0.4, strokeOpacity: 0.8 });
+        const [path] = paths(render([layer]));
+
+        expect(path!.getAttribute('fill-opacity')).toBe('0.2');
+        expect(path!.getAttribute('stroke-opacity')).toBe('0.4');
     });
 
     it('centers the layer on the surface with cy pointing up', () => {
@@ -146,12 +155,21 @@ describe('renderScene: repetition', () => {
     });
 
     it('interpolates the opacity along the sequence on top of the layer opacity', () => {
-        const layer = makeLayer('rect', { amount: 2, opacity: 0.5, calcOpacity: ['interpolate'] });
+        const layer = makeLayer('rect', {
+            amount: 2,
+            opacity: 0.5,
+            strokeOpacity: 0.5,
+            calcOpacity: ['interpolate']
+        });
         const flipped = { ...layer, calcOpacity: ['interpolate', 'flip'] } as Layer;
 
         expect(paths(render([layer])).map((p) => p.getAttribute('fill-opacity'))).toEqual([
             '0',
             '0.5'
+        ]);
+        expect(paths(render([layer])).map((p) => p.getAttribute('stroke-opacity'))).toEqual([
+            '0',
+            '0.25'
         ]);
         expect(paths(render([flipped])).map((p) => p.getAttribute('fill-opacity'))).toEqual([
             '0.5',
@@ -162,7 +180,8 @@ describe('renderScene: repetition', () => {
     it('interpolates the stroke width along the sequence', () => {
         const layer = makeLayer('rect', {
             amount: 2,
-            fillMode: 'stroke',
+            fillOpacity: 0,
+            strokeOpacity: 1,
             strokeWidth: 4,
             calcStrokeWidth: ['interpolate']
         });
@@ -195,7 +214,7 @@ describe('renderScene: layers', () => {
 
     it('applies the layer opacity to every instance, not to the layer as a group', () => {
         const svg = render([
-            makeLayer('rect', { amount: 2, opacity: 0.5, fillMode: 'fillStroke' })
+            makeLayer('rect', { amount: 2, opacity: 0.5, fillOpacity: 1, strokeOpacity: 1 })
         ]);
 
         expect(svg.querySelector('[opacity]')).toBeNull();
@@ -251,7 +270,8 @@ describe('renderScene: gradients', () => {
         const layer = makeLayer('circle', {
             radiusX: 60,
             radiusY: 60,
-            fillMode: 'stroke',
+            fillOpacity: 0,
+            strokeOpacity: 1,
             applyColorSchemeToEachShape: true,
             gradientType: 'radial'
         });
@@ -266,7 +286,8 @@ describe('renderScene: gradients', () => {
     it('gives every instance of every layer its own gradient', () => {
         const layer = makeLayer('rect', {
             amount: 2,
-            fillMode: 'fillStroke',
+            fillOpacity: 1,
+            strokeOpacity: 1,
             applyColorSchemeToEachShape: true
         });
         const svg = render([layer, { ...layer, id: 'other' }]);

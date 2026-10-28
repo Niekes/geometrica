@@ -17,6 +17,7 @@ const NUMERIC_FIELDS = [
     'cx',
     'cy',
     'distance',
+    'fillOpacity',
     'gradientAngle',
     'height',
     'opacity',
@@ -25,6 +26,7 @@ const NUMERIC_FIELDS = [
     'rotation',
     'sides',
     'size',
+    'strokeOpacity',
     'strokeWidth',
     'width'
 ];
@@ -64,14 +66,22 @@ function coerceBackground(config: Record<string, unknown> | undefined): Backgrou
     };
 }
 
+// older v2 URLs store a fill mode instead of the fill and stroke opacities
+const LEGACY_FILL_MODES: Record<string, Pick<Layer, 'fillOpacity' | 'strokeOpacity'>> = {
+    stroke: { fillOpacity: 0, strokeOpacity: 1 },
+    fill: { fillOpacity: 1, strokeOpacity: 0 },
+    fillStroke: { fillOpacity: 1, strokeOpacity: 1 }
+};
+
 function coerceLayer(config: Record<string, unknown>, index: number): Layer {
-    const coerced = coerceConfig(config);
+    const { fillMode, ...coerced } = coerceConfig(config);
     const shape = SHAPE_PRESETS.includes(coerced.shape as ShapePreset)
         ? (coerced.shape as ShapePreset)
         : 'rect';
 
     return {
         ...buildLayer(shape),
+        ...LEGACY_FILL_MODES[fillMode as string],
         ...coerced,
         shape,
         // custom paths only exist in v2 URLs

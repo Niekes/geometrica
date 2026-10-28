@@ -17,7 +17,8 @@ describe('serializeState / parseState roundtrip (v2)', () => {
         const layers = [
             makeLayer(0, {
                 shape: 'custom',
-                fillMode: 'fillStroke',
+                fillOpacity: 0.3,
+                strokeOpacity: 0.6,
                 path: 'M0 0 L10 0 L10 10 Z',
                 amount: 5,
                 gradientType: 'radial',
@@ -61,6 +62,20 @@ describe('parseState', () => {
         expect(layer.calcOpacity).toEqual(['interpolate', 'flip']);
     });
 
+    it('migrates the fill mode of older v2 URLs into fill and stroke opacity', () => {
+        const parsed = parseState(
+            'v=2&l[0][fillMode]=stroke&l[1][fillMode]=fill&l[2][fillMode]=fillStroke'
+        );
+        const opacities = parsed!.layers.map((layer) => [layer.fillOpacity, layer.strokeOpacity]);
+
+        expect(opacities).toEqual([
+            [0, 1],
+            [1, 0],
+            [1, 1]
+        ]);
+        expect(parsed!.layers[0]).not.toHaveProperty('fillMode');
+    });
+
     it('migrates a legacy URL without a shape parameter', () => {
         const parsed = parseState('circle[amount]=3&circle[bgColor]=%23fff');
 
@@ -97,7 +112,8 @@ describe('parseState', () => {
         expect(layer.applyColorSchemeToEachShape).toBe(true);
         expect(layer.calcOpacity).toEqual(['interpolate']);
         // layer-specific v2 defaults are filled in
-        expect(layer.fillMode).toBe('stroke');
+        expect(layer.fillOpacity).toBe(0);
+        expect(layer.strokeOpacity).toBe(1);
         expect(layer.opacity).toBe(1);
         expect(layer.visible).toBe(true);
     });

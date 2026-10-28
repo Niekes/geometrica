@@ -50,8 +50,6 @@ function renderLayer(layer: Layer, idPrefix: string, defs: string[]): string {
     const cx = round(surfaceSize / 2 + layer.cx);
     const cy = round(surfaceSize / 2 - layer.cy);
     const colorIp = resolveInterpolator(layer);
-    const wantsFill = layer.fillMode !== 'stroke';
-    const wantsStroke = layer.fillMode !== 'fill';
     const polygonOffset = layer.shape === 'polygon' ? -PI / 2 : 0;
 
     let markup = '';
@@ -70,16 +68,20 @@ function renderLayer(layer: Layer, idPrefix: string, defs: string[]): string {
             paint = `url(#${id})`;
         }
 
-        const opacity = round(layer.opacity * sequenceOpacity(layer, instance));
+        const instanceOpacity = layer.opacity * sequenceOpacity(layer, instance);
         const rotation = round(((instance.angle + polygonOffset) * 180) / PI);
 
         let attributes = `transform="translate(${cx} ${cy}) rotate(${rotation})"`;
 
-        attributes += wantsFill ? ` fill="${paint}" fill-opacity="${opacity}"` : ' fill="none"';
+        // a zero opacity drops the paint entirely, so exports carry no invisible fills or strokes
+        attributes +=
+            layer.fillOpacity > 0
+                ? ` fill="${paint}" fill-opacity="${round(instanceOpacity * layer.fillOpacity)}"`
+                : ' fill="none"';
 
         // miter limit 10 keeps the sharp corners of existing artworks; SVG would default to 4
-        if (wantsStroke) {
-            attributes += ` stroke="${paint}" stroke-opacity="${opacity}" stroke-width="${round(instanceStrokeWidth(layer, instance))}" stroke-miterlimit="10"`;
+        if (layer.strokeOpacity > 0) {
+            attributes += ` stroke="${paint}" stroke-opacity="${round(instanceOpacity * layer.strokeOpacity)}" stroke-width="${round(instanceStrokeWidth(layer, instance))}" stroke-miterlimit="10"`;
         }
 
         markup += `<path d="${serializePath(geometry.commands)}" ${attributes}/>`;

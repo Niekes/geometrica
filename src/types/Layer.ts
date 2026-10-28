@@ -2,8 +2,6 @@ import { type ColorInterPolator } from './ColorInterPolators';
 
 export type ShapePreset = 'rect' | 'circle' | 'polygon' | 'custom';
 
-export type FillMode = 'stroke' | 'fill' | 'fillStroke';
-
 export type GradientType = 'linear' | 'radial';
 
 export type Layer = {
@@ -12,7 +10,8 @@ export type Layer = {
     visible: boolean;
     opacity: number;
     shape: ShapePreset;
-    fillMode: FillMode;
+    fillOpacity: number;
+    strokeOpacity: number;
     gradientType: GradientType;
     gradientAngle: number;
     path: string;

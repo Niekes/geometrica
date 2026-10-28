@@ -48,9 +48,17 @@ _Avoid_: Farbinterpolation über Instanzen
 Eine benannte d3-Farbramppen-Funktion, die eine Position [0..1] auf eine Farbe abbildet.
 _Avoid_: Farbschema, Palette
 
-**Fill-Modus**:
-Pro Layer wählbare Darstellung einer Instanz: Stroke, Fill oder Fill+Stroke.
-_Avoid_: Zeichenmodus
+**Fill-Opacity**:
+Deckkraft der Füllung einer Instanz, stufenlos von 0 (keine Füllung) bis 1. Fill und Stroke teilen sich dieselbe Farbe.
+_Avoid_: Fill-Modus, Zeichenmodus
+
+**Stroke-Opacity**:
+Deckkraft der Kontur einer Instanz, stufenlos von 0 (keine Kontur) bis 1. Unabhängig von der Fill-Opacity einstellbar.
+_Avoid_: Fill-Modus, Zeichenmodus
+
+**Layer-Opacity**:
+Deckkraft eines ganzen Layers, die Fill-Opacity und Stroke-Opacity gemeinsam abschwächt. Sich überlappende Instanzen desselben Layers addieren sich dabei.
+_Avoid_: Layer-Opazität
 
 ### Architektur
 

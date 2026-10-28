@@ -1,7 +1,4 @@
 <script setup lang="ts">
-// Vue
-import { computed } from 'vue';
-
 // Components
 import BaseCheckBox from '@/components/BaseCheckBox.vue';
 import BaseRadioButton from '@/components/BaseRadioButton.vue';
@@ -10,6 +7,7 @@ import ColorInterpolator from '@/components/ColorInterpolator.vue';
 
 // Types
 import { type Layer } from '@/types/Layer';
+import type { BaseControl } from '@/types/Control';
 
 // Config
 import {
@@ -21,9 +19,37 @@ import {
 
 const layer = defineModel<Layer>({ required: true });
 
-const isGradientRelevant = computed(
-    () => layer.value.applyColorSchemeToEachShape && layer.value.fillMode !== 'stroke'
-);
+type Control = BaseControl & { name: keyof Layer };
+
+const toPercent = (d: number) => `${(d * 100).toFixed(0)}%`;
+
+// the layer opacity scales the fill and the stroke opacity of every instance
+const opacityControls: Control[] = [
+    {
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'Layer Opacity',
+        name: 'opacity',
+        format: toPercent
+    },
+    {
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'Fill Opacity',
+        name: 'fillOpacity',
+        format: toPercent
+    },
+    {
+        min: 0,
+        max: 1,
+        step: 0.01,
+        label: 'Stroke Opacity',
+        name: 'strokeOpacity',
+        format: toPercent
+    }
+];
 
 const setColorInterPolator = (interpolator: { name: Layer['colorInterPolator'] }) => {
     layer.value.colorInterPolator = interpolator.name;
@@ -32,12 +58,14 @@ const setColorInterPolator = (interpolator: { name: Layer['colorInterPolator'] }
 
 <template>
     <BaseRangeSlider
-        v-model.number="layer.opacity"
-        :min="0"
-        :max="1"
-        :step="0.01"
-        label="Layer Opacity"
-        :format="(d: number) => `${(d * 100).toFixed(0)}%`"
+        v-for="ctrl in opacityControls"
+        :key="ctrl.name"
+        v-model.number="layer[ctrl.name] as number"
+        :min="ctrl.min"
+        :max="ctrl.max"
+        :step="ctrl.step"
+        :label="ctrl.label"
+        :format="ctrl.format"
     />
 
     <BaseCheckBox :options="calcOpacityOptions" v-model="layer.calcOpacity" />
@@ -47,7 +75,7 @@ const setColorInterPolator = (interpolator: { name: Layer['colorInterPolator'] }
         v-model="layer.applyColorSchemeToEachShape"
     />
 
-    <template v-if="isGradientRelevant">
+    <template v-if="layer.applyColorSchemeToEachShape">
         <BaseRadioButton :options="gradientTypeOptions" v-model="layer.gradientType" />
         <BaseRangeSlider
             v-if="layer.gradientType === 'linear'"

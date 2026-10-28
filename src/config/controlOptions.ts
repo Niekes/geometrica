@@ -37,12 +37,6 @@ export const shapeOptions = [
     { value: 'custom', label: 'Custom Shape' }
 ];
 
-export const fillModeOptions = [
-    { value: 'stroke', label: 'Stroke' },
-    { value: 'fill', label: 'Fill' },
-    { value: 'fillStroke', label: 'Fill + Stroke' }
-];
-
 export const gradientTypeOptions = [
     { value: 'linear', label: 'Linear gradient' },
     { value: 'radial', label: 'Radial gradient' }

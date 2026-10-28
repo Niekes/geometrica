@@ -24,7 +24,7 @@ import { normalizePath } from '@/lib/pathBounds';
 import { surfaceSize } from '@/config/surface';
 import { useLinkedSliders } from '@/composables/useLinkedSliders';
 import { buildLayer } from '@/config/defaults';
-import { calcStrokeWidthOptions, shapeOptions, fillModeOptions } from '@/config/controlOptions';
+import { calcStrokeWidthOptions, shapeOptions } from '@/config/controlOptions';
 
 const layer = defineModel<Layer>({ required: true });
 
@@ -123,9 +123,7 @@ useLinkedSliders(
     () => layer.value.shape === 'rect'
 );
 
-const isStrokeRelevant = computed(
-    () => layer.value.fillMode === 'stroke' || layer.value.fillMode === 'fillStroke'
-);
+const isStrokeRelevant = computed(() => layer.value.strokeOpacity > 0);
 
 const isCustomPathValid = computed(() => {
     if (layer.value.shape !== 'custom') return true;
@@ -144,7 +142,6 @@ function resetFields(controls: Control[]) {
 <template>
     <div class="flex flex-col gap-4">
         <BaseRadioButton :options="shapeOptions" v-model="layer.shape" />
-        <BaseRadioButton :options="fillModeOptions" v-model="layer.fillMode" />
 
         <BaseAccordion v-if="layer.shape === 'custom'">
             <template #title> Custom Shape </template>
@@ -264,6 +261,8 @@ function resetFields(controls: Control[]) {
                 resetFields(borderRadiusControls);
                 resetFields(positionControls);
                 layer.opacity = defaults.opacity;
+                layer.fillOpacity = defaults.fillOpacity;
+                layer.strokeOpacity = defaults.strokeOpacity;
                 layer.strokeWidth = defaults.strokeWidth;
             "
         >
