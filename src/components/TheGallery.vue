@@ -31,7 +31,7 @@ const galleryLinks = [
 </script>
 
 <template>
-    <BaseModal v-model="showGallery" wide>
+    <BaseModal v-model="showGallery">
         <template #title>Gallery</template>
         <div class="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             <a
