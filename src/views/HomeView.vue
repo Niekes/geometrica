@@ -200,7 +200,7 @@ onMounted(() => {
                             <BaseRangeSlider
                                 v-model.number="scene.background.value.opacity"
                                 v-bind="backgroundRanges.opacity"
-                                class="w-44"
+                                class="w-52"
                                 label="Opacity"
                                 :scale="100"
                                 unit="%"
@@ -208,7 +208,7 @@ onMounted(() => {
                             <BaseRangeSlider
                                 v-model.number="scene.background.value.borderRadius"
                                 v-bind="backgroundRanges.borderRadius"
-                                class="w-44"
+                                class="w-52"
                                 label="Corner radius"
                                 unit="%"
                             />

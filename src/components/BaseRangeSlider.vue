@@ -107,10 +107,10 @@ function onKeydown(event: KeyboardEvent) {
     <div class="flex flex-col gap-1">
         <div class="flex items-center justify-between gap-2">
             <label :for="id" class="truncate text-xs" v-text="label" />
-            <span class="flex shrink-0 items-center gap-1 text-xs">
+            <label class="input input-xs w-28 shrink-0">
                 <input
                     type="number"
-                    class="input input-xs w-16 text-right tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
+                    class="text-right tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none"
                     :aria-label="label"
                     :value="fieldValue"
                     :min="min * scale"
@@ -120,8 +120,8 @@ function onKeydown(event: KeyboardEvent) {
                     @change="onFieldChange"
                     @keydown="onKeydown"
                 />
-                <span class="w-3 text-base-content/70" v-text="unit" />
-            </span>
+                <span v-if="unit" class="label" v-text="unit" />
+            </label>
         </div>
 
         <div class="relative flex items-center">
