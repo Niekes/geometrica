@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { parsePath, getPathBounds, normalizePath } from '../pathBounds';
+import { parsePath, getPathBounds, normalizePath, serializePath } from '../pathBounds';
 
 describe('getPathBounds', () => {
     it('computes bounds of straight lines', () => {
@@ -66,6 +66,12 @@ describe('getPathBounds', () => {
         const bounds = getPathBounds(parsePath('M1 1 3 2 5 3'));
 
         expect(bounds).toEqual({ minX: 1, minY: 1, maxX: 5, maxY: 3 });
+    });
+
+    it('repeats any command while arguments follow without a letter', () => {
+        expect(serializePath(parsePath('m1 1 2 0l0 2 1 1a1 1 0 0 1 1 1 1 1 0 0 1 1 1z'))).toBe(
+            'M1 1L3 1L3 3L4 4A1 1 0 0 1 5 5A1 1 0 0 1 6 6Z'
+        );
     });
 
     it('parses relative arcs', () => {

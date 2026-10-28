@@ -123,17 +123,6 @@ function parseMove(ctx: ParseContext) {
     ctx.state.sy = absY;
     ctx.state.prevCubicCtrl = null;
     ctx.state.prevQuadCtrl = null;
-
-    // pairs after the first moveto are implicit linetos
-    while (!ctx.lexer.atEnd() && !ctx.lexer.peekCommand()) {
-        const [lx, ly] = readArgs(ctx, 2);
-        const [aX, aY] = toAbsolute(ctx, lx, ly);
-
-        ctx.commands.push({ cmd: 'L', x: aX, y: aY });
-        moveTo(ctx, aX, aY);
-        ctx.state.prevCubicCtrl = null;
-        ctx.state.prevQuadCtrl = null;
-    }
 }
 
 function parseLine(ctx: ParseContext) {
@@ -273,9 +262,14 @@ export function parsePath(d: string): Command[] {
     try {
         while (!lexer.atEnd()) {
             const command = lexer.readCommand();
-            const relative = command === command.toLowerCase();
+            const name = command.toUpperCase();
+            const ctx = { lexer, state, commands, relative: command === command.toLowerCase() };
 
-            COMMAND_HANDLERS[command.toUpperCase()]!({ lexer, state, commands, relative });
+            COMMAND_HANDLERS[name]!(ctx);
+
+            // a command repeats while arguments follow without a letter; pairs after a moveto are linetos
+            const repeat = COMMAND_HANDLERS[name === 'M' ? 'L' : name]!;
+            while (name !== 'Z' && !lexer.atEnd() && !lexer.peekCommand()) repeat(ctx);
         }
     } catch {
         return [];
