@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { ref, nextTick, type Ref } from 'vue';
 import { useUrlSync } from '../useUrlSync';
 import { buildLayer, defaultBackground, type Background } from '../../config/defaults';
@@ -31,6 +31,7 @@ describe('useUrlSync', () => {
     });
 
     afterEach(() => {
+        vi.useRealTimers();
         window.history.replaceState({}, '', '/geometrica/');
     });
 
@@ -72,14 +73,25 @@ describe('useUrlSync', () => {
         expect(window.location.search).toContain('one');
     });
 
-    it('pushes the state to the URL when watched state changes', async () => {
+    it('pushes the state to the URL once watched state stops changing', async () => {
+        vi.useFakeTimers();
         layers.value = [makeLayer('one')];
+        const entries = window.history.length;
 
         sync.setupWatchers();
-        layers.value[0]!.amount = 7;
-        await nextTick();
 
-        expect(window.location.search).toContain('v=2');
+        for (const amount of [5, 6, 7]) {
+            layers.value[0]!.amount = amount;
+            await nextTick();
+            vi.advanceTimersByTime(100);
+        }
+
+        expect(window.location.search).toBe('');
+
+        vi.advanceTimersByTime(300);
+
+        expect(window.location.search).toContain('amount%5D=7');
+        expect(window.history.length).toBe(entries + 1);
     });
 
     it('reloads the state when the browser navigates back', () => {

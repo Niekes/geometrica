@@ -12,7 +12,7 @@ export interface UseUrlSyncOptions {
 /**
  * Composable for bidirectional URL query parameter synchronization.
  * Parses URL params on init (v2 format or legacy migration) and
- * updates the URL whenever the scene state changes.
+ * updates the URL once the scene state stops changing.
  */
 export function useUrlSync(state: UseUrlSyncOptions) {
     const { layers, background, onLoad } = state;
@@ -39,11 +39,21 @@ export function useUrlSync(state: UseUrlSyncOptions) {
         initFromUrl();
     }
 
+    // a slider or a drag changes the state many times per second; browsers throttle pushState,
+    // and a single history entry per gesture keeps the back button useful
+    let serializeTimer: ReturnType<typeof setTimeout> | undefined;
+
+    function scheduleSerialize() {
+        clearTimeout(serializeTimer);
+        serializeTimer = setTimeout(serializeToUrl, 300);
+    }
+
     function setupWatchers() {
-        watch([layers, background], serializeToUrl, { deep: true });
+        watch([layers, background], scheduleSerialize, { deep: true });
         window.addEventListener('popstate', onPopState);
 
         onUnmounted(() => {
+            clearTimeout(serializeTimer);
             window.removeEventListener('popstate', onPopState);
         });
     }
