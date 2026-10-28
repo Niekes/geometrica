@@ -30,9 +30,17 @@ _Avoid_: Gitter
 Eine Hilfsform des Rasters nach den Material-Icon-Richtlinien: Kreis, Innenkreis, Quadrat, Hochformat- oder Querformat-Rechteck.
 _Avoid_: Hilfsform, Schlüssellinie
 
+**Einrasten**:
+Das Ausrichten der Position eines Layers an den Rasterlinien, während er auf der Zeichenfläche verschoben wird. Es wirkt nur, solange das Raster eingeblendet ist.
+_Avoid_: Snapping, Snap
+
 **Form**:
 Eine Pfadgeometrie (Rect, Circle, Polygon oder eine eigene Form aus eingefügten SVG-Pfaden). Mehrere eingefügte Pfade bilden zusammen eine Form. Die Form selbst ist nur die Geometrie, ohne Wiederholungs- oder Stilparameter.
 _Avoid_: Shape, Figur, Objekt
+
+**Position**:
+Der Versatz des Form-Mittelpunkts vom Mittelpunkt der Zeichenfläche. Alle Instanzen eines Layers teilen ihn.
+_Avoid_: Offset, Koordinate
 
 **Instanz**:
 Eine einzelne gezeichnete Wiederholung einer Form auf der Zeichenfläche.

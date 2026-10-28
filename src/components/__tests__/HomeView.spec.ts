@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
+import { nextTick } from 'vue';
 import HomeView from '../../views/HomeView.vue';
 
 describe('HomeView', () => {
@@ -81,6 +82,48 @@ describe('HomeView', () => {
         await checkbox.setValue(true);
 
         expect(wrapper.find('.context__grid').exists()).toBe(true);
+
+        wrapper.unmount();
+    });
+
+    it('drags the selected layer across the drawing surface and snaps it to the grid', async () => {
+        const wrapper = mount(HomeView, {
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+        const surface = wrapper.find('.context__surface');
+        const grid = wrapper
+            .findAll('label')
+            .find((label) => label.text() === 'Grid')!
+            .find('input');
+        // jsdom lacks PointerEvent; a MouseEvent carries the same coordinates and button
+        const pointer = (type: string, clientX = 0, clientY = 0) =>
+            surface.element.dispatchEvent(new MouseEvent(type, { clientX, clientY }));
+        const drag = async (dx: number, dy: number) => {
+            pointer('pointerdown');
+            pointer('pointermove', dx, dy);
+            pointer('pointerup');
+            await nextTick();
+        };
+
+        // jsdom has no layout: a surface 1024 pixels wide maps one pixel to one unit
+        Object.defineProperty(surface.element, 'clientWidth', { value: 1024 });
+        surface.element.setPointerCapture = vi.fn();
+
+        // x lands within a quarter cell of 32 and snaps; y moves down, so cy turns negative
+        await drag(37, 20);
+
+        expect(surface.html()).toContain('translate(544 532)');
+
+        await grid.setValue(false);
+        await drag(5, 0);
+
+        expect(surface.html()).toContain('translate(549 532)');
+
+        // the jitter of a click moves nothing, so it does not snap the layer either
+        await grid.setValue(true);
+        await drag(1, 1);
+
+        expect(surface.html()).toContain('translate(549 532)');
 
         wrapper.unmount();
     });

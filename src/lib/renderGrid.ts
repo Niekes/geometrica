@@ -47,6 +47,14 @@ function keylineRect(width: number, height: number): string {
     return `<rect x="${(surfaceSize - width) / 2}" y="${(surfaceSize - height) / 2}" width="${width}" height="${height}" rx="${cell}" ${nonScaling}/>`;
 }
 
+// positions count from the center, which lies on a grid line, so the lines sit at multiples of a
+// cell; the pull reaches a quarter cell, so positions between the lines stay reachable
+export function snapToGrid(position: number): number {
+    const nearest = Math.round(position / cell) * cell;
+
+    return Math.abs(position - nearest) < cell / 4 ? nearest : position;
+}
+
 export function renderGrid(background: Background): string {
     return (
         `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${surfaceSize} ${surfaceSize}" fill="none" stroke="${lineColor(background)}" stroke-width="1">` +

@@ -6,7 +6,8 @@ import LayerControl from '../components/LayerControl.vue';
 import TheGallery from '../components/TheGallery.vue';
 import useScene from '../composables/useScene';
 import { useUrlSync } from '../composables/useUrlSync';
-import { renderGrid } from '../lib/renderGrid';
+import { surfaceSize } from '../config/surface';
+import { renderGrid, snapToGrid } from '../lib/renderGrid';
 import { renderScene } from '../lib/renderScene';
 
 const scene = useScene();
@@ -37,6 +38,55 @@ function download() {
 const showGrid = ref(true);
 const grid = computed(() => renderGrid(scene.background.value));
 const toPercent = (d: number) => `${(d * 100).toFixed(0)}%`;
+
+// dragging the drawing surface moves the selected layer; the jitter of a click never moves it
+let drag: { x: number; y: number; cx: number; cy: number; scale: number; moved: boolean } | null =
+    null;
+
+function startDrag(event: PointerEvent) {
+    if (event.button !== 0) return;
+
+    const surface = event.currentTarget as HTMLElement;
+    const { cx, cy } = scene.selectedLayer.value;
+
+    surface.setPointerCapture(event.pointerId);
+    drag = {
+        x: event.clientX,
+        y: event.clientY,
+        cx,
+        cy,
+        scale: surfaceSize / surface.clientWidth,
+        moved: false
+    };
+}
+
+function moveDrag(event: PointerEvent) {
+    if (!drag) return;
+
+    const dx = event.clientX - drag.x;
+    // cy counts upwards, the screen downwards
+    const dy = drag.y - event.clientY;
+
+    if (!drag.moved && Math.hypot(dx, dy) < 3) return;
+
+    drag.moved = true;
+
+    const { scale } = drag;
+    const place = (start: number, delta: number) => {
+        const half = surfaceSize / 2;
+        const position = Math.max(-half, Math.min(half, Math.round(start + delta * scale)));
+
+        // the grid shows where a layer snaps to, so without it the layer moves freely
+        return showGrid.value ? snapToGrid(position) : position;
+    };
+
+    scene.selectedLayer.value.cx = place(drag.cx, dx);
+    scene.selectedLayer.value.cy = place(drag.cy, dy);
+}
+
+function endDrag() {
+    drag = null;
+}
 
 const showGallery = ref(false);
 
@@ -116,7 +166,13 @@ onMounted(() => {
         </div>
 
         <div class="context">
-            <div class="context__surface">
+            <div
+                class="context__surface"
+                @pointerdown="startDrag"
+                @pointermove="moveDrag"
+                @pointerup="endDrag"
+                @pointercancel="endDrag"
+            >
                 <div v-html="svg" />
                 <div v-if="showGrid" class="context__grid" v-html="grid" />
             </div>
@@ -157,10 +213,13 @@ onMounted(() => {
     aspect-ratio: 1;
     /* the transparency pattern lives in CSS, so the exported SVG never contains it */
     background: repeating-conic-gradient(#e5e5e5 0 25%, #fff 0 50%) 0 0 / 16px 16px;
+    cursor: move;
     display: grid;
     filter: drop-shadow(0 4px 6px rgb(0 0 0 / 50%));
     height: 75%;
     max-width: 75%;
+    /* touch input drags the layer instead of scrolling the page */
+    touch-action: none;
 }
 
 .context__surface > * {

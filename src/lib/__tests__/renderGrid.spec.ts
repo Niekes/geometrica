@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { renderGrid } from '../renderGrid';
+import { renderGrid, snapToGrid } from '../renderGrid';
 import { type Background, defaultBackground } from '../../config/defaults';
 
 function render(background: Partial<Background> = {}): Element {
@@ -90,5 +90,17 @@ describe('renderGrid', () => {
             [160, 32, 704, 960, 32],
             [32, 160, 960, 704, 32]
         ]);
+    });
+});
+
+describe('snapToGrid', () => {
+    it('snaps a position within a quarter cell to the nearest grid line', () => {
+        expect(snapToGrid(37)).toBe(32);
+        expect(snapToGrid(-60)).toBe(-64);
+    });
+
+    it('leaves a position between grid lines free', () => {
+        expect(snapToGrid(48)).toBe(48);
+        expect(snapToGrid(-23)).toBe(-23);
     });
 });
