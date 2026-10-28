@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-
 import type { Layer } from '@/types/Layer';
+
+import BaseIconButton from '@/components/BaseIconButton.vue';
 
 import {
     EyeIcon,
     EyeSlashIcon,
     ArrowUpIcon,
     ArrowDownIcon,
-    ChevronDownIcon,
     PlusIcon,
     Square2StackIcon,
     TrashIcon
@@ -27,73 +26,38 @@ const emit = defineEmits<{
     (e: 'move', id: string, direction: -1 | 1): void;
     (e: 'toggle-visibility', id: string): void;
 }>();
-
-const isOpen = ref(true);
 </script>
 
 <template>
     <section class="flex flex-col gap-1 p-2" aria-label="Layers">
         <div class="flex items-center gap-1">
-            <button
-                type="button"
-                class="btn btn-ghost btn-xs flex-1 justify-start gap-1 px-1 text-sm font-semibold"
-                aria-controls="layer-list"
-                :aria-expanded="isOpen"
-                @click="isOpen = !isOpen"
-            >
-                <ChevronDownIcon
-                    class="size-4 transition-transform"
-                    :class="{ '-rotate-90': !isOpen }"
-                />
-                Layers
-            </button>
-            <button
-                type="button"
-                class="btn btn-ghost btn-xs btn-square"
-                aria-label="Add layer"
-                title="Add layer"
-                @click="emit('add')"
-            >
-                <PlusIcon class="size-4" />
-            </button>
-            <button
-                type="button"
-                class="btn btn-ghost btn-xs btn-square"
-                aria-label="Duplicate layer"
-                title="Duplicate layer"
+            <h2 class="flex-1 px-1 text-sm font-semibold">Layers</h2>
+            <BaseIconButton label="Add layer" :icon="PlusIcon" @click="emit('add')" />
+            <BaseIconButton
+                label="Duplicate layer"
+                :icon="Square2StackIcon"
                 @click="emit('duplicate', props.selectedId)"
-            >
-                <Square2StackIcon class="size-4" />
-            </button>
-            <button
-                type="button"
-                class="btn btn-ghost btn-xs btn-square"
-                aria-label="Delete layer"
-                title="Delete layer"
+            />
+            <BaseIconButton
+                label="Delete layer"
+                :icon="TrashIcon"
                 :disabled="props.layers.length <= 1"
                 @click="emit('remove', props.selectedId)"
-            >
-                <TrashIcon class="size-4" />
-            </button>
+            />
         </div>
 
-        <ul v-show="isOpen" id="layer-list" class="flex flex-col gap-0.5">
+        <ul class="flex flex-col gap-0.5">
             <li
                 v-for="(layer, index) in props.layers"
                 :key="layer.id"
                 class="flex items-center gap-0.5 rounded-field"
                 :class="{ 'bg-primary/15': layer.id === props.selectedId }"
             >
-                <button
-                    type="button"
-                    class="btn btn-xs btn-square btn-ghost"
-                    :aria-label="layer.visible ? `Hide ${layer.name}` : `Show ${layer.name}`"
-                    :title="layer.visible ? 'Hide layer' : 'Show layer'"
+                <BaseIconButton
+                    :label="layer.visible ? `Hide ${layer.name}` : `Show ${layer.name}`"
+                    :icon="layer.visible ? EyeIcon : EyeSlashIcon"
                     @click="emit('toggle-visibility', layer.id)"
-                >
-                    <EyeSlashIcon v-if="!layer.visible" class="size-3.5" />
-                    <EyeIcon v-else class="size-3.5" />
-                </button>
+                />
 
                 <button
                     type="button"
@@ -105,26 +69,18 @@ const isOpen = ref(true);
                     <span class="truncate" v-text="layer.name" />
                 </button>
 
-                <button
-                    type="button"
-                    class="btn btn-xs btn-square btn-ghost"
+                <BaseIconButton
+                    :label="`Move ${layer.name} up`"
+                    :icon="ArrowUpIcon"
                     :disabled="index === 0"
-                    :aria-label="`Move ${layer.name} up`"
-                    title="Move up"
                     @click="emit('move', layer.id, -1)"
-                >
-                    <ArrowUpIcon class="size-3.5" />
-                </button>
-                <button
-                    type="button"
-                    class="btn btn-xs btn-square btn-ghost"
+                />
+                <BaseIconButton
+                    :label="`Move ${layer.name} down`"
+                    :icon="ArrowDownIcon"
                     :disabled="index === props.layers.length - 1"
-                    :aria-label="`Move ${layer.name} down`"
-                    title="Move down"
                     @click="emit('move', layer.id, 1)"
-                >
-                    <ArrowDownIcon class="size-3.5" />
-                </button>
+                />
             </li>
         </ul>
     </section>
