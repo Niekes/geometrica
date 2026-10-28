@@ -1,11 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { renderScene } from '../renderScene';
-import { buildLayer } from '../../config/defaults';
+import { type Background, buildLayer, defaultBackground } from '../../config/defaults';
 import { type Layer } from '../../types/Layer';
-
-const CANVAS_SIZE = 100;
-
-let ctx: CanvasRenderingContext2D;
 
 function makeLayer(shape: Layer['shape'], overrides: Partial<Layer> = {}): Layer {
     return {
@@ -18,133 +14,73 @@ function makeLayer(shape: Layer['shape'], overrides: Partial<Layer> = {}): Layer
     };
 }
 
-function pixel(x: number, y: number): [number, number, number, number] {
-    const data = ctx.getImageData(x, y, 1, 1).data;
-    return [data[0]!, data[1]!, data[2]!, data[3]!];
+function render(layers: Layer[], background: Background = defaultBackground): Element {
+    const markup = renderScene({ background, layers });
+    const svg = new DOMParser().parseFromString(markup, 'image/svg+xml').documentElement;
+
+    expect(svg.tagName).toBe('svg');
+
+    return svg;
 }
 
-function expectBright(actual: [number, number, number, number]) {
-    expect(actual[0]).toBeGreaterThan(240);
-    expect(actual[1]).toBeGreaterThan(240);
-    expect(actual[2]).toBeGreaterThan(170);
-    expect(actual[3]).toBe(255);
-}
+const MAGMA_BRIGHT = '#fcfdbf';
 
-beforeEach(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = CANVAS_SIZE;
-    canvas.height = CANVAS_SIZE;
-    ctx = canvas.getContext('2d')!;
-});
+function paths(svg: Element): Element[] {
+    return [...svg.querySelectorAll('g > path')];
+}
 
 describe('renderScene: fill modes', () => {
     it('fills a single rect instance with the sequence color', () => {
-        const layer = makeLayer('rect', { width: 60, height: 60 });
+        const [path, ...rest] = paths(render([makeLayer('rect', { width: 60, height: 60 })]));
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        expectBright(pixel(50, 50));
-        expect(pixel(10, 50)[3]).toBe(0);
+        expect(rest).toHaveLength(0);
+        expect(path!.getAttribute('d')).toMatch(/^M-30 -30L30 -30/);
+        expect(path!.getAttribute('fill')).toBe(MAGMA_BRIGHT);
+        expect(path!.getAttribute('fill-opacity')).toBe('1');
+        expect(path!.hasAttribute('stroke')).toBe(false);
     });
 
     it('strokes instead of filling in stroke mode', () => {
-        const layer = makeLayer('rect', {
-            width: 60,
-            height: 60,
-            fillMode: 'stroke',
-            strokeWidth: 5
-        });
+        const layer = makeLayer('rect', { fillMode: 'stroke', strokeWidth: 5 });
+        const [path] = paths(render([layer]));
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        expectBright(pixel(21, 50));
-        expect(pixel(50, 50)[3]).toBe(0);
+        expect(path!.getAttribute('fill')).toBe('none');
+        expect(path!.getAttribute('stroke')).toBe(MAGMA_BRIGHT);
+        expect(path!.getAttribute('stroke-opacity')).toBe('1');
+        expect(path!.getAttribute('stroke-width')).toBe('5');
+        // keeps the miter joins of the former renderer; SVG would default to 4
+        expect(path!.getAttribute('stroke-miterlimit')).toBe('10');
     });
 
     it('fills and strokes in fillStroke mode', () => {
-        const layer = makeLayer('rect', {
-            width: 60,
-            height: 60,
-            fillMode: 'fillStroke',
-            strokeWidth: 5
-        });
+        const [path] = paths(render([makeLayer('rect', { fillMode: 'fillStroke' })]));
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
+        expect(path!.getAttribute('fill')).toBe(MAGMA_BRIGHT);
+        expect(path!.getAttribute('stroke')).toBe(MAGMA_BRIGHT);
+    });
 
-        expect(pixel(50, 50)[3]).toBe(255);
-        expectBright(pixel(21, 50));
+    it('centers the layer on the surface with cy pointing up', () => {
+        const [path] = paths(render([makeLayer('rect', { cx: 10, cy: 20 })]));
+
+        expect(path!.getAttribute('transform')).toBe('translate(522 492) rotate(0)');
     });
 });
 
 describe('renderScene: shape presets', () => {
-    it('fills circle instances', () => {
-        const layer = makeLayer('circle', { radiusX: 60, radiusY: 60 });
+    it('draws circles as two elliptical arcs', () => {
+        const [path] = paths(render([makeLayer('circle', { radiusX: 60, radiusY: 40 })]));
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        expectBright(pixel(50, 50));
-        expectBright(pixel(75, 50));
-        expect(pixel(85, 50)[3]).toBe(0);
+        expect(path!.getAttribute('d')).toBe('M30 0A30 20 0 1 1 -30 0A30 20 0 1 1 30 0Z');
     });
 
-    it('fills polygon instances', () => {
-        const layer = makeLayer('polygon', { sides: 4, size: 60 });
+    it('draws polygons with a vertex pointing up', () => {
+        const [path] = paths(render([makeLayer('polygon', { sides: 4, size: 60 })]));
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        expectBright(pixel(50, 50));
+        expect(path!.getAttribute('d')).toMatch(/^M30 0/);
+        expect(path!.getAttribute('transform')).toBe('translate(512 512) rotate(-90)');
     });
 
-    it('fills custom svg path instances', () => {
-        const layer = makeLayer('custom', {
-            path: 'M0 0 L100 0 L100 100 L0 100 Z',
-            size: 60
-        });
-
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        expectBright(pixel(50, 50));
-        expect(pixel(80, 50)[3]).toBe(0);
-    });
-
-    it('fills custom paths built from curve commands', () => {
-        // cubic bulge, quadratic bow and a half circle arc
-        const cubic = makeLayer('custom', {
-            path: 'M0 0 C0 100 100 100 100 0 L100 100 L0 100 Z',
-            size: 60
-        });
-        const quadratic = makeLayer('custom', { path: 'M0 0 Q50 100 100 0 Z', size: 60 });
-        const arc = makeLayer('custom', { path: 'M0 0 A50 50 0 0 1 100 0 Z', size: 60 });
-
-        renderScene(ctx, [cubic], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-        // the cubic bulge dips to y=65, the closing lines sit at y=80
-        expect(pixel(50, 70)[3]).toBe(255);
-        expect(pixel(50, 85)[3]).toBe(0);
-
-        renderScene(ctx, [quadratic], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-        // the bow spans y=35 (chord) to y=65 (apex) at the center
-        expect(pixel(50, 42)[3]).toBe(255);
-        expect(pixel(50, 70)[3]).toBe(0);
-
-        renderScene(ctx, [arc], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-        // the half circle spans y=35 (arc top) to y=65 (chord) at the center
-        expect(pixel(50, 45)[3]).toBe(255);
-        expect(pixel(50, 70)[3]).toBe(0);
-    });
-
-    it('falls back to the first interpolator for an unknown color scheme name', () => {
-        const layer = makeLayer('rect', {
-            width: 60,
-            height: 60,
-            colorInterPolator: 'nope' as unknown as Layer['colorInterPolator']
-        });
-
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        expect(pixel(50, 50)[3]).toBe(255);
-    });
-
-    it('draws rounded rect corners through quadratic segments', () => {
+    it('rounds rect corners through quadratic segments', () => {
         const layer = makeLayer('rect', {
             width: 60,
             height: 60,
@@ -153,175 +89,217 @@ describe('renderScene: shape presets', () => {
             borderRadiusBl: 1,
             borderRadiusBr: 1
         });
+        const [path] = paths(render([layer]));
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        expectBright(pixel(50, 50));
-        // the corner itself is cut by the rounding
-        expect(pixel(21, 21)[3]).toBe(0);
+        expect(path!.getAttribute('d')).toContain('Q30 -30 30 0');
     });
 
-    it('renders all interpolation toggles combined without errors', () => {
-        const layer = makeLayer('rect', {
-            width: 60,
-            height: 60,
-            amount: 2,
-            distance: 10,
-            fillMode: 'fillStroke',
-            strokeWidth: 5,
-            applyColorSchemeToEachShape: true,
-            gradientType: 'radial',
-            calcOpacity: ['interpolate', 'flip'],
-            calcStrokeWidth: ['interpolate', 'flip']
-        });
+    it('normalizes custom svg paths to the layer size around the center', () => {
+        const layer = makeLayer('custom', { path: 'M0 0 L100 0 L100 100 L0 100 Z', size: 60 });
+        const [path] = paths(render([layer]));
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        expect(pixel(50, 50)[3]).toBe(255);
+        expect(path!.getAttribute('d')).toBe('M-30 -30L30 -30L30 30L-30 30Z');
     });
 
-    it('strokes with the full color ramp when applyColorSchemeToEachShape is on', () => {
-        const layer = makeLayer('rect', {
-            width: 60,
-            height: 60,
-            fillMode: 'stroke',
-            strokeWidth: 5,
-            applyColorSchemeToEachShape: true,
-            gradientType: 'linear',
-            gradientAngle: 90
+    it('keeps curve commands of custom paths', () => {
+        const layer = makeLayer('custom', {
+            path: 'M0 0 C0 100 100 100 100 0 Q50 100 0 0 A50 50 0 0 1 100 0 Z',
+            size: 60
         });
+        const d = paths(render([layer]))[0]!.getAttribute('d')!;
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
+        expect(d).toMatch(/C.*Q.*A/);
+    });
 
-        expect(pixel(21, 50)[3]).toBe(255);
+    it('skips custom layers with an empty or invalid path', () => {
+        const empty = makeLayer('custom', { path: '' });
+        const invalid = makeLayer('custom', { path: 'not a path' });
+
+        expect(paths(render([empty, invalid]))).toHaveLength(0);
     });
 
     it('skips degenerate zero-size instances at the repetition end', () => {
         const layer = makeLayer('polygon', { sides: 3, size: 20, amount: 2, distance: 20 });
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        expect(pixel(50, 50)[3]).toBe(255);
+        expect(paths(render([layer]))).toHaveLength(1);
     });
 
-    it('skips custom layers with an empty path', () => {
-        const layer = makeLayer('custom', { path: '', size: 60 });
+    it('falls back to the first interpolator for an unknown color scheme name', () => {
+        const layer = makeLayer('rect', {
+            colorInterPolator: 'nope' as unknown as Layer['colorInterPolator']
+        });
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        expect(pixel(50, 50)[3]).toBe(0);
-    });
-
-    it('skips layers with invalid custom paths', () => {
-        const layer = makeLayer('custom', { path: 'not a path', size: 60 });
-
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        expect(pixel(50, 50)[3]).toBe(0);
+        expect(paths(render([layer]))[0]!.getAttribute('fill')).toBe(MAGMA_BRIGHT);
     });
 });
 
 describe('renderScene: repetition', () => {
-    it('interpolates opacity along the sequence when calcOpacity includes interpolate', () => {
+    it('draws one path per instance and spreads the rotation across them', () => {
+        const layer = makeLayer('rect', { amount: 3, distance: 10, rotation: 90 });
+        const rotations = paths(render([layer])).map((p) => p.getAttribute('transform'));
+
+        expect(rotations).toEqual([
+            'translate(512 512) rotate(0)',
+            'translate(512 512) rotate(45)',
+            'translate(512 512) rotate(90)'
+        ]);
+    });
+
+    it('interpolates the opacity along the sequence on top of the layer opacity', () => {
+        const layer = makeLayer('rect', { amount: 2, opacity: 0.5, calcOpacity: ['interpolate'] });
+        const flipped = { ...layer, calcOpacity: ['interpolate', 'flip'] } as Layer;
+
+        expect(paths(render([layer])).map((p) => p.getAttribute('fill-opacity'))).toEqual([
+            '0',
+            '0.5'
+        ]);
+        expect(paths(render([flipped])).map((p) => p.getAttribute('fill-opacity'))).toEqual([
+            '0.5',
+            '0'
+        ]);
+    });
+
+    it('interpolates the stroke width along the sequence', () => {
         const layer = makeLayer('rect', {
-            width: 60,
-            height: 60,
             amount: 2,
-            distance: 30,
-            flipColorInterpolator: false,
-            calcOpacity: ['interpolate']
+            fillMode: 'stroke',
+            strokeWidth: 4,
+            calcStrokeWidth: ['interpolate']
         });
+        const flipped = { ...layer, calcStrokeWidth: ['flip'] } as Layer;
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        // instance k=0 (60px) has opacity 0, instance k=1 (30px) has opacity 1
-        expect(pixel(23, 50)[3]).toBe(0);
-        expectBright(pixel(50, 50));
+        expect(paths(render([layer])).map((p) => p.getAttribute('stroke-width'))).toEqual([
+            '0',
+            '4'
+        ]);
+        expect(paths(render([flipped])).map((p) => p.getAttribute('stroke-width'))).toEqual([
+            '4',
+            '0'
+        ]);
     });
 });
 
 describe('renderScene: layers', () => {
     it('draws the first layer on top', () => {
-        const top = makeLayer('rect', { width: 60, height: 60 });
-        const bottom = makeLayer('rect', {
-            width: 80,
-            height: 80,
-            colorInterPolator: 'interpolateGreens'
-        });
+        const top = makeLayer('rect');
+        const bottom = makeLayer('rect', { colorInterPolator: 'interpolateGreens' });
+        const fills = paths(render([top, bottom])).map((p) => p.getAttribute('fill'));
 
-        renderScene(ctx, [top, bottom], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        // inside the top layer: magma bright
-        expectBright(pixel(50, 50));
-        // inside the bottom layer only: greens(1) is #00441b
-        const bottomPixel = pixel(15, 50);
-        expect(bottomPixel[0]).toBeLessThan(40);
-        expect(bottomPixel[1]).toBeGreaterThan(40);
-        expect(bottomPixel[1]).toBeLessThan(110);
-        expect(bottomPixel[2]).toBeLessThan(60);
-        expect(bottomPixel[3]).toBe(255);
+        // greens(1) is #00441b
+        expect(fills).toEqual(['#00441b', MAGMA_BRIGHT]);
     });
 
     it('skips hidden layers', () => {
-        const layer = makeLayer('rect', { width: 60, height: 60, visible: false });
-
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        expect(pixel(50, 50)[3]).toBe(0);
+        expect(paths(render([makeLayer('rect', { visible: false })]))).toHaveLength(0);
     });
 
-    it('applies the layer opacity', () => {
-        const layer = makeLayer('rect', { width: 60, height: 60, opacity: 0.5 });
+    it('applies the layer opacity to every instance, not to the layer as a group', () => {
+        const svg = render([
+            makeLayer('rect', { amount: 2, opacity: 0.5, fillMode: 'fillStroke' })
+        ]);
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
-
-        const px = pixel(50, 50);
-        expect(px[3]).toBeGreaterThan(120);
-        expect(px[3]).toBeLessThan(135);
+        expect(svg.querySelector('[opacity]')).toBeNull();
+        for (const path of paths(svg)) {
+            expect(path.getAttribute('fill-opacity')).toBe('0.5');
+            expect(path.getAttribute('stroke-opacity')).toBe('0.5');
+        }
     });
 });
 
 describe('renderScene: gradients', () => {
-    it('fills a linear gradient from dark to bright left to right', () => {
+    const MAGMA_DARK = '#000004';
+
+    function gradientOf(svg: Element, path: Element, attribute = 'fill'): Element {
+        const id = /^url\(#(.+)\)$/.exec(path.getAttribute(attribute)!)![1]!;
+
+        return svg.querySelector(`defs > #${id}`)!;
+    }
+
+    function stopColors(gradient: Element): string[] {
+        return [...gradient.querySelectorAll('stop')].map((s) => s.getAttribute('stop-color')!);
+    }
+
+    it('fills each instance with a linear gradient along the angle in its own space', () => {
         const layer = makeLayer('rect', {
             width: 60,
-            height: 60,
+            height: 40,
             applyColorSchemeToEachShape: true,
             flipColorInterpolator: false,
             gradientType: 'linear',
-            gradientAngle: 0
+            gradientAngle: 90
         });
+        const svg = render([layer]);
+        const gradient = gradientOf(svg, paths(svg)[0]!);
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
+        expect(gradient.tagName).toBe('linearGradient');
+        expect(gradient.getAttribute('gradientUnits')).toBe('userSpaceOnUse');
+        // the radius is half the larger side
+        expect(['x1', 'y1', 'x2', 'y2'].map((a) => gradient.getAttribute(a))).toEqual([
+            '0',
+            '-30',
+            '0',
+            '30'
+        ]);
 
-        // magma(0) is near-black rgb(0, 0, 4)
-        const left = pixel(23, 50);
-        expect(left[0]).toBeLessThan(30);
-        expect(left[1]).toBeLessThan(30);
-        expect(left[2]).toBeLessThan(40);
-        expect(left[3]).toBe(255);
-
-        const right = pixel(77, 50);
-        expect(right[0]).toBeGreaterThan(200);
-        expect(right[3]).toBe(255);
+        const stops = stopColors(gradient);
+        expect(stops).toHaveLength(11);
+        expect(stops[0]).toBe(MAGMA_DARK);
+        expect(stops[10]).toBe(MAGMA_BRIGHT);
     });
 
-    it('fills a radial gradient from dark center to bright rim', () => {
-        const layer = makeLayer('rect', {
-            width: 60,
-            height: 60,
+    it('strokes with a radial gradient from the center and flips the ramp', () => {
+        const layer = makeLayer('circle', {
+            radiusX: 60,
+            radiusY: 60,
+            fillMode: 'stroke',
             applyColorSchemeToEachShape: true,
-            flipColorInterpolator: false,
             gradientType: 'radial'
         });
+        const svg = render([layer]);
+        const gradient = gradientOf(svg, paths(svg)[0]!, 'stroke');
 
-        renderScene(ctx, [layer], { width: CANVAS_SIZE, height: CANVAS_SIZE });
+        expect(gradient.tagName).toBe('radialGradient');
+        expect(['cx', 'cy', 'r'].map((a) => gradient.getAttribute(a))).toEqual(['0', '0', '30']);
+        expect(stopColors(gradient)[0]).toBe(MAGMA_BRIGHT);
+    });
 
-        const center = pixel(50, 50);
-        expect(center[0]).toBeLessThan(30);
+    it('gives every instance of every layer its own gradient', () => {
+        const layer = makeLayer('rect', {
+            amount: 2,
+            fillMode: 'fillStroke',
+            applyColorSchemeToEachShape: true
+        });
+        const svg = render([layer, { ...layer, id: 'other' }]);
+        const fills = paths(svg).map((p) => p.getAttribute('fill'));
 
-        const rim = pixel(77, 50);
-        expect(rim[0]).toBeGreaterThan(200);
-        expect(rim[3]).toBe(255);
+        expect(new Set(fills).size).toBe(4);
+        expect(paths(svg).every((p) => p.getAttribute('stroke') === p.getAttribute('fill'))).toBe(
+            true
+        );
+        expect(svg.querySelectorAll('defs > linearGradient')).toHaveLength(4);
+    });
+});
+
+describe('renderScene: surface', () => {
+    it('draws the background with its corner radius and clips the layers to it', () => {
+        const svg = render([], { color: '#123456', borderRadius: 50 });
+
+        expect(svg.getAttribute('xmlns')).toBe('http://www.w3.org/2000/svg');
+        expect(svg.getAttribute('viewBox')).toBe('0 0 1024 1024');
+
+        const background = svg.querySelector(':scope > rect')!;
+        expect(background.getAttribute('fill')).toBe('#123456');
+        expect(background.getAttribute('rx')).toBe('512');
+
+        const clip = svg.querySelector('clipPath#surface rect')!;
+        expect(clip.getAttribute('rx')).toBe('512');
+        expect(svg.querySelector('g')!.getAttribute('clip-path')).toBe('url(#surface)');
+    });
+
+    it('falls back to the default color for a background color that is not a color', () => {
+        const svg = render([], { color: '"/><script>alert(1)</script>', borderRadius: 0 });
+
+        expect(svg.querySelector('script')).toBeNull();
+        expect(svg.querySelector(':scope > rect')!.getAttribute('fill')).toBe('#000');
     });
 });

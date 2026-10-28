@@ -55,7 +55,7 @@ If Geometrica saves you time, [become a sponsor](https://github.com/sponsors/nie
 Where the money goes:
 
 - **Issue triage and bug fixes.** Sponsorship buys a reply within a couple of days instead of whenever I get to it.
-- **An engine that stays correct.** Keeping the renderer, the SVG path parser and the URL state in shape as Vue and the canvas APIs move on.
+- **An engine that stays correct.** Keeping the renderer, the SVG path parser and the URL state in shape as Vue and the SVG spec move on.
 - **The artwork pipeline.** Gallery pieces, examples and the shareable-link format.
 - **Time for new work.** More shape presets, better gradient controls, and whatever the community dreams up.
 

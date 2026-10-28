@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { computeInstances, baseDimension } from '../computeInstances';
 import { buildLayer } from '../../config/defaults';
-import { canvasHeight } from '../../config/canvas';
+import { surfaceSize } from '../../config/surface';
 
 describe('computeInstances', () => {
     it('returns one instance with k=0 and no rotation for amount=1', () => {
@@ -80,7 +80,7 @@ describe('baseDimension', () => {
     });
 
     it('uses size for polygons and custom shapes', () => {
-        const polygon = { ...buildLayer('polygon'), size: canvasHeight / 4 };
+        const polygon = { ...buildLayer('polygon'), size: surfaceSize / 2 };
         const custom = { ...buildLayer('custom'), size: 100 };
 
         expect(baseDimension(polygon)).toBe(polygon.size);

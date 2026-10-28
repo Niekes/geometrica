@@ -1,17 +1,25 @@
 # Geometrica
 
-Interaktiver Generator für geometrische LineArt: Formen werden auf dem Canvas wiederholt, eingefärbt und als PNG exportiert.
+Interaktiver Generator für geometrische LineArt: Formen werden auf der Zeichenfläche wiederholt, eingefärbt und als SVG exportiert.
 
 ## Language
 
 ### Komposition
+
+**Zeichenfläche**:
+Die quadratische Fläche, auf der Layer komponiert werden. Was auf ihr sichtbar ist, ist genau das, was exportiert wird.
+_Avoid_: Canvas, Stage, Artboard
+
+**Hintergrund**:
+Farbe und Eckradius der Zeichenfläche. Er gehört zu keinem Layer und ist Teil des Exports; Instanzen werden an seiner Form abgeschnitten.
+_Avoid_: bgColor, Canvas-Hintergrund
 
 **Form**:
 Eine Pfadgeometrie (Rect, Circle, Polygon oder eigene SVG-Path-Eingabe). Die Form selbst ist nur die Geometrie, ohne Wiederholungs- oder Stilparameter.
 _Avoid_: Shape, Figur, Objekt
 
 **Instanz**:
-Eine einzelne gezeichnete Wiederholung einer Form auf dem Canvas.
+Eine einzelne gezeichnete Wiederholung einer Form auf der Zeichenfläche.
 _Avoid_: Kopie, Iteration
 
 **Wiederholung**:
@@ -19,7 +27,7 @@ Die Sequenz von Instanzen einer Form, gesteuert durch amount, distance und rotat
 _Avoid_: Loop, Serie
 
 **Layer**:
-Eine vollständige Konfiguration aus Form, Wiederholung, Farbe und Füllung. Layer stapeln sich in Z-Ordnung auf dem Canvas; beliebig viele sind möglich.
+Eine vollständige Konfiguration aus Form, Wiederholung, Farbe und Füllung. Layer stapeln sich in Z-Ordnung auf der Zeichenfläche; beliebig viele sind möglich.
 _Avoid_: Ebene, Schicht
 
 **Preset**:

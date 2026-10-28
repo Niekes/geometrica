@@ -370,7 +370,7 @@ function arcToCenterParams(
     return { cx, cy, startAngle, deltaAngle, rx: rxc, ry: ryc };
 }
 
-export type ArcParams = {
+type ArcParams = {
     cx: number;
     cy: number;
     startAngle: number;
@@ -380,11 +380,7 @@ export type ArcParams = {
     ry: number;
 };
 
-export function arcParams(
-    x0: number,
-    y0: number,
-    command: Extract<Command, { cmd: 'A' }>
-): ArcParams {
+function arcParams(x0: number, y0: number, command: Extract<Command, { cmd: 'A' }>): ArcParams {
     const { cx, cy, startAngle, deltaAngle, rx, ry } = arcToCenterParams(
         x0,
         y0,
@@ -479,9 +475,9 @@ export function getPathBounds(commands: Command[]): PathBounds | null {
     return { minX, minY, maxX, maxY };
 }
 
-const round = (n: number): number => Math.round(n * 1e4) / 1e4;
+export const round = (n: number): number => Math.round(n * 1e4) / 1e4;
 
-function serializePath(commands: Command[]): string {
+export function serializePath(commands: Command[]): string {
     let d = '';
 
     for (const command of commands) {

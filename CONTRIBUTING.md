@@ -54,8 +54,8 @@ Details live in `AGENTS.md` and `docs/adr/`.
 ## Writing tests
 
 - Engine and composables are unit-tested in the `__tests__` folder next to
-  the module; the renderer is verified through pixel samples on a real 2D
-  context.
+  the module; the renderer is verified by parsing its SVG output and checking
+  the elements and attributes.
 - New public exports in `src/lib` or `src/composables` need a test — the
   `coverage-gaps` gate reports them otherwise.
 - Component wiring is covered by the HomeView component test; presentational

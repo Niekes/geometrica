@@ -1,4 +1,4 @@
-import { canvasHeight, canvasWidth } from './canvas';
+import { surfaceSize } from './surface';
 import { type Layer, type ShapePreset } from '../types/Layer';
 
 export type Background = {
@@ -33,17 +33,17 @@ export function buildLayer(shape: ShapePreset): Layer {
         flipColorInterpolator: false,
         calcOpacity: [],
         calcStrokeWidth: [],
-        width: canvasWidth / 4,
-        height: canvasHeight / 4,
+        width: surfaceSize / 2,
+        height: surfaceSize / 2,
         borderRadiusTl: 0,
         borderRadiusTr: 0,
         borderRadiusBl: 0,
         borderRadiusBr: 0,
-        radiusX: canvasHeight / 4,
-        radiusY: canvasWidth / 4,
+        radiusX: surfaceSize / 2,
+        radiusY: surfaceSize / 2,
         sides: 5,
         borderRadius: 0,
-        size: canvasHeight / 4
+        size: surfaceSize / 2
     };
 
     return layer;

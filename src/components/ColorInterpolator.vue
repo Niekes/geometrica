@@ -1,20 +1,19 @@
 <template>
     <div class="color-interpolator">
-        <canvas
-            v-for="(color, index) in colorInterpolators"
+        <button
+            v-for="color in colorInterPolators"
             :key="color.name"
-            :ref="(el) => setCanvasRef(el, index)"
+            type="button"
+            :aria-label="color.name"
             :class="{ 'is-active': active === color.name }"
-            class="interpolator-canvas"
-            width="32"
-            height="1"
+            class="interpolator-swatch"
+            :style="{ background: ramp(color.fn) }"
             @click="$emit('update-color-interpolator', color)"
-        ></canvas>
+        ></button>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, type ComponentPublicInstance } from 'vue';
 import { colorInterPolators } from '../config/colorInterPolators';
 
 defineProps({
@@ -23,27 +22,13 @@ defineProps({
 
 defineEmits(['update-color-interpolator']);
 
-const colorInterpolators = ref(colorInterPolators);
+const STOPS = 32;
 
-// Draw gradient on canvas when it's mounted
-const setCanvasRef = (el: Element | ComponentPublicInstance | null, index: number) => {
-    if (!(el instanceof HTMLCanvasElement)) return;
+function ramp(fn: (t: number) => string): string {
+    const stops = Array.from({ length: STOPS + 1 }, (_, i) => fn(i / STOPS));
 
-    // Check if customized already (simple check to avoid redrawing if not needed)
-    // We verify if data-drawn is set to avoid infinite redraws if reactivity triggers updates
-    if (el.dataset.drawn === 'true') return;
-
-    const ctx = el.getContext('2d');
-    const color = colorInterpolators.value[index];
-
-    if (ctx && color) {
-        for (let i = 0; i <= el.width; i += 1) {
-            ctx.fillStyle = color.fn(i / el.width);
-            ctx.fillRect(i, 0, 1, 1);
-        }
-        el.dataset.drawn = 'true';
-    }
-};
+    return `linear-gradient(to right, ${stops.join(', ')})`;
+}
 </script>
 
 <style scoped>
@@ -53,7 +38,7 @@ const setCanvasRef = (el: Element | ComponentPublicInstance | null, index: numbe
     flex-direction: column;
 }
 
-.interpolator-canvas {
+.interpolator-swatch {
     width: 100%;
     height: 2rem;
     cursor: pointer;

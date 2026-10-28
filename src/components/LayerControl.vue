@@ -20,7 +20,7 @@ import LayerColorControl from '@/components/LayerColorControl.vue';
 import { normalizePath } from '@/lib/pathBounds';
 
 // Config
-import { canvasHeight, canvasWidth } from '@/config/canvas';
+import { surfaceSize } from '@/config/surface';
 import { useLinkedSliders } from '@/composables/useLinkedSliders';
 import { buildLayer } from '@/config/defaults';
 import { calcStrokeWidthOptions, shapeOptions, fillModeOptions } from '@/config/controlOptions';
@@ -59,16 +59,16 @@ const generalControls: Control[] = [
 
 const positionControls: Control[] = [
     {
-        min: -canvasWidth / 4,
-        max: canvasWidth / 4,
+        min: -surfaceSize / 2,
+        max: surfaceSize / 2,
         step: 1,
         label: 'CX',
         name: 'cx',
         format: (d: number) => `${d}px`
     },
     {
-        min: -canvasHeight / 4,
-        max: canvasHeight / 4,
+        min: -surfaceSize / 2,
+        max: surfaceSize / 2,
         step: 1,
         label: 'CY',
         name: 'cy',
@@ -226,7 +226,7 @@ function resetFields(controls: Control[]) {
                     <BaseRangeSlider
                         v-model.number="layer.strokeWidth"
                         :min="0.1"
-                        :max="canvasWidth / 4"
+                        :max="surfaceSize / 2"
                         :step="0.1"
                         label="Stroke Width"
                         :format="(d: number) => d.toFixed(1)"

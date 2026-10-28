@@ -1,89 +1,91 @@
 import { color } from 'd3';
 import { computeInstances, type Instance } from './computeInstances';
-import { type Command, getPathBounds, normalizePath, parsePath } from './pathBounds';
-import { tracePath, type TraceCommand } from './tracePath';
-import { canvasHeight, canvasWidth } from '../config/canvas';
+import {
+    type Command,
+    getPathBounds,
+    normalizePath,
+    parsePath,
+    round,
+    serializePath
+} from './pathBounds';
+import { type SceneState } from './urlState';
 import { colorInterPolators } from '../config/colorInterPolators';
+import { defaultBackground } from '../config/defaults';
+import { surfaceSize } from '../config/surface';
 import { type Layer } from '../types/Layer';
 
 const PI = Math.PI;
 const TAU = PI * 2;
 
-export type SceneOptions = {
-    width?: number;
-    height?: number;
-};
-
 type Geometry = {
-    commands: TraceCommand[];
+    commands: Command[];
     width: number;
     height: number;
 };
 
-export function renderScene(
-    ctx: CanvasRenderingContext2D,
-    layers: Layer[],
-    options: SceneOptions = {}
-): void {
-    const width = options.width ?? canvasWidth / 2;
-    const height = options.height ?? canvasHeight / 2;
-
-    ctx.clearRect(0, 0, width, height);
+export function renderScene({ background, layers }: SceneState): string {
+    // the background color comes from the URL and ends up in the DOM: only a parsed color passes
+    const fill = color(background.color)?.formatHex() ?? defaultBackground.color;
+    const rx = round((background.borderRadius / 100) * surfaceSize);
+    const surfaceAttributes = `width="${surfaceSize}" height="${surfaceSize}" rx="${rx}"`;
 
     // the first layer is the topmost one and is drawn last
-    for (const layer of [...layers].reverse()) {
-        if (!layer.visible) continue;
+    const defs: string[] = [];
+    const content = [...layers]
+        .reverse()
+        .filter((layer) => layer.visible)
+        .map((layer, index) => renderLayer(layer, `g${index}`, defs))
+        .join('');
 
-        renderLayer(ctx, layer, width, height);
-    }
+    return (
+        `<svg xmlns="http://www.w3.org/2000/svg" width="${surfaceSize}" height="${surfaceSize}" viewBox="0 0 ${surfaceSize} ${surfaceSize}">` +
+        `<defs><clipPath id="surface"><rect ${surfaceAttributes}/></clipPath>${defs.join('')}</defs>` +
+        `<rect ${surfaceAttributes} fill="${fill}"/>` +
+        `<g clip-path="url(#surface)">${content}</g>` +
+        `</svg>`
+    );
 }
 
-function renderLayer(
-    ctx: CanvasRenderingContext2D,
-    layer: Layer,
-    width: number,
-    height: number
-): void {
-    const cx = width / 2 + layer.cx;
-    const cy = height / 2 + layer.cy * -1;
+function renderLayer(layer: Layer, idPrefix: string, defs: string[]): string {
+    const cx = round(surfaceSize / 2 + layer.cx);
+    const cy = round(surfaceSize / 2 - layer.cy);
     const colorIp = resolveInterpolator(layer);
-    const opacityFlags = {
-        interpolate: layer.calcOpacity.includes('interpolate'),
-        flip: layer.calcOpacity.includes('flip')
-    };
     const wantsFill = layer.fillMode !== 'stroke';
     const wantsStroke = layer.fillMode !== 'fill';
+    const polygonOffset = layer.shape === 'polygon' ? -PI / 2 : 0;
+
+    let markup = '';
 
     for (const instance of computeInstances(layer)) {
         const geometry = buildGeometry(layer, instance.shrink);
 
         if (!geometry) continue;
 
-        ctx.save();
-        ctx.globalAlpha = layer.opacity;
-        ctx.translate(cx, cy);
-        ctx.rotate(instance.angle + (layer.shape === 'polygon' ? -PI / 2 : 0));
+        let paint = instanceColor(layer, instance, colorIp);
 
-        if (wantsStroke) ctx.lineWidth = instanceStrokeWidth(layer, instance);
+        if (layer.applyColorSchemeToEachShape) {
+            const id = `${idPrefix}-${instance.index}`;
 
-        tracePath(ctx, geometry.commands);
-
-        const style = layer.applyColorSchemeToEachShape
-            ? buildGradient(ctx, layer, instance, geometry, opacityFlags, colorIp)
-            : instanceColor(layer, instance, colorIp, opacityFlags);
-
-        if (wantsFill) {
-            ctx.fillStyle = style;
-            ctx.fill();
+            defs.push(buildGradient(id, layer, geometry, colorIp));
+            paint = `url(#${id})`;
         }
 
+        const opacity = round(layer.opacity * sequenceOpacity(layer, instance));
+        const rotation = round(((instance.angle + polygonOffset) * 180) / PI);
+
+        let attributes = `transform="translate(${cx} ${cy}) rotate(${rotation})"`;
+
+        attributes += wantsFill ? ` fill="${paint}" fill-opacity="${opacity}"` : ' fill="none"';
+
+        // miter limit 10 keeps the sharp corners of existing artworks; SVG would default to 4
         if (wantsStroke) {
-            ctx.strokeStyle = style;
-            ctx.stroke();
+            attributes += ` stroke="${paint}" stroke-opacity="${opacity}" stroke-width="${round(instanceStrokeWidth(layer, instance))}" stroke-miterlimit="10"`;
         }
 
-        ctx.restore();
+        markup += `<path d="${serializePath(geometry.commands)}" ${attributes}/>`;
     }
+
+    return markup;
 }
 
 function resolveInterpolator(layer: Layer): (t: number) => string {
@@ -92,22 +94,44 @@ function resolveInterpolator(layer: Layer): (t: number) => string {
     ).fn;
 }
 
-type OpacityFlags = { interpolate: boolean; flip: boolean };
+const hex = (value: string): string => color(value)?.formatHex() ?? '#000';
 
-function instanceColor(
+function instanceColor(layer: Layer, instance: Instance, colorIp: (t: number) => string): string {
+    return hex(colorIp(layer.flipColorInterpolator ? instance.flippedK : instance.k));
+}
+
+// one complete gradient per instance: design tools do not reliably resolve shared stops
+function buildGradient(
+    id: string,
     layer: Layer,
-    instance: { k: number; flippedK: number },
-    colorIp: (t: number) => string,
-    opacityFlags: OpacityFlags
+    geometry: Geometry,
+    colorIp: (t: number) => string
 ): string {
-    const solid = color(
-        layer.flipColorInterpolator ? colorIp(instance.flippedK) : colorIp(instance.k)
-    );
+    const r = round(Math.max(geometry.width, geometry.height) / 2);
 
-    if (solid && opacityFlags.interpolate) solid.opacity = instance.k;
-    if (solid && opacityFlags.interpolate && opacityFlags.flip) solid.opacity = instance.flippedK;
+    let stops = '';
 
-    return solid?.toString() || '#000';
+    for (let j = 0; j <= 10; j += 1) {
+        const t = j / 10;
+        stops += `<stop offset="${t}" stop-color="${hex(colorIp(layer.flipColorInterpolator ? 1 - t : t))}"/>`;
+    }
+
+    if (layer.gradientType === 'radial') {
+        return `<radialGradient id="${id}" gradientUnits="userSpaceOnUse" cx="0" cy="0" r="${r}">${stops}</radialGradient>`;
+    }
+
+    const theta = (layer.gradientAngle * PI) / 180;
+    const x = round(r * Math.cos(theta));
+    const y = round(r * Math.sin(theta));
+
+    return `<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="${-x}" y1="${-y}" x2="${x}" y2="${y}">${stops}</linearGradient>`;
+}
+
+// opacity applies per instance, never to the layer as a group, so overlapping instances add up
+function sequenceOpacity(layer: Layer, instance: Instance): number {
+    if (!layer.calcOpacity.includes('interpolate')) return 1;
+
+    return layer.calcOpacity.includes('flip') ? instance.flippedK : instance.k;
 }
 
 function instanceStrokeWidth(layer: Layer, instance: Instance): number {
@@ -115,44 +139,7 @@ function instanceStrokeWidth(layer: Layer, instance: Instance): number {
     const flip = layer.calcStrokeWidth.includes('flip');
     const base = flip ? instance.flippedK : instance.k;
 
-    return interpolate || flip ? Math.max(layer.strokeWidth * base, 1e-10) : layer.strokeWidth;
-}
-
-function buildGradient(
-    ctx: CanvasRenderingContext2D,
-    layer: Layer,
-    instance: { k: number; flippedK: number },
-    geometry: Geometry,
-    opacityFlags: OpacityFlags,
-    colorIp: (t: number) => string
-): CanvasGradient {
-    const r = Math.max(geometry.width, geometry.height) / 2;
-
-    let gradient: CanvasGradient;
-
-    if (layer.gradientType === 'radial') {
-        gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
-    } else {
-        const theta = (layer.gradientAngle * PI) / 180;
-        gradient = ctx.createLinearGradient(
-            -r * Math.cos(theta),
-            -r * Math.sin(theta),
-            r * Math.cos(theta),
-            r * Math.sin(theta)
-        );
-    }
-
-    for (let j = 0; j <= 10; j += 1) {
-        const t = j / 10;
-        const stop = color(layer.flipColorInterpolator ? colorIp(1 - t) : colorIp(t));
-
-        if (opacityFlags.interpolate && stop) stop.opacity = instance.k;
-        if (opacityFlags.interpolate && opacityFlags.flip && stop) stop.opacity = instance.flippedK;
-
-        gradient.addColorStop(t, stop?.toString() || '#000');
-    }
-
-    return gradient;
+    return interpolate || flip ? layer.strokeWidth * base : layer.strokeWidth;
 }
 
 function buildGeometry(layer: Layer, shrink: number): Geometry | null {
@@ -216,8 +203,19 @@ function buildCircleGeometry(layer: Layer, shrink: number): Geometry | null {
 
     if (rx <= 0 || ry <= 0) return null;
 
+    const arc = (x: number): Command => ({
+        cmd: 'A',
+        rx,
+        ry,
+        rot: 0,
+        largeArc: 1,
+        sweep: 1,
+        x,
+        y: 0
+    });
+
     return {
-        commands: [{ cmd: 'E', rx, ry }],
+        commands: [{ cmd: 'M', x: rx, y: 0 }, arc(-rx), arc(rx), { cmd: 'Z' }],
         width: rx * 2,
         height: ry * 2
     };

@@ -9,7 +9,7 @@ import BaseRangeSlider from '@/components/BaseRangeSlider.vue';
 import { type Layer } from '@/types/Layer';
 
 // Config
-import { canvasHeight, canvasWidth } from '@/config/canvas';
+import { surfaceSize } from '@/config/surface';
 import { useLinkedSliders } from '@/composables/useLinkedSliders';
 
 const layer = defineModel<Layer>({ required: true });
@@ -36,7 +36,7 @@ useLinkedSliders(layer, ['radiusX', 'radiusY'], isSizeLocked, () => layer.value.
         <BaseRangeSlider
             v-model.number="layer.width"
             :min="1"
-            :max="canvasWidth / 2"
+            :max="surfaceSize"
             :step="1"
             label="Width"
             :format="px"
@@ -44,7 +44,7 @@ useLinkedSliders(layer, ['radiusX', 'radiusY'], isSizeLocked, () => layer.value.
         <BaseRangeSlider
             v-model.number="layer.height"
             :min="1"
-            :max="canvasHeight / 2"
+            :max="surfaceSize"
             :step="1"
             label="Height"
             :format="px"
@@ -55,7 +55,7 @@ useLinkedSliders(layer, ['radiusX', 'radiusY'], isSizeLocked, () => layer.value.
         <BaseRangeSlider
             v-model.number="layer.radiusX"
             :min="1"
-            :max="canvasWidth / 2"
+            :max="surfaceSize"
             :step="1"
             label="Radius X"
             :format="px"
@@ -63,7 +63,7 @@ useLinkedSliders(layer, ['radiusX', 'radiusY'], isSizeLocked, () => layer.value.
         <BaseRangeSlider
             v-model.number="layer.radiusY"
             :min="1"
-            :max="canvasHeight / 2"
+            :max="surfaceSize"
             :step="1"
             label="Radius Y"
             :format="px"
@@ -75,7 +75,7 @@ useLinkedSliders(layer, ['radiusX', 'radiusY'], isSizeLocked, () => layer.value.
         <BaseRangeSlider
             v-model.number="layer.size"
             :min="1"
-            :max="canvasHeight / 2"
+            :max="surfaceSize"
             :step="1"
             label="Size"
             :format="px"
@@ -94,7 +94,7 @@ useLinkedSliders(layer, ['radiusX', 'radiusY'], isSizeLocked, () => layer.value.
         v-if="layer.shape === 'custom'"
         v-model.number="layer.size"
         :min="1"
-        :max="canvasHeight / 2"
+        :max="surfaceSize"
         :step="1"
         label="Size"
         :format="px"

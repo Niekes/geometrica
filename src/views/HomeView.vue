@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import LayerList from '../components/LayerList.vue';
 import LayerControl from '../components/LayerControl.vue';
 import TheGallery from '../components/TheGallery.vue';
 import useScene from '../composables/useScene';
 import { useUrlSync } from '../composables/useUrlSync';
 import { renderScene } from '../lib/renderScene';
-import { canvasHeight, canvasWidth } from '../config/canvas';
-
-const canvas = ref<HTMLCanvasElement | null>(null);
-const ctx = ref<CanvasRenderingContext2D | null>(null);
 
 const scene = useScene();
 
@@ -19,28 +15,23 @@ const { initFromUrl, setupWatchers } = useUrlSync({
     onLoad: () => scene.selectFirstLayer()
 });
 
-function download() {
-    if (canvas.value) {
-        const link: HTMLAnchorElement = document.createElement('a');
-        const date: Date = new Date();
+// ponytail: every change rebuilds and reparses the whole SVG (ADR-0004); throttle or render via a Vue template if 1000+ instances lag
+const svg = computed(() =>
+    renderScene({ background: scene.background.value, layers: scene.layers.value })
+);
 
-        link.download = `geometrica-${date.toLocaleDateString()}-${date.toLocaleTimeString()}.png`;
-        link.href = canvas.value.toDataURL();
-        link.click();
-    }
+function download() {
+    const link: HTMLAnchorElement = document.createElement('a');
+    const date: Date = new Date();
+
+    link.download = `geometrica-${date.toLocaleDateString()}-${date.toLocaleTimeString()}.svg`;
+    link.href = URL.createObjectURL(new Blob([svg.value], { type: 'image/svg+xml' }));
+    link.click();
+    // revoking synchronously can cancel the download in some browsers
+    setTimeout(() => URL.revokeObjectURL(link.href));
 }
 
 const showGallery = ref(false);
-
-async function draw(): Promise<void> {
-    await nextTick();
-
-    if (!ctx.value) return;
-
-    renderScene(ctx.value, scene.layers.value);
-}
-
-watch(scene.layers, draw, { deep: true });
 
 onMounted(() => {
     const hasUrlState = initFromUrl();
@@ -48,26 +39,6 @@ onMounted(() => {
     if (!hasUrlState || scene.layers.value.length === 0) scene.init(scene.layers.value);
 
     setupWatchers();
-
-    if (canvas.value) {
-        const context = canvas.value.getContext('2d');
-
-        canvas.value.width = canvasWidth;
-        canvas.value.height = canvasHeight;
-
-        if (context) {
-            ctx.value = context;
-
-            ctx.value.scale(2, 2);
-            ctx.value.imageSmoothingEnabled = false;
-
-            draw();
-        } else {
-            console.error('2D context is not supported.');
-        }
-    } else {
-        console.error('Canvas element not found.');
-    }
 });
 </script>
 
@@ -126,17 +97,7 @@ onMounted(() => {
         </div>
 
         <div class="context">
-            <canvas
-                class="context__canvas shadow-md shadow-black/50"
-                ref="canvas"
-                :height="canvasHeight"
-                :width="canvasWidth"
-                :style="{
-                    'background-color': scene.background.value.color,
-                    'border-radius': `${scene.background.value.borderRadius}%`
-                }"
-                @contextmenu.prevent.stop
-            />
+            <div class="context__surface" v-html="svg" />
         </div>
 
         <TheGallery v-model="showGallery" />
@@ -170,10 +131,15 @@ onMounted(() => {
     justify-content: center;
 }
 
-.context__canvas {
-    border: 1px solid var(--niekes-black-10);
-    max-height: 75%;
-    max-width: 75%;
+.context__surface {
     aspect-ratio: 1;
+    filter: drop-shadow(0 4px 6px rgb(0 0 0 / 50%));
+    height: 75%;
+    max-width: 75%;
+}
+
+.context__surface :deep(svg) {
+    height: 100%;
+    width: 100%;
 }
 </style>
