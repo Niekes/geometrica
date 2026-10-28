@@ -43,14 +43,18 @@ function startRename(id: string) {
 function finishRename(event: Event, save: boolean) {
     const id = renamingId.value;
 
-    // removing the field after Enter or Escape blurs it once more
-    if (!id) return;
+    // removing the field after Enter or Escape blurs it once more; while an input method composes,
+    // Enter and Escape belong to the composition
+    if (!id || (event as KeyboardEvent).isComposing) return;
 
     renamingId.value = null;
     if (save) emit('rename', id, (event.target as HTMLInputElement).value);
 
+    if (event.type !== 'keydown') return;
+
     // the field is gone, so the keyboard picks up at the layer again; Enter must not click it
-    if (event.type === 'keydown') nextTick(() => document.getElementById(`layer-${id}`)?.focus());
+    event.preventDefault();
+    nextTick(() => document.getElementById(`layer-${id}`)?.focus());
 }
 </script>
 
@@ -93,7 +97,7 @@ function finishRename(event: Event, save: boolean) {
                     :aria-label="`Name of ${layer.name}`"
                     :value="layer.name"
                     :maxlength="layerNameMaxLength"
-                    @keydown.enter.prevent="finishRename($event, true)"
+                    @keydown.enter="finishRename($event, true)"
                     @keydown.esc="finishRename($event, false)"
                     @blur="finishRename($event, true)"
                 />

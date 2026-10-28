@@ -234,6 +234,24 @@ describe('HomeView', () => {
         wrapper.unmount();
     });
 
+    it('keeps renaming while Enter or Escape only ends an input method composition', async () => {
+        const wrapper = mount(HomeView, {
+            attachTo: document.body,
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+
+        await wrapper.find('[aria-label="Layers"] button[aria-current="true"]').trigger('dblclick');
+
+        const input = wrapper.find('input[aria-label="Name of Layer 1"]');
+        await input.setValue('東京');
+        await input.trigger('keydown', { key: 'Enter', isComposing: true });
+        await input.trigger('keydown', { key: 'Escape', isComposing: true });
+
+        expect(wrapper.find('input[aria-label="Name of Layer 1"]').exists()).toBe(true);
+
+        wrapper.unmount();
+    });
+
     it('moves the selected layer by touch without Space and frames it while dragging', async () => {
         const wrapper = mount(HomeView, {
             global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
