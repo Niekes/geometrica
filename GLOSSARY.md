@@ -1,117 +1,121 @@
 # Geometrica
 
-Interaktiver Generator für geometrische LineArt: Formen werden auf der Zeichenfläche wiederholt, eingefärbt und als SVG exportiert.
+Interactive generator for geometric line art: shapes are repeated on the surface, colored and exported as SVG.
 
 ## Language
 
-### Komposition
+### Composition
 
-**Kunstwerk**:
-Alles, was auf der Zeichenfläche komponiert ist: der Hintergrund und alle Layer in ihrer Z-Ordnung. Ein Kunstwerk wird als SVG exportiert und als Link geteilt.
-_Avoid_: Szene, Scene, Artwork, Bild, Effekt
+**Artwork**:
+Everything composed on the surface: the background and all layers in their z-order. An artwork is exported as SVG and shared as a link.
+_Avoid_: Scene, Picture, Image, Effect
 
 **Export**:
-Die SVG-Datei, die aus einem Kunstwerk entsteht: der Hintergrund und alle sichtbaren Layer. Transparenzmuster, Raster, Drehpunkt und Begrenzungsrahmen sind Arbeitshilfen und gehören nie dazu.
-_Avoid_: Download, Speichern
+The SVG file made from an artwork: the background and all visible layers. Transparency pattern, grid, rotation center and bounding box are working aids and never part of it.
+_Avoid_: Download, Save
 
-**Zeichenfläche**:
-Die quadratische Fläche, auf der Layer komponiert werden. Exportiert wird alles, was auf ihr gezeichnet ist; Transparenzmuster und Raster sind reine Arbeitshilfen.
-_Avoid_: Canvas, Stage, Artboard, Bearbeitungsfläche, Zeichenunterlage
+**Link**:
+The address that carries a complete artwork: the background and all layers with their names. It is the only storage of a shared artwork; no server resolves it. An artwork lives exactly as long as its link.
+_Avoid_: URL, Permalink, Short link, Hash
 
-**Hintergrund**:
-Farbe, Deckkraft und Eckradius der Zeichenfläche. Er gehört zu keinem Layer und ist Teil des Exports; Instanzen werden an seiner Form abgeschnitten.
-_Avoid_: bgColor, Canvas-Hintergrund
+**Surface**:
+The square area on which layers are composed. Everything drawn on it is exported; the transparency pattern and the grid are working aids only.
+_Avoid_: Canvas, Stage, Artboard, Drawing area
 
-**Hintergrund-Opacity**:
-Deckkraft des Hintergrunds, stufenlos von 0 (transparent) bis 1.
-_Avoid_: Alpha, Hintergrund-Transparenz
+**Background**:
+Color, opacity and corner radius of the surface. It belongs to no layer and is part of the export; instances are clipped to its shape.
+_Avoid_: bgColor, Canvas background
 
-**Transparenzmuster**:
-Das Schachbrettmuster hinter der Zeichenfläche, das transparente Stellen des Exports sichtbar macht. Es wird nicht exportiert.
-_Avoid_: Checkerboard, Schachbrett
+**Background opacity**:
+The opacity of the background, continuous from 0 (transparent) to 1.
+_Avoid_: Alpha, Background transparency
 
-**Raster**:
-Hilfslinien und Keylines über der Zeichenfläche zum Ausrichten von Formen. Es skaliert mit der Zeichenfläche und wird nicht exportiert.
-_Avoid_: Gitter
+**Transparency pattern**:
+The checkered pattern behind the surface that makes the transparent areas of the export visible. It is not exported.
+_Avoid_: Checkerboard, Chessboard
+
+**Grid**:
+Guide lines and keylines over the surface for aligning shapes. It scales with the surface and is not exported.
+_Avoid_: Lattice, Raster
 
 **Keyline**:
-Eine Hilfsform des Rasters nach den Material-Icon-Richtlinien: Kreis, Innenkreis, Quadrat, Hochformat- oder Querformat-Rechteck.
-_Avoid_: Hilfsform, Schlüssellinie
+A guide shape of the grid following the Material icon guidelines: circle, inner circle, square, portrait or landscape rectangle.
+_Avoid_: Guide shape
 
-**Einrasten**:
-Das Ausrichten der Position oder des Drehpunkts eines Layers an den Rasterlinien, während er auf der Zeichenfläche verschoben wird. Der Drehpunkt rastet zusätzlich auf der Position ein. Es lässt sich unabhängig vom Raster ein- und ausschalten.
-_Avoid_: Snapping, Snap
+**Snap**:
+Aligning the position or the rotation center of a layer to the grid lines while it is moved on the surface. The rotation center also snaps to the position. It is turned on and off independently of the grid.
+_Avoid_: Magnet, Lock
 
-**Form**:
-Eine Pfadgeometrie (Rect, Circle, Polygon oder eine eigene Form aus eingefügten SVG-Pfaden). Mehrere eingefügte Pfade bilden zusammen eine Form. Die Form selbst ist nur die Geometrie, ohne Wiederholungs- oder Stilparameter.
-_Avoid_: Shape, Figur, Objekt
+**Shape**:
+A path geometry (Rect, Circle, Polygon or a custom shape from pasted SVG paths). Several pasted paths form one shape together. The shape itself is only the geometry, without repetition or style parameters.
+_Avoid_: Figure, Object
 
 **Position**:
-Der Versatz des Form-Mittelpunkts vom Mittelpunkt der Zeichenfläche. Alle Instanzen eines Layers teilen ihn.
-_Avoid_: Offset, Koordinate
+How far the center of the shape lies from the center of the surface. All instances of a layer share it.
+_Avoid_: Offset, Coordinate
 
-**Drehpunkt**:
-Der Punkt, um den sich die Instanzen eines Layers entlang der Wiederholung drehen. Jeder Layer hat seinen eigenen. Er ist ein Versatz von der Position und wandert mit, wenn der Layer verschoben wird. Liegt er auf der Position, dreht sich jede Instanz um ihren eigenen Mittelpunkt; liegt er daneben, kreisen die Instanzen um ihn. Auf der Zeichenfläche ist er zu sehen und zu ziehen, solange er eingeblendet ist, unabhängig vom Raster; exportiert wird er nie.
-_Avoid_: Rotation Center, Pivot, Ursprung, Ankerpunkt
+**Rotation center**:
+The point the instances of a layer turn around along the repetition. Every layer has its own. It is measured from the position and moves along when the layer is moved. On the position, each instance turns around its own center; beside it, the instances circle around it. It is visible and draggable on the surface while it is shown, independent of the grid; it is never exported.
+_Avoid_: Pivot, Origin, Anchor point
 
-**Begrenzungsrahmen**:
-Das Rechteck um alle Instanzen des ausgewählten Layers samt ihrer Kontur. Es zeigt an, dass der Layer gerade verschoben werden kann. Es ist eine Arbeitshilfe und wird nie exportiert.
-_Avoid_: Bounding Box, Auswahlrahmen, Selection
+**Bounding box**:
+The rectangle around all instances of the selected layer, including their stroke. It shows that the layer can be moved right now. It is a working aid and never exported.
+_Avoid_: Selection frame, Selection
 
-**Instanz**:
-Eine einzelne gezeichnete Wiederholung einer Form auf der Zeichenfläche.
-_Avoid_: Kopie, Iteration
+**Instance**:
+One drawn occurrence of a shape on the surface.
+_Avoid_: Copy, Iteration
 
-**Wiederholung**:
-Die Sequenz von Instanzen einer Form, gesteuert durch amount, distance und rotation.
-_Avoid_: Loop, Serie
+**Repetition**:
+The sequence of instances of a shape, controlled by amount, distance and rotation.
+_Avoid_: Loop, Series
 
 **Layer**:
-Eine vollständige Konfiguration aus Form, Wiederholung, Farbe und Füllung. Layer stapeln sich in Z-Ordnung auf der Zeichenfläche; beliebig viele sind möglich. Jeder Layer trägt einen frei wählbaren Namen, der ihn in der Layer-Liste bezeichnet. Der Name reist im geteilten Link mit, wird aber nicht exportiert.
-_Avoid_: Ebene, Schicht
+A complete configuration of shape, repetition, color and fill. Layers stack in z-order on the surface; any number is possible. Every layer carries a freely chosen name that labels it in the layer list. The name travels in the shared link but is not exported.
+_Avoid_: Level, Plane
 
 **Preset**:
-Eine fertige Formauswahl innerhalb eines Layers. Rect, Circle und Polygon sind Presets, keine eigenständigen Modi mehr.
-_Avoid_: Formtyp
+A ready-made shape choice within a layer. Rect, Circle and Polygon are presets, not modes of their own.
+_Avoid_: Shape type
 
-### Farbe & Füllung
+### Color & fill
 
-**Verlauf**:
-Ein Farbgradient, der eine Instanzfläche füllt (linear oder radial), mit Farbstopps aus einem Color-Interpolator.
-_Avoid_: Gradient, Farbschema
+**Gradient**:
+A color transition that fills the area of an instance (linear or radial), with color stops from a color interpolator.
+_Avoid_: Color scheme
 
-**Sequenz-Verlauf**:
-Die Farbverläufe entlang der Wiederholung: die Instanzposition bestimmt die Farbe über den Color-Interpolator.
-_Avoid_: Farbinterpolation über Instanzen
+**Sequence gradient**:
+The colors along the repetition: the place of an instance in the repetition picks its color from the color interpolator.
+_Avoid_: Color interpolation across instances
 
-**Color-Interpolator**:
-Eine benannte d3-Farbramppen-Funktion, die eine Position [0..1] auf eine Farbe abbildet.
-_Avoid_: Farbschema, Palette
+**Color interpolator**:
+A named d3 color ramp function that maps a position in [0..1] to a color.
+_Avoid_: Color scheme, Palette
 
-**Fill-Opacity**:
-Deckkraft der Füllung einer Instanz, stufenlos von 0 (keine Füllung) bis 1. Fill und Stroke teilen sich dieselbe Farbe.
-_Avoid_: Fill-Modus, Zeichenmodus
+**Fill opacity**:
+The opacity of the fill of an instance, continuous from 0 (no fill) to 1. Fill and stroke share the same color.
+_Avoid_: Fill mode, Draw mode
 
-**Stroke-Opacity**:
-Deckkraft der Kontur einer Instanz, stufenlos von 0 (keine Kontur) bis 1. Unabhängig von der Fill-Opacity einstellbar.
-_Avoid_: Fill-Modus, Zeichenmodus
+**Stroke opacity**:
+The opacity of the stroke of an instance, continuous from 0 (no stroke) to 1. It is set independently of the fill opacity.
+_Avoid_: Fill mode, Draw mode
 
-**Layer-Opacity**:
-Deckkraft eines ganzen Layers, die Fill-Opacity und Stroke-Opacity gemeinsam abschwächt. Sich überlappende Instanzen desselben Layers addieren sich dabei.
-_Avoid_: Layer-Opazität
+**Layer opacity**:
+The opacity of a whole layer, which fades fill opacity and stroke opacity together. Overlapping instances of the same layer still add up.
+_Avoid_: Layer alpha, Layer transparency
 
-### Bedienung
+### Interaction
 
 **Agent**:
-Ein Programm, das das Kunstwerk auf Zuruf liest und ersetzt, statt dass jemand die Regler bedient.
-_Avoid_: Bot, KI, Assistent
+A program that reads and replaces the artwork on request, instead of someone moving the sliders.
+_Avoid_: Bot, AI, Assistant
 
-**Galerie**:
-Die kuratierte Sammlung fertiger Kunstwerke, von denen man eines öffnet, um daran weiterzuarbeiten.
-_Avoid_: Gallery, Vorlagen, Beispiele, Presets
+**Gallery**:
+The curated collection of finished artworks, from which one is opened to keep working on it.
+_Avoid_: Templates, Examples, Presets
 
-### Architektur
+### Architecture
 
 **Zone**:
-Eine Schicht der App-Architektur mit festgelegten Importrechten. Abhängigkeiten zeigen nur nach innen (types → config → lib → composables → components → views); die Grenzen werden von fallow erzwungen.
-_Avoid_: Schicht (im Architektursinne), Layer (kollidiert mit dem Bild-Layer)
+A tier of the app architecture with fixed import rights. Dependencies point inwards only (types → config → lib → composables → components → views); fallow enforces the boundaries.
+_Avoid_: Layer (collides with the artwork layer), Tier

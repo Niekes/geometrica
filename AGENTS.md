@@ -78,6 +78,13 @@ Two consequences worth remembering:
   thresholds live in `vitest.config.ts` and include `src/lib/**` and
   `src/composables/**` only.
 
+## Vocabulary
+
+`GLOSSARY.md` is the language of the project, and it is written in English.
+Name things in code, UI text and docs by its terms, never by a word listed
+under _Avoid_. A new or changed entry is written in English, also when the
+conversation that settled it was in another language.
+
 ## Adding a feature
 
 1. Place new modules into the matching zone (see the table above).
