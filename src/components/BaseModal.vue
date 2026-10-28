@@ -20,7 +20,7 @@ const close = () => {
 
 <template>
     <dialog ref="dialog" class="modal backdrop-blur-sm" @close="close">
-        <div class="modal-box flex max-h-[85dvh] flex-col">
+        <div class="modal-box flex max-h-[85dvh] w-11/12 max-w-5xl flex-col">
             <h3 class="text-lg font-bold">
                 <slot name="title" />
             </h3>
