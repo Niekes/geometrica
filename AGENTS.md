@@ -86,6 +86,19 @@ Two consequences worth remembering:
 3. Run `npm run lint` and `npm run coverage` before committing; the
    pre-commit hook runs `fallow audit` on the changeset.
 
+## Building UI
+
+Whatever a component can do, a component does:
+
+- **daisyUI first.** Use the daisyUI class in the template before writing
+  Tailwind utilities, and tune it with daisyUI's own modifiers (`-xs`,
+  `collapse-arrow`, `tabs-box`), not with overrides against it. Using daisyUI
+  as documented is never a duplicate, even across files.
+- **Repeated markup within one template becomes a `v-for`.**
+- **A convention of our own that appears twice becomes a Vue component**
+  (accessibility wiring, icon sizes, behaviour), e.g. `BaseIconButton`. No
+  component only forwards a class.
+
 ## Releasing
 
 There is no release pipeline. `master` deploys to GitHub Pages through
