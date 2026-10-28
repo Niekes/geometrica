@@ -19,9 +19,11 @@ export function useUrlSync(state: UseUrlSyncOptions) {
 
     function serializeToUrl() {
         const query = serializeState({ background: background.value, layers: layers.value });
+        const current = parseState(window.location.search.substring(1));
 
-        // the back button restores a state the URL already holds; pushing it again cuts off the way forward
-        if (`?${query}` === window.location.search) return;
+        // the back button restores a state the URL already holds, maybe in an older format;
+        // pushing it again cuts off the way forward
+        if (current && serializeState(current) === query) return;
 
         window.history.pushState({}, '', `${window.location.pathname}?${query}`);
     }

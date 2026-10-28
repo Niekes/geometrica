@@ -127,4 +127,20 @@ describe('useUrlSync', () => {
 
         expect(window.history.length).toBe(entries);
     });
+
+    it('keeps the way forward after going back to a link in an older format', async () => {
+        vi.useFakeTimers();
+        sync.setupWatchers();
+
+        for (const link of ['v=2&l[0][name]=old&l[0][amount]=8', 'shape=rect&rect[amount]=8']) {
+            window.history.replaceState({}, '', `/geometrica/?${link}`);
+            const entries = window.history.length;
+
+            window.dispatchEvent(new PopStateEvent('popstate'));
+            await nextTick();
+            vi.advanceTimersByTime(300);
+
+            expect(window.history.length).toBe(entries);
+        }
+    });
 });
