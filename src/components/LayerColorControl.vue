@@ -17,9 +17,9 @@ const layer = defineModel<Layer>({ required: true });
 <template>
     <ColorInterpolator v-model="layer.colorInterPolator" />
 
-    <label class="flex cursor-pointer items-center justify-between text-xs">
+    <label class="label text-xs">
+        <input v-model="layer.flipColorInterpolator" type="checkbox" class="toggle toggle-xs" />
         Reverse colors
-        <input v-model="layer.flipColorInterpolator" type="checkbox" class="toggle toggle-sm" />
     </label>
 
     <BaseSegmented

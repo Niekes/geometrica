@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import BaseRangeSlider from '../components/BaseRangeSlider.vue';
 import LayerList from '../components/LayerList.vue';
 import LayerControl from '../components/LayerControl.vue';
@@ -41,9 +41,8 @@ function exportSvg() {
 
 // the grid, snapping and the rotation center belong to the working view only:
 // they are not stored in the URL and never exported
-const showGrid = ref(false);
-const snap = ref(true);
-const showRotationCenter = ref(true);
+const view = reactive({ grid: false, snap: true, rotationCenter: true });
+const viewLabels = { grid: 'Grid', snap: 'Snap', rotationCenter: 'Rotation center' };
 const grid = computed(() => renderGrid(scene.background.value));
 
 // the marker of the rotation center keeps its screen size, so it is placed as a share of the surface
@@ -106,7 +105,7 @@ function moveDrag(event: PointerEvent) {
         const half = surfaceSize / 2;
         const position = Math.max(-half, Math.min(half, Math.round(start + delta * scale)));
 
-        return snap.value ? snapToGrid(position, anchor) : position;
+        return view.snap ? snapToGrid(position, anchor) : position;
     };
 
     if (drag.rotationCenter) {
@@ -167,9 +166,9 @@ onMounted(() => {
                         @pointercancel="endDrag"
                     >
                         <div v-html="svg" />
-                        <div v-if="showGrid" class="context__grid" v-html="grid" />
+                        <div v-if="view.grid" class="context__grid" v-html="grid" />
                         <svg
-                            v-if="showRotationCenter"
+                            v-if="view.rotationCenter"
                             class="context__rotation-center"
                             :style="rotationCenter"
                             viewBox="-12 -12 24 24"
@@ -187,52 +186,44 @@ onMounted(() => {
 
                 <div class="context__bar">
                     <!-- exported with the artwork -->
-                    <fieldset class="flex flex-wrap items-end gap-4">
-                        <legend class="mb-2 text-xs font-semibold">Background</legend>
-                        <label class="flex flex-col gap-1 text-xs">
-                            Color
-                            <input
-                                v-model="scene.background.value.color"
-                                type="color"
-                                class="h-7 w-12 cursor-pointer rounded-field"
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">Background</legend>
+                        <div class="flex flex-wrap items-end gap-4">
+                            <label class="flex flex-col gap-1">
+                                Color
+                                <input
+                                    v-model="scene.background.value.color"
+                                    type="color"
+                                    class="h-7 w-12 cursor-pointer rounded-field"
+                                />
+                            </label>
+                            <BaseRangeSlider
+                                v-model.number="scene.background.value.opacity"
+                                v-bind="backgroundRanges.opacity"
+                                class="w-44"
+                                label="Opacity"
+                                :scale="100"
+                                unit="%"
                             />
-                        </label>
-                        <BaseRangeSlider
-                            v-model.number="scene.background.value.opacity"
-                            v-bind="backgroundRanges.opacity"
-                            class="w-44"
-                            label="Opacity"
-                            :scale="100"
-                            unit="%"
-                        />
-                        <BaseRangeSlider
-                            v-model.number="scene.background.value.borderRadius"
-                            v-bind="backgroundRanges.borderRadius"
-                            class="w-44"
-                            label="Corner radius"
-                            unit="%"
-                        />
+                            <BaseRangeSlider
+                                v-model.number="scene.background.value.borderRadius"
+                                v-bind="backgroundRanges.borderRadius"
+                                class="w-44"
+                                label="Corner radius"
+                                unit="%"
+                            />
+                        </div>
                     </fieldset>
 
                     <!-- working aids, never exported -->
-                    <fieldset class="flex flex-wrap items-center gap-4">
-                        <legend class="mb-2 text-xs font-semibold">View</legend>
-                        <label class="flex cursor-pointer items-center gap-2 text-xs">
-                            <input v-model="showGrid" type="checkbox" class="toggle toggle-xs" />
-                            Grid
-                        </label>
-                        <label class="flex cursor-pointer items-center gap-2 text-xs">
-                            <input v-model="snap" type="checkbox" class="toggle toggle-xs" />
-                            Snap
-                        </label>
-                        <label class="flex cursor-pointer items-center gap-2 text-xs">
-                            <input
-                                v-model="showRotationCenter"
-                                type="checkbox"
-                                class="toggle toggle-xs"
-                            />
-                            Rotation center
-                        </label>
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">View</legend>
+                        <div class="flex flex-wrap items-center gap-4">
+                            <label v-for="(text, key) in viewLabels" :key="key" class="label">
+                                <input v-model="view[key]" type="checkbox" class="toggle toggle-xs" />
+                                {{ text }}
+                            </label>
+                        </div>
                     </fieldset>
                 </div>
             </div>

@@ -30,28 +30,32 @@ function onPaste(event: ClipboardEvent) {
 </script>
 
 <template>
-    <label class="text-xs font-semibold" for="custom-path">SVG Path</label>
-    <textarea
-        id="custom-path"
-        v-model="layer.path"
-        class="textarea textarea-xs w-full font-mono"
-        rows="3"
-        placeholder="M0 0 L100 0 L100 100 L0 100 Z"
-        @paste="onPaste"
-        @input="pathImport = null"
-    />
-    <p v-if="pathImport && 'error' in pathImport" class="text-xs text-error">
-        {{ pathImport.error }}
-    </p>
-    <p v-else-if="pathImport" class="text-xs opacity-60">
-        Imported {{ pathImport.paths }} path(s){{
-            pathImport.ignored ? `, ignored ${pathImport.ignored} other element(s)` : ''
-        }}.
-    </p>
-    <p v-else-if="layer.path && !isPathValid" class="text-xs text-error">
-        Invalid path data. Use SVG path syntax, e.g. M, L, C, Q, A, Z.
-    </p>
-    <p v-else-if="!layer.path" class="text-xs opacity-60">
-        Paste an SVG or its path data (d attribute).
-    </p>
+    <!-- a label rather than a legend, so the textarea keeps its name; the hints wrap, which
+         daisyUI's nowrap label would not -->
+    <div class="fieldset">
+        <label class="fieldset-legend" for="custom-path">SVG Path</label>
+        <textarea
+            id="custom-path"
+            v-model="layer.path"
+            class="textarea textarea-xs w-full font-mono"
+            rows="3"
+            placeholder="M0 0 L100 0 L100 100 L0 100 Z"
+            @paste="onPaste"
+            @input="pathImport = null"
+        />
+        <p v-if="pathImport && 'error' in pathImport" class="text-error">
+            {{ pathImport.error }}
+        </p>
+        <p v-else-if="pathImport" class="text-base-content/60">
+            Imported {{ pathImport.paths }} path(s){{
+                pathImport.ignored ? `, ignored ${pathImport.ignored} other element(s)` : ''
+            }}.
+        </p>
+        <p v-else-if="layer.path && !isPathValid" class="text-error">
+            Invalid path data. Use SVG path syntax, e.g. M, L, C, Q, A, Z.
+        </p>
+        <p v-else-if="!layer.path" class="text-base-content/60">
+            Paste an SVG or its path data (d attribute).
+        </p>
+    </div>
 </template>

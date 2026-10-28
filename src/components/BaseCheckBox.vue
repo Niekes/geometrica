@@ -31,7 +31,7 @@ const onChange = (value: string | boolean) => {
         <label
             v-for="opt in options"
             :key="opt.value.toString()"
-            class="inline-flex cursor-pointer items-center gap-2 text-xs has-disabled:cursor-not-allowed has-disabled:text-base-content/50"
+            class="label text-xs has-disabled:cursor-not-allowed has-disabled:opacity-50"
         >
             <input
                 type="checkbox"
