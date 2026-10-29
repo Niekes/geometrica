@@ -8,7 +8,7 @@ Interactive generator for geometric line art: shapes are repeated on the surface
 
 **Artwork**:
 Everything composed on the surface: the background and all layers in their z-order. An artwork is exported as SVG and shared as a link.
-_Avoid_: Scene, Picture, Image, Effect
+_Avoid_: Scene, Picture, Image, Effect, Icon
 
 **Export**:
 The SVG file made from an artwork: the background and all visible layers. Transparency pattern, grid, rotation center and bounding box are working aids and never part of it.
