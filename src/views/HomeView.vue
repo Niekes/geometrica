@@ -275,13 +275,14 @@ onUnmounted(() => {
                         <!-- exported with the artwork -->
                         <fieldset class="fieldset">
                             <legend class="fieldset-legend">Background</legend>
-                            <div class="flex flex-wrap items-end gap-4">
-                                <label class="flex flex-col gap-1">
+                            <!-- labels and fields share the first line, the sliders hang below it -->
+                            <div class="flex flex-wrap items-start gap-4">
+                                <label class="flex items-center gap-2 text-xs">
                                     Color
                                     <input
                                         v-model="scene.background.value.color"
                                         type="color"
-                                        class="h-7 w-12 cursor-pointer rounded-field"
+                                        class="h-6 w-12 cursor-pointer rounded-field"
                                     />
                                 </label>
                                 <BaseRangeSlider
@@ -305,7 +306,8 @@ onUnmounted(() => {
                         <!-- working aids, never exported -->
                         <fieldset class="fieldset">
                             <legend class="fieldset-legend">View</legend>
-                            <div class="flex flex-wrap items-center gap-4">
+                            <!-- as tall as a field, so the toggles line up with the background fields -->
+                            <div class="flex min-h-6 flex-wrap items-center gap-4">
                                 <label v-for="(text, key) in viewLabels" :key="key" class="label">
                                     <input
                                         v-model="view[key]"
