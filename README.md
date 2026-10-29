@@ -1,4 +1,8 @@
 <p align="center">
+  <a href="https://niekes.github.io/geometrica/"><img src="public/logo.webp" alt="Geometrica" width="120"></a>
+</p>
+
+<p align="center">
   <a href="https://github.com/sponsors/niekes"><img src="https://img.shields.io/badge/Sponsor_Geometrica-EA4AAA?logo=githubsponsors&logoColor=white&style=for-the-badge" alt="Sponsor Geometrica"></a>
 </p>
 

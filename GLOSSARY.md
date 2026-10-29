@@ -10,6 +10,10 @@ Interactive generator for geometric line art: shapes are repeated on the surface
 Everything composed on the surface: the background and all layers in their z-order. An artwork is exported as SVG and shared as a link.
 _Avoid_: Scene, Picture, Image, Effect, Icon
 
+**Logo**:
+The artwork that identifies Geometrica in the navbar, the icons, the README and the social preview. It is an artwork like any other, kept apart from the gallery so reordering the gallery never swaps it.
+_Avoid_: Icon, Brand mark, Favicon
+
 **Export**:
 The SVG file made from an artwork: the background and all visible layers. Transparency pattern, grid, rotation center and bounding box are working aids and never part of it.
 _Avoid_: Download, Save
