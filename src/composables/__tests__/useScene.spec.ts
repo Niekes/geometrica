@@ -58,6 +58,16 @@ describe('useScene', () => {
         expect(scene.selectedLayerId.value).toBe(scene.layers.value[2]!.id);
     });
 
+    it('adds no layer beyond ten, neither a new one nor a duplicate', () => {
+        const scene = useScene();
+        scene.init(Array.from({ length: 10 }, (_, index) => makeLayer('rect', `${index}`)));
+
+        scene.addLayer();
+        scene.duplicateLayer('id-3');
+
+        expect(scene.layers.value.length).toBe(10);
+    });
+
     it('keeps at least one layer when removing', () => {
         const scene = useScene();
         scene.init([]);

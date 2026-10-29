@@ -145,6 +145,18 @@ describe('set_artwork', () => {
         expect(written).toEqual([]);
     });
 
+    it('takes ten layers and rejects an eleventh', async () => {
+        const { run, written } = setup(artwork);
+        const layers = (length: number) => Array.from({ length }, () => ({}));
+
+        await run('set_artwork', { layers: layers(10) });
+
+        await expect(run('set_artwork', { layers: layers(11) })).rejects.toThrow(
+            'layers must hold at most 10 items'
+        );
+        expect(written).toHaveLength(1);
+    });
+
     it('rejects a background color and a custom shape the renderer cannot draw', async () => {
         const { run, written } = setup(artwork);
 

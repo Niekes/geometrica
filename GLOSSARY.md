@@ -71,7 +71,7 @@ The sequence of instances of a shape, controlled by amount, distance and rotatio
 _Avoid_: Loop, Series
 
 **Layer**:
-A complete configuration of shape, repetition, color and fill. Layers stack in z-order on the surface; any number is possible. Every layer carries a freely chosen name that labels it in the layer list. The name travels in the shared link but is not exported.
+A complete configuration of shape, repetition, color and fill. Layers stack in z-order on the surface; an artwork holds at most ten. Every layer carries a freely chosen name that labels it in the layer list. The name travels in the shared link but is not exported.
 _Avoid_: Level, Plane
 
 **Preset**:

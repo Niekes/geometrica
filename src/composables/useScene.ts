@@ -4,6 +4,7 @@ import {
     type Background,
     buildLayer,
     defaultBackground,
+    maxLayers,
     normalizeLayerName
 } from '../config/defaults';
 
@@ -64,7 +65,7 @@ export default function useScene() {
     function duplicateLayer(id: string) {
         const source = layers.value.find((layer) => layer.id === id);
 
-        if (!source) return;
+        if (!source || layers.value.length >= maxLayers) return;
 
         // structuredClone cannot handle reactive proxies; all layer fields are JSON-safe
         const layer = JSON.parse(JSON.stringify(source)) as Layer;

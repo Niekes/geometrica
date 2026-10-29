@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { nextTick, ref } from 'vue';
 import type { Layer } from '@/types/Layer';
-import { layerNameMaxLength } from '@/config/defaults';
+import { layerNameMaxLength, maxLayers } from '@/config/defaults';
 
 import BaseIconButton from '@/components/BaseIconButton.vue';
 
@@ -66,10 +66,16 @@ function finishRename(event: Event, save: boolean) {
     <section class="flex flex-col gap-1 p-2" aria-label="Layers">
         <div class="flex items-center gap-1">
             <h2 class="flex-1 px-1 text-sm font-semibold">Layers</h2>
-            <BaseIconButton label="Add layer" :icon="PlusIcon" @click="emit('add')" />
+            <BaseIconButton
+                label="Add layer"
+                :icon="PlusIcon"
+                :disabled="props.layers.length >= maxLayers"
+                @click="emit('add')"
+            />
             <BaseIconButton
                 label="Duplicate layer"
                 :icon="Square2StackIcon"
+                :disabled="props.layers.length >= maxLayers"
                 @click="emit('duplicate', props.selectedId)"
             />
             <BaseIconButton

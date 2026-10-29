@@ -13,6 +13,7 @@ import {
     buildLayer,
     defaultBackground,
     layerNameMaxLength,
+    maxLayers,
     normalizeLayerName
 } from '../config/defaults';
 import { backgroundRanges, layerRanges } from '../config/ranges';
@@ -36,7 +37,7 @@ type Schema = { description?: string } & (
     | { type: 'integer'; minimum: number; maximum: number }
     | { type: 'boolean' }
     | { type: 'string'; enum?: string[]; maxLength?: number }
-    | { type: 'array'; items: Schema; minItems?: number }
+    | { type: 'array'; items: Schema; minItems?: number; maxItems?: number }
     | {
           type: 'object';
           properties: Record<string, Schema>;
@@ -180,6 +181,7 @@ const inputSchema: Schema = {
             type: 'array',
             items: { type: 'object', properties: layerProperties, additionalProperties: false },
             minItems: 1,
+            maxItems: maxLayers,
             description: 'The layers, layers[0] on top. Omitted fields take the shape defaults.'
         }
     },
@@ -230,9 +232,14 @@ const checks: { [T in Schema['type']]: Check<T> } = {
             value.length < (schema.minItems ?? 0)
                 ? [`${path} must hold at least ${schema.minItems} item`]
                 : [];
+        const tooLong =
+            value.length > (schema.maxItems ?? Infinity)
+                ? [`${path} must hold at most ${schema.maxItems} items`]
+                : [];
 
         return [
             ...tooShort,
+            ...tooLong,
             ...value.flatMap((item, index) => check(item, schema.items, `${path}[${index}]`))
         ];
     },

@@ -16,6 +16,9 @@ export const defaultBackground: Background = Object.freeze({
 // every character of a name ends up in the shared link
 export const layerNameMaxLength = 40;
 
+// an artwork stays a few repeated shapes
+export const maxLayers = 10;
+
 // a blank name would leave the layer without a label in the list
 export function normalizeLayerName(name: unknown, fallback: string): string {
     if (typeof name !== 'string') return fallback;
