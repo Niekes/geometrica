@@ -107,7 +107,8 @@ describe('set_artwork', () => {
                     visible: 'yes',
                     shape: 'star',
                     colorInterPolator: 'interpolateRosa',
-                    calcOpacity: ['fade']
+                    calcOpacity: ['fade'],
+                    strokeJoin: 'spiky'
                 }
             ]
         }).catch((e: Error) => e.message);
@@ -117,6 +118,7 @@ describe('set_artwork', () => {
         expect(error).toContain('layers[0].shape must be one of rect, circle, polygon, custom');
         expect(error).toMatch(/layers\[0\]\.colorInterPolator must be one of .*interpolateMagma/);
         expect(error).toContain('layers[0].calcOpacity[0] must be one of interpolate, flip');
+        expect(error).toContain('layers[0].strokeJoin must be one of miter, round, bevel');
         expect(written).toEqual([]);
     });
 

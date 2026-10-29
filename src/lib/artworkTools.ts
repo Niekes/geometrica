@@ -6,7 +6,8 @@ import {
     calcOpacityOptions,
     calcStrokeWidthOptions,
     gradientTypeOptions,
-    shapeOptions
+    shapeOptions,
+    strokeJoinOptions
 } from '../config/controlOptions';
 import {
     type Background,
@@ -117,6 +118,10 @@ const layerProperties: Record<keyof Artwork['layers'][number], Schema> = {
     borderRadiusBl: number(layerRanges.borderRadiusBl, corner('bottom left')),
     borderRadiusBr: number(layerRanges.borderRadiusBr, corner('bottom right')),
     strokeWidth: number(layerRanges.strokeWidth, 'Stroke width in px.'),
+    strokeJoin: oneOf(
+        strokeJoinOptions,
+        'How the stroke turns a sharp corner: miter is pointed, bevel is cut off.'
+    ),
     opacity: number(
         layerRanges.opacity,
         'Opacity of the whole layer; it scales fillOpacity and strokeOpacity.'

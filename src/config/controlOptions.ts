@@ -1,4 +1,4 @@
-import { type GradientType, type ShapePreset } from '../types/Layer';
+import { type GradientType, type ShapePreset, type StrokeJoin } from '../types/Layer';
 
 export const shapeOptions: { value: ShapePreset; label: string }[] = [
     { value: 'rect', label: 'Rect' },
@@ -26,4 +26,10 @@ export const colorModeOptions = [
 export const gradientTypeOptions: { value: GradientType; label: string }[] = [
     { value: 'linear', label: 'Linear' },
     { value: 'radial', label: 'Radial' }
+];
+
+export const strokeJoinOptions: { value: StrokeJoin; label: string }[] = [
+    { value: 'miter', label: 'Miter' },
+    { value: 'round', label: 'Round' },
+    { value: 'bevel', label: 'Bevel' }
 ];

@@ -51,6 +51,17 @@ describe('renderScene: fill and stroke', () => {
         expect(path!.getAttribute('stroke-width')).toBe('5');
         // keeps the miter joins of the former renderer; SVG would default to 4
         expect(path!.getAttribute('stroke-miterlimit')).toBe('10');
+        // miter is the SVG default, so existing exports stay as they were
+        expect(path!.hasAttribute('stroke-linejoin')).toBe(false);
+    });
+
+    it('turns sharp corners with the stroke join of the layer', () => {
+        const layer = makeLayer('rect', { strokeOpacity: 1, strokeJoin: 'round' });
+        const [path] = paths(render([layer]));
+
+        expect(path!.getAttribute('stroke-linejoin')).toBe('round');
+        // a limit only applies to miter joins
+        expect(path!.hasAttribute('stroke-miterlimit')).toBe(false);
     });
 
     it('fills and strokes with the same color', () => {
@@ -433,6 +444,26 @@ describe('layerBounds', () => {
             maxX: expect.closeTo(512 + 50 + 10 / Math.SQRT2),
             maxY: expect.closeTo(512 + 50 + 10 / Math.SQRT2)
         });
+    });
+
+    it('stops at half the width around corners turned by a round or bevel join', () => {
+        for (const strokeJoin of ['round', 'bevel'] as const) {
+            const layer = makeLayer('polygon', {
+                sides: 4,
+                size: 100,
+                borderRadius: 0,
+                strokeOpacity: 1,
+                strokeWidth: 10,
+                strokeJoin
+            });
+
+            expect(layerBounds(layer)).toEqual({
+                minX: expect.closeTo(457),
+                minY: expect.closeTo(457),
+                maxX: expect.closeTo(567),
+                maxY: expect.closeTo(567)
+            });
+        }
     });
 
     it('stops at half the width where the miter limit bevels a spike', () => {

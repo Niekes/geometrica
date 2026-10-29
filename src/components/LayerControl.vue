@@ -17,7 +17,12 @@ import LayerShapeControl from '@/components/LayerShapeControl.vue';
 // Config
 import { buildLayer } from '@/config/defaults';
 import { layerRanges } from '@/config/ranges';
-import { calcOpacityOptions, calcStrokeWidthOptions, shapeOptions } from '@/config/controlOptions';
+import {
+    calcOpacityOptions,
+    calcStrokeWidthOptions,
+    shapeOptions,
+    strokeJoinOptions
+} from '@/config/controlOptions';
 
 const layer = defineModel<Layer>({ required: true });
 
@@ -157,6 +162,11 @@ function resetLayer() {
                     unit="px"
                 />
                 <BaseCheckBox :options="calcStrokeWidthOptions" v-model="layer.calcStrokeWidth" />
+                <BaseSegmented
+                    v-model="layer.strokeJoin"
+                    legend="Stroke join"
+                    :options="strokeJoinOptions"
+                />
             </fieldset>
             <p v-if="!isStrokeRelevant" class="text-xs text-base-content/70">
                 Raise the stroke opacity to draw a stroke.

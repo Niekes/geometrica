@@ -17,9 +17,14 @@ const name = useId();
 <template>
     <fieldset class="fieldset">
         <legend :class="hideLegend ? 'sr-only' : 'fieldset-legend'" v-text="legend" />
-        <!-- a label.tab hides its radio and marks itself active and focused once the radio is -->
+        <!-- a label.tab hides its radio and marks itself active and focused once the radio is;
+             a disabled fieldset around the group disables the radio, but not the label -->
         <div class="tabs tabs-box tabs-xs">
-            <label v-for="option in options" :key="String(option.value)" class="tab flex-1 gap-1">
+            <label
+                v-for="option in options"
+                :key="String(option.value)"
+                class="tab flex-1 gap-1 has-disabled:tab-disabled"
+            >
                 <input v-model="model" type="radio" :name="name" :value="option.value" />
                 <slot :option="option">{{ option.label }}</slot>
             </label>

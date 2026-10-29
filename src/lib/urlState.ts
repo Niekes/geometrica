@@ -7,6 +7,7 @@ import {
     defaultBackground,
     normalizeLayerName
 } from '../config/defaults';
+import { strokeJoinOptions } from '../config/controlOptions';
 
 export type SceneState = {
     background: Background;
@@ -87,12 +88,16 @@ function coerceLayer(config: Record<string, unknown>, index: number): Layer {
     const shape = SHAPE_PRESETS.includes(coerced.shape as ShapePreset)
         ? (coerced.shape as ShapePreset)
         : 'rect';
+    // the join ends up in the markup of the surface: only a known one passes
+    const strokeJoin =
+        strokeJoinOptions.find(({ value }) => value === coerced.strokeJoin)?.value ?? 'miter';
 
     return {
         ...buildLayer(shape),
         ...LEGACY_FILL_MODES[fillMode as string],
         ...coerced,
         shape,
+        strokeJoin,
         // custom paths only exist in v2 URLs
         path: typeof coerced.path === 'string' ? coerced.path : '',
         name: normalizeLayerName(coerced.name, `Layer ${index + 1}`),

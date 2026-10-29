@@ -4,6 +4,8 @@ export type ShapePreset = 'rect' | 'circle' | 'polygon' | 'custom';
 
 export type GradientType = 'linear' | 'radial';
 
+export type StrokeJoin = 'miter' | 'round' | 'bevel';
+
 export type Layer = {
     id: string;
     name: string;
@@ -23,6 +25,7 @@ export type Layer = {
     rotationCx: number;
     rotationCy: number;
     strokeWidth: number;
+    strokeJoin: StrokeJoin;
     colorInterPolator: ColorInterPolator;
     applyColorSchemeToEachShape: boolean;
     flipColorInterpolator: boolean;

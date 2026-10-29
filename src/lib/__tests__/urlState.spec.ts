@@ -26,7 +26,8 @@ describe('serializeState / parseState roundtrip (v2)', () => {
                 gradientAngle: 45,
                 opacity: 0.7,
                 visible: false,
-                calcOpacity: ['interpolate', 'flip']
+                calcOpacity: ['interpolate', 'flip'],
+                strokeJoin: 'round'
             }),
             makeLayer(1, {
                 shape: 'circle',
@@ -138,6 +139,7 @@ describe('parseState', () => {
         expect(parsed!.background).toEqual(defaultBackground);
         expect(parsed!.layers[0]!.name).toBe('x');
         expect(parsed!.layers[0]!.path).toBe('');
+        expect(parsed!.layers[0]!.strokeJoin).toBe('miter');
     });
 
     it('loads an empty layer list from a v2 URL without layers', () => {
@@ -201,6 +203,14 @@ describe('parseState', () => {
         expect(layer.sides).toBe(7);
         expect(layer.borderRadius).toBe(0.2);
         expect(layer.size).toBe(200);
+    });
+
+    it('falls back to miter for a stroke join it does not know', () => {
+        // the join ends up in the markup of the surface
+        const parsed = parseState('v=2&l[0][strokeJoin]=round"/><script>');
+
+        expect(parsed).not.toBeNull();
+        expect(parsed!.layers[0]!.strokeJoin).toBe('miter');
     });
 
     it('falls back to rect for an unknown legacy shape', () => {

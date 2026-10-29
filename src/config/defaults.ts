@@ -54,6 +54,7 @@ export function buildLayer(shape: ShapePreset): Layer {
         rotationCx: 0,
         rotationCy: 0,
         strokeWidth: 3,
+        strokeJoin: 'miter',
         colorInterPolator: 'interpolateMagma',
         applyColorSchemeToEachShape: false,
         flipColorInterpolator: false,

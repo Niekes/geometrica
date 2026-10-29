@@ -104,6 +104,10 @@ _Avoid_: Fill mode, Draw mode
 The opacity of the stroke of an instance, continuous from 0 (no stroke) to 1. It is set independently of the fill opacity.
 _Avoid_: Fill mode, Draw mode
 
+**Stroke join**:
+How the stroke of an instance turns a sharp corner: miter (pointed), round or bevel (cut off). Corners without a sharp turn, such as rounded corners and circles, look the same in all three.
+_Avoid_: Line join, Corner style, Join type
+
 **Layer opacity**:
 The opacity of a whole layer, which fades fill opacity and stroke opacity together. Overlapping instances of the same layer still add up.
 _Avoid_: Layer alpha, Layer transparency

@@ -78,9 +78,12 @@ export function layerBounds(layer: Layer): PathBounds | null {
         for (const subpath of flattenPath(turned)) {
             const points = subpath.points.map(([px, py]): [number, number] => [x + px, y + py]);
 
-            // a stroke reaches half its width beyond the path, and further at a sharp corner
+            // a stroke reaches half its width beyond the path, and further at a mitered corner
             points.forEach((point) => include(point, width / 2));
-            miterTips(points, subpath.closed, width).forEach((tip) => include(tip, 0));
+
+            if (layer.strokeJoin === 'miter') {
+                miterTips(points, subpath.closed, width).forEach((tip) => include(tip, 0));
+            }
         }
     }
 
@@ -181,7 +184,14 @@ function renderLayer(layer: Layer, idPrefix: string, defs: string[]): string {
                 : ' fill="none"';
 
         if (layer.strokeOpacity > 0) {
-            attributes += ` stroke="${paint}" stroke-opacity="${round(instanceOpacity * layer.strokeOpacity)}" stroke-width="${round(instanceStrokeWidth(layer, instance))}" stroke-miterlimit="${MITER_LIMIT}"`;
+            attributes += ` stroke="${paint}" stroke-opacity="${round(instanceOpacity * layer.strokeOpacity)}" stroke-width="${round(instanceStrokeWidth(layer, instance))}"`;
+
+            // miter is the SVG default, so existing exports keep their markup; a limit only
+            // applies to it
+            attributes +=
+                layer.strokeJoin === 'miter'
+                    ? ` stroke-miterlimit="${MITER_LIMIT}"`
+                    : ` stroke-linejoin="${layer.strokeJoin}"`;
         }
 
         markup += `<path d="${serializePath(geometry.commands)}" ${attributes}/>`;
