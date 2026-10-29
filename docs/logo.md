@@ -19,7 +19,7 @@ is named "Logo".
 
 | Asset                      | Size            | Where                        |
 | -------------------------- | --------------- | ---------------------------- |
-| `public/logo.webp`         | 120 x 120       | Navbar, README               |
+| `public/logo.webp`         | 192 x 192 (64 x 64 in the navbar, 120 in the README) | Navbar, README               |
 | `public/favicon.ico`       | 16, 32, 48      | Browser tab                  |
 | `public/favicon-16x16.png` | 16 x 16         | Browser tab                  |
 | `public/favicon-32x32.png` | 32 x 32         | Browser tab                  |

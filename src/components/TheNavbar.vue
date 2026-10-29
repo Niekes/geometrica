@@ -12,9 +12,9 @@ const logoUrl: string = `${import.meta.env.BASE_URL}logo.webp`;
             <img
                 :src="logoUrl"
                 alt=""
-                width="40"
-                height="40"
-                class="size-10 rounded-artwork bg-black"
+                width="64"
+                height="64"
+                class="size-16 rounded-artwork bg-black"
             />
             <div class="flex flex-col leading-tight">
                 <span class="text-lg font-semibold tracking-tight" v-text="appName" />
