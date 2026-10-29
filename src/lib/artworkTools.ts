@@ -308,10 +308,10 @@ function drawingProblems(artwork: Artwork): string[] {
     return problems;
 }
 
-// the agent reads the reasons and corrects its input
-function reject(problems: string[]) {
-    if (problems.length > 0) throw new Error(problems.join('\n'));
-}
+// the agent reads the reasons and corrects its input; the browser hands a thrown error to the
+// agent without its message, so the reasons travel as the result
+const rejection = (problems: string[]) =>
+    `Rejected, the artwork is unchanged:\n${problems.join('\n')}`;
 
 // WebMCP tools that let an agent in the browser read and replace the artwork
 export function artworkTools(access: ArtworkAccess): ModelContextTool[] {
@@ -349,11 +349,15 @@ export function artworkTools(access: ArtworkAccess): ModelContextTool[] {
                 "unchanged; the browser's back button undoes a change.",
             inputSchema,
             execute: async ({ selectedLayer: _selectedLayer, ...input }) => {
-                reject(check(input, inputSchema));
+                const inputProblems = check(input, inputSchema);
+
+                if (inputProblems.length > 0) return rejection(inputProblems);
 
                 const artwork = toArtwork(input);
+                const problems = drawingProblems(artwork);
 
-                reject(drawingProblems(artwork));
+                if (problems.length > 0) return rejection(problems);
+
                 access.write(artwork);
 
                 return 'Artwork replaced.';

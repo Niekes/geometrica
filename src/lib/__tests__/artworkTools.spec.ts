@@ -65,7 +65,7 @@ describe('set_artwork', () => {
     it('rejects a fraction where the slider moves in whole steps', async () => {
         const { run, written } = setup(artwork);
 
-        await expect(run('set_artwork', { layers: [{ sides: 3.5 }] })).rejects.toThrow(
+        await expect(run('set_artwork', { layers: [{ sides: 3.5 }] })).resolves.toContain(
             'layers[0].sides must be a whole number between 3 and 32'
         );
         expect(written).toEqual([]);
@@ -74,7 +74,7 @@ describe('set_artwork', () => {
     it('rejects a number outside the slider bounds and leaves the artwork unchanged', async () => {
         const { run, written } = setup(artwork);
 
-        await expect(run('set_artwork', { layers: [{ distance: 100 }] })).rejects.toThrow(
+        await expect(run('set_artwork', { layers: [{ distance: 100 }] })).resolves.toContain(
             'layers[0].distance must be a number between -64 and 64'
         );
         expect(written).toEqual([]);
@@ -91,7 +91,7 @@ describe('set_artwork', () => {
     it('rejects a layer name longer than 40 characters', async () => {
         const { run, written } = setup(artwork);
 
-        await expect(run('set_artwork', { layers: [{ name: 'a'.repeat(41) }] })).rejects.toThrow(
+        await expect(run('set_artwork', { layers: [{ name: 'a'.repeat(41) }] })).resolves.toContain(
             'layers[0].name must be at most 40 characters'
         );
         expect(written).toEqual([]);
@@ -111,7 +111,7 @@ describe('set_artwork', () => {
                     strokeJoin: 'spiky'
                 }
             ]
-        }).catch((e: Error) => e.message);
+        });
 
         expect(error).toContain('layers[0].rotationX is not a known field');
         expect(error).toContain('layers[0].visible must be true or false');
@@ -125,14 +125,14 @@ describe('set_artwork', () => {
     it('rejects input that is not shaped like an artwork', async () => {
         const { run, written } = setup(artwork);
 
-        await expect(run('set_artwork', {})).rejects.toThrow('layers is required');
-        await expect(run('set_artwork', { layers: 'circle' })).rejects.toThrow(
+        await expect(run('set_artwork', {})).resolves.toContain('layers is required');
+        await expect(run('set_artwork', { layers: 'circle' })).resolves.toContain(
             'layers must be an array'
         );
-        await expect(run('set_artwork', { layers: ['circle'] })).rejects.toThrow(
+        await expect(run('set_artwork', { layers: ['circle'] })).resolves.toContain(
             'layers[0] must be an object'
         );
-        await expect(run('set_artwork', { layers: [{ name: 7 }] })).rejects.toThrow(
+        await expect(run('set_artwork', { layers: [{ name: 7 }] })).resolves.toContain(
             'layers[0].name must be a string'
         );
         expect(written).toEqual([]);
@@ -141,7 +141,7 @@ describe('set_artwork', () => {
     it('rejects an artwork without layers, since the surface always holds one', async () => {
         const { run, written } = setup(artwork);
 
-        await expect(run('set_artwork', { layers: [] })).rejects.toThrow(
+        await expect(run('set_artwork', { layers: [] })).resolves.toContain(
             'layers must hold at least 1 item'
         );
         expect(written).toEqual([]);
@@ -153,7 +153,7 @@ describe('set_artwork', () => {
 
         await run('set_artwork', { layers: layers(10) });
 
-        await expect(run('set_artwork', { layers: layers(11) })).rejects.toThrow(
+        await expect(run('set_artwork', { layers: layers(11) })).resolves.toContain(
             'layers must hold at most 10 items'
         );
         expect(written).toHaveLength(1);
@@ -165,7 +165,7 @@ describe('set_artwork', () => {
         const error = await run('set_artwork', {
             background: { color: 'sunset' },
             layers: [{ shape: 'custom', path: 'draw a star' }]
-        }).catch((e: Error) => e.message);
+        });
 
         expect(error).toContain('background.color must be a CSS color');
         expect(error).toContain('layers[0].path must be SVG path data');
