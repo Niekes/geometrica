@@ -2,19 +2,19 @@
 const appName: string = import.meta.env.VITE_APP_NAME;
 const appDescription: string = import.meta.env.VITE_APP_DESCRIPTION;
 // the logo is an artwork made with Geometrica, kept apart from the gallery so reordering it never swaps the logo
-const logoUrl: string = `${import.meta.env.BASE_URL}logo.webp`;
+const logoUrl: string = `${import.meta.env.BASE_URL}logo.svg`;
 </script>
 
 <template>
     <div class="navbar bg-base-300 shadow-sm fixed top-0 z-50">
         <div class="navbar-start ml-2 gap-3">
-            <!-- black and rounded, like the default background of an artwork -->
+            <!-- the logo artwork as SVG, without its background -->
             <img
                 :src="logoUrl"
                 alt=""
-                width="64"
-                height="64"
-                class="size-16 rounded-artwork bg-black"
+                width="40"
+                height="40"
+                class="size-10"
             />
             <div class="flex flex-col leading-tight">
                 <span class="text-lg font-semibold tracking-tight" v-text="appName" />
