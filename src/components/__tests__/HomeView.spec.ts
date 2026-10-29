@@ -158,6 +158,24 @@ describe('HomeView', () => {
         wrapper.unmount();
     });
 
+    it('keeps background and view in a toolbar that starts collapsed and opens from its strip', async () => {
+        const wrapper = mount(HomeView, {
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+        const strip = wrapper.find('summary[aria-label="Background and view"]');
+        const toolbar = strip.element.parentElement as HTMLDetailsElement;
+
+        expect(toolbar.textContent).toContain('Corner radius');
+        expect(toolbar.textContent).toContain('Rotation center');
+        expect(toolbar.open).toBe(false);
+
+        await strip.trigger('click');
+
+        expect(toolbar.open).toBe(true);
+
+        wrapper.unmount();
+    });
+
     it('rounds the transparency pattern with the corner radius of the background', () => {
         const wrapper = mount(HomeView, {
             global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ChevronUpIcon } from '@heroicons/vue/24/outline';
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
 import BaseRangeSlider from '../components/BaseRangeSlider.vue';
 import LayerList from '../components/LayerList.vue';
@@ -257,55 +258,69 @@ onUnmounted(() => {
                     </div>
                 </div>
 
-                <div class="context__bar">
-                    <!-- exported with the artwork -->
-                    <fieldset class="fieldset">
-                        <legend class="fieldset-legend">Background</legend>
-                        <div class="flex flex-wrap items-end gap-4">
-                            <label class="flex flex-col gap-1">
-                                Color
-                                <input
-                                    v-model="scene.background.value.color"
-                                    type="color"
-                                    class="h-7 w-12 cursor-pointer rounded-field"
-                                />
-                            </label>
-                            <BaseRangeSlider
-                                v-model.number="scene.background.value.opacity"
-                                v-bind="backgroundRanges.opacity"
-                                class="w-52"
-                                label="Opacity"
-                                :scale="100"
-                                unit="%"
-                            />
-                            <BaseRangeSlider
-                                v-model.number="scene.background.value.borderRadius"
-                                v-bind="backgroundRanges.borderRadius"
-                                class="w-52"
-                                label="Corner radius"
-                                unit="%"
-                            />
-                        </div>
-                    </fieldset>
+                <!-- stays open while the surface is worked on, until the strip closes it again -->
+                <details class="dropdown dropdown-top dropdown-center group w-64 justify-self-center">
+                    <summary
+                        class="btn btn-ghost btn-xs btn-wide"
+                        aria-label="Background and view"
+                        title="Background and view"
+                    >
+                        <ChevronUpIcon class="size-4 group-open:rotate-180" />
+                    </summary>
 
-                    <!-- working aids, never exported -->
-                    <fieldset class="fieldset">
-                        <legend class="fieldset-legend">View</legend>
-                        <div class="flex flex-wrap items-center gap-4">
-                            <label v-for="(text, key) in viewLabels" :key="key" class="label">
-                                <input
-                                    v-model="view[key]"
-                                    type="checkbox"
-                                    class="toggle toggle-xs"
+                    <!-- as wide as the stage at most, though it hangs from the narrower strip -->
+                    <div
+                        class="context__bar dropdown-content mb-2 w-max max-w-[100cqw] rounded-box border border-base-300 bg-base-100 p-4 shadow-sm"
+                    >
+                        <!-- exported with the artwork -->
+                        <fieldset class="fieldset">
+                            <legend class="fieldset-legend">Background</legend>
+                            <div class="flex flex-wrap items-end gap-4">
+                                <label class="flex flex-col gap-1">
+                                    Color
+                                    <input
+                                        v-model="scene.background.value.color"
+                                        type="color"
+                                        class="h-7 w-12 cursor-pointer rounded-field"
+                                    />
+                                </label>
+                                <BaseRangeSlider
+                                    v-model.number="scene.background.value.opacity"
+                                    v-bind="backgroundRanges.opacity"
+                                    class="w-52"
+                                    label="Opacity"
+                                    :scale="100"
+                                    unit="%"
                                 />
-                                {{ text }}
-                            </label>
-                            <span class="label">
-                                Hold <kbd class="kbd kbd-xs">Space</kbd> to move
-                            </span>
-                        </div>
-                    </fieldset>
-                </div>
+                                <BaseRangeSlider
+                                    v-model.number="scene.background.value.borderRadius"
+                                    v-bind="backgroundRanges.borderRadius"
+                                    class="w-52"
+                                    label="Corner radius"
+                                    unit="%"
+                                />
+                            </div>
+                        </fieldset>
+
+                        <!-- working aids, never exported -->
+                        <fieldset class="fieldset">
+                            <legend class="fieldset-legend">View</legend>
+                            <div class="flex flex-wrap items-center gap-4">
+                                <label v-for="(text, key) in viewLabels" :key="key" class="label">
+                                    <input
+                                        v-model="view[key]"
+                                        type="checkbox"
+                                        class="toggle toggle-xs"
+                                    />
+                                    {{ text }}
+                                </label>
+                                <span class="label">
+                                    Hold <kbd class="kbd kbd-xs">Space</kbd> to move
+                                </span>
+                            </div>
+                        </fieldset>
+                    </div>
+                </details>
             </div>
 
             <LayerList
@@ -355,6 +370,7 @@ onUnmounted(() => {
 }
 
 .context__stage {
+    container-type: inline-size;
     display: grid;
     flex: 1;
     gap: 1.25rem;
@@ -362,7 +378,7 @@ onUnmounted(() => {
     min-width: 0;
 }
 
-/* the surface takes the largest square that fits, beside the bar below it */
+/* the surface takes the largest square that fits above the strip; the opened bar floats over it */
 .context__fit {
     container-type: size;
     display: grid;
