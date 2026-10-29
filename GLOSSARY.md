@@ -80,7 +80,7 @@ _Avoid_: Level, Plane
 
 **Preset**:
 A ready-made shape choice within a layer. Rect, Circle and Polygon are presets, not modes of their own.
-_Avoid_: Shape type
+_Avoid_: Shape type, Primitive
 
 ### Color & fill
 
