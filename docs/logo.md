@@ -19,8 +19,7 @@ is named "Logo".
 
 | Asset                      | Size            | Where                        |
 | -------------------------- | --------------- | ---------------------------- |
-| `public/logo.svg`         | 1024 x 1024     | Navbar (no background)        |
-| `public/logo.webp`         | 120 x 120       | README                        |
+| `public/logo.svg`         | 1024 x 1024     | Navbar and README (no background) |
 | `public/favicon.ico`       | 16, 32, 48      | Browser tab                  |
 | `public/favicon-16x16.png` | 16 x 16         | Browser tab                  |
 | `public/favicon-32x32.png` | 32 x 32         | Browser tab                  |

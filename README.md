@@ -1,5 +1,8 @@
 <p align="center">
-  <a href="https://niekes.github.io/geometrica/"><img src="public/logo.webp" alt="Geometrica" width="120"></a>
+  <a href="https://niekes.github.io/geometrica/">
+    <img src="public/logo.svg" alt="" width="64" align="absmiddle">
+    <strong>Geometrica</strong>
+  </a>
 </p>
 
 <p align="center">
