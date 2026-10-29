@@ -223,7 +223,7 @@ onUnmounted(() => {
         </aside>
 
         <main class="context">
-            <div class="context__stage">
+            <div class="context__stage group">
                 <div class="context__fit">
                     <div
                         class="context__surface"
@@ -258,71 +258,75 @@ onUnmounted(() => {
                     </div>
                 </div>
 
-                <!-- stays open while the surface is worked on, until the strip closes it again -->
-                <details class="dropdown dropdown-top dropdown-center group w-64 justify-self-center">
-                    <summary
-                        class="btn btn-ghost btn-xs btn-wide"
-                        aria-label="Background and view"
-                        title="Background and view"
-                    >
-                        <ChevronUpIcon class="size-4 group-open:rotate-180" />
-                    </summary>
+                <button
+                    type="button"
+                    class="btn btn-ghost btn-xs btn-wide justify-self-center"
+                    aria-label="Background and view"
+                    title="Background and view"
+                    popovertarget="background-and-view"
+                    style="anchor-name: --background-and-view"
+                >
+                    <ChevronUpIcon class="size-4 group-has-[:popover-open]:rotate-180" />
+                </button>
 
-                    <!-- as wide as the stage at most, though it hangs from the narrower strip -->
-                    <div
-                        class="context__bar dropdown-content mb-2 w-max max-w-[100cqw] rounded-box border border-base-300 bg-base-100 p-4 shadow-sm"
-                    >
-                        <!-- exported with the artwork -->
-                        <fieldset class="fieldset">
-                            <legend class="fieldset-legend">Background</legend>
-                            <!-- labels and fields share the first line, the sliders hang below it -->
-                            <div class="flex flex-wrap items-start gap-4">
-                                <label class="flex items-center gap-2 text-xs">
-                                    Color
-                                    <input
-                                        v-model="scene.background.value.color"
-                                        type="color"
-                                        class="h-6 w-12 cursor-pointer rounded-field"
-                                    />
-                                </label>
-                                <BaseRangeSlider
-                                    v-model.number="scene.background.value.opacity"
-                                    v-bind="backgroundRanges.opacity"
-                                    class="w-52"
-                                    label="Opacity"
-                                    :scale="100"
-                                    unit="%"
+                <!-- the browser closes it on a press outside it or on Escape; it is as wide as
+                     the stage at most, though it hangs from the narrower strip -->
+                <div
+                    id="background-and-view"
+                    popover
+                    class="context__bar dropdown dropdown-top dropdown-center mb-2 w-max max-w-[100cqw] rounded-box border border-base-300 bg-base-100 p-4 shadow-sm"
+                    style="position-anchor: --background-and-view"
+                >
+                    <!-- exported with the artwork -->
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">Background</legend>
+                        <!-- labels and fields share the first line, the sliders hang below it -->
+                        <div class="flex flex-wrap items-start gap-4">
+                            <label class="flex items-center gap-2 text-xs">
+                                Color
+                                <input
+                                    v-model="scene.background.value.color"
+                                    type="color"
+                                    class="h-6 w-12 cursor-pointer rounded-field"
                                 />
-                                <BaseRangeSlider
-                                    v-model.number="scene.background.value.borderRadius"
-                                    v-bind="backgroundRanges.borderRadius"
-                                    class="w-52"
-                                    label="Corner radius"
-                                    unit="%"
-                                />
-                            </div>
-                        </fieldset>
+                            </label>
+                            <BaseRangeSlider
+                                v-model.number="scene.background.value.opacity"
+                                v-bind="backgroundRanges.opacity"
+                                class="w-52"
+                                label="Opacity"
+                                :scale="100"
+                                unit="%"
+                            />
+                            <BaseRangeSlider
+                                v-model.number="scene.background.value.borderRadius"
+                                v-bind="backgroundRanges.borderRadius"
+                                class="w-52"
+                                label="Corner radius"
+                                unit="%"
+                            />
+                        </div>
+                    </fieldset>
 
-                        <!-- working aids, never exported -->
-                        <fieldset class="fieldset">
-                            <legend class="fieldset-legend">View</legend>
-                            <!-- as tall as a field, so the toggles line up with the background fields -->
-                            <div class="flex min-h-6 flex-wrap items-center gap-4">
-                                <label v-for="(text, key) in viewLabels" :key="key" class="label">
-                                    <input
-                                        v-model="view[key]"
-                                        type="checkbox"
-                                        class="toggle toggle-xs"
-                                    />
-                                    {{ text }}
-                                </label>
-                                <span class="label">
-                                    Hold <kbd class="kbd kbd-xs">Space</kbd> to move
-                                </span>
-                            </div>
-                        </fieldset>
-                    </div>
-                </details>
+                    <!-- working aids, never exported -->
+                    <fieldset class="fieldset">
+                        <legend class="fieldset-legend">View</legend>
+                        <!-- as tall as a field, so the toggles line up with the background fields -->
+                        <div class="flex min-h-6 flex-wrap items-center gap-4">
+                            <label v-for="(text, key) in viewLabels" :key="key" class="label">
+                                <input
+                                    v-model="view[key]"
+                                    type="checkbox"
+                                    class="toggle toggle-xs"
+                                />
+                                {{ text }}
+                            </label>
+                            <span class="label">
+                                Hold <kbd class="kbd kbd-xs">Space</kbd> to move
+                            </span>
+                        </div>
+                    </fieldset>
+                </div>
             </div>
 
             <LayerList
@@ -393,7 +397,8 @@ onUnmounted(() => {
     place-items: center;
 }
 
-.context__bar {
+/* a display of its own while closed would keep the popover on screen */
+.context__bar:popover-open {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem 2.5rem;

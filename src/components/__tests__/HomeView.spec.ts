@@ -158,20 +158,18 @@ describe('HomeView', () => {
         wrapper.unmount();
     });
 
-    it('keeps background and view in a toolbar that starts collapsed and opens from its strip', async () => {
+    // jsdom has no popover API, so the browser's opening and light dismiss stay untested
+    it('keeps background and view in a toolbar that its strip opens and a press outside closes', () => {
         const wrapper = mount(HomeView, {
             global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
         });
-        const strip = wrapper.find('summary[aria-label="Background and view"]');
-        const toolbar = strip.element.parentElement as HTMLDetailsElement;
+        const strip = wrapper.find('button[aria-label="Background and view"]');
+        const toolbar = wrapper.find(`#${strip.attributes('popovertarget')}`);
 
-        expect(toolbar.textContent).toContain('Corner radius');
-        expect(toolbar.textContent).toContain('Rotation center');
-        expect(toolbar.open).toBe(false);
-
-        await strip.trigger('click');
-
-        expect(toolbar.open).toBe(true);
+        expect(toolbar.text()).toContain('Corner radius');
+        expect(toolbar.text()).toContain('Rotation center');
+        // an auto popover starts hidden and closes on a press outside it or on Escape
+        expect(toolbar.attributes('popover')).toBe('');
 
         wrapper.unmount();
     });
