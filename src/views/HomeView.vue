@@ -374,8 +374,14 @@ onUnmounted(() => {
     display: grid;
     flex: 1;
     gap: 1.25rem;
-    grid-template-rows: minmax(0, 1fr) auto;
+    /* the strip of an extra small button below the surface, mirrored above it by an empty row */
+    grid-template-rows: 1.5rem minmax(0, 1fr) 1.5rem;
     min-width: 0;
+}
+
+/* keeps the same space above the surface as below it, to the pixel */
+.context__stage::before {
+    content: '';
 }
 
 /* the surface takes the largest square that fits above the strip; the opened bar floats over it */
