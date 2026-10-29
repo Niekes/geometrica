@@ -36,6 +36,8 @@ is named "Logo".
    surface size).
 2. Rasterize the SVG at 1024 px, then derive every size in the table from that
    one render. The banner formats center the square render on the black
-   background of the artwork. The navbar variant `public/logo.svg` is the same
-   render with the background opacity set to 0.
+   background of the artwork. The navbar variant `public/logo.svg` and the
+   favicons are the same artwork with the background opacity set to 0; the
+   touch and Android icons keep the black background, as those surfaces do
+   not support transparency.
 3. Keep the artwork as the single source; never retouch the binaries.
