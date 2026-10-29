@@ -105,11 +105,11 @@ function resetLayer() {
             />
         </header>
 
-        <BaseAccordion title="Shape" open>
+        <BaseAccordion title="Shape">
             <LayerShapeControl v-model="layer" />
         </BaseAccordion>
 
-        <BaseAccordion title="Repetition" open>
+        <BaseAccordion title="Repetition">
             <BaseRangeSlider
                 v-for="ctrl in repetitionControls"
                 :key="ctrl.name"

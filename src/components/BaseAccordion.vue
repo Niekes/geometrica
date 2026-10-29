@@ -6,12 +6,10 @@ const openSections = reactive<Record<string, boolean>>({});
 </script>
 
 <script setup lang="ts">
+// every section starts closed
 const props = defineProps<{
     title: string;
-    open?: boolean;
 }>();
-
-openSections[props.title] ??= props.open ?? false;
 
 function onToggle(event: Event) {
     openSections[props.title] = (event.target as HTMLDetailsElement).open;
