@@ -2,12 +2,31 @@ import { describe, it, expect, vi } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import HomeView from '../../views/HomeView.vue';
+import TheExportDialog from '../TheExportDialog.vue';
 
 // a key arrives at the focused element, or at the body when no control has the focus
 const space = (type: 'keydown' | 'keyup', target: Element = document.body) =>
     target.dispatchEvent(
         new KeyboardEvent(type, { code: 'Space', bubbles: true, cancelable: true })
     );
+
+// jsdom cannot show a modal; a no-op stands in so an export can open the sponsor dialog
+HTMLDialogElement.prototype.showModal ||= () => {};
+
+// an export hands the browser a blob link; both export tests stub the URL and spy the link click
+const stubExport = () => {
+    const createObjectURL = vi.fn((_blob: Blob) => 'blob:geometrica');
+    vi.stubGlobal('URL', { createObjectURL, revokeObjectURL: vi.fn() });
+    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+
+    return {
+        createObjectURL,
+        restore: () => {
+            click.mockRestore();
+            vi.unstubAllGlobals();
+        }
+    };
+};
 
 describe('HomeView', () => {
     it('resolves every component it renders', () => {
@@ -45,9 +64,7 @@ describe('HomeView', () => {
     });
 
     it('shows the grid on the drawing surface but keeps it out of the export', async () => {
-        const createObjectURL = vi.fn((_blob: Blob) => 'blob:geometrica');
-        vi.stubGlobal('URL', { createObjectURL, revokeObjectURL: vi.fn() });
-        const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+        const exportStub = stubExport();
         const wrapper = mount(HomeView, {
             global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
         });
@@ -60,18 +77,62 @@ describe('HomeView', () => {
 
         expect(wrapper.find('.context').html()).toContain('non-scaling-stroke');
 
+        // the navbar button opens the dialog first, the export leaves from there
+        await wrapper
+            .findAll('button')
+            .find((b) => b.text() === 'Export SVG')!
+            .trigger('click');
+        await wrapper
+            .findComponent(TheExportDialog)
+            .findAll('button')
+            .find((b) => b.text() === 'Export SVG')!
+            .trigger('click');
+
+        const exported = await exportStub.createObjectURL.mock.calls[0]![0].text();
+
+        expect(exported).toMatch(/^<svg/);
+        expect(exported).not.toContain('non-scaling-stroke');
+
+        exportStub.restore();
+        wrapper.unmount();
+    });
+
+    it('exports the artwork from the sponsor dialog, which stays up for the sponsor ask', async () => {
+        const exportStub = stubExport();
+        const wrapper = mount(HomeView, {
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+        const dialog = () => wrapper.findComponent(TheExportDialog);
+        const exportFromDialog = () =>
+            dialog()
+                .findAll('button')
+                .find((b) => b.text() === 'Export SVG')!
+                .trigger('click');
+
+        // the navbar button opens the dialog first; nothing leaves the page yet
         await wrapper
             .findAll('button')
             .find((b) => b.text() === 'Export SVG')!
             .trigger('click');
 
-        const exported = await createObjectURL.mock.calls[0]![0].text();
+        expect(exportStub.createObjectURL).not.toHaveBeenCalled();
+        expect(dialog().props('modelValue')).toBe(true);
 
-        expect(exported).toMatch(/^<svg/);
-        expect(exported).not.toContain('non-scaling-stroke');
+        const sponsor = wrapper.find('a[href="https://github.com/sponsors/niekes"]');
 
-        click.mockRestore();
-        vi.unstubAllGlobals();
+        expect(sponsor.attributes('target')).toBe('_blank');
+
+        // following the sponsor ask opens the page in its own tab and keeps the dialog up
+        await sponsor.trigger('click');
+
+        expect(dialog().props('modelValue')).toBe(true);
+
+        await exportFromDialog();
+
+        expect(exportStub.createObjectURL).toHaveBeenCalledTimes(1);
+        expect(dialog().props('modelValue')).toBe(false);
+
+        exportStub.restore();
         wrapper.unmount();
     });
 

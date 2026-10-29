@@ -4,6 +4,7 @@ import BaseRangeSlider from '../components/BaseRangeSlider.vue';
 import LayerList from '../components/LayerList.vue';
 import LayerControl from '../components/LayerControl.vue';
 import TheAgentGuide from '../components/TheAgentGuide.vue';
+import TheExportDialog from '../components/TheExportDialog.vue';
 import TheGallery from '../components/TheGallery.vue';
 import TheNavbar from '../components/TheNavbar.vue';
 import useScene from '../composables/useScene';
@@ -176,6 +177,7 @@ function endDrag() {
 
 const showAgentGuide = ref(false);
 const showGallery = ref(false);
+const showExportDialog = ref(false);
 
 onMounted(() => {
     const hasUrlState = initFromUrl();
@@ -205,7 +207,7 @@ onUnmounted(() => {
                 Gallery
             </button>
             <div class="aura text-primary">
-                <button type="button" class="btn btn-primary btn-sm" @click="exportSvg">
+                <button type="button" class="btn btn-primary btn-sm" @click="showExportDialog = true">
                     Export SVG
                 </button>
             </div>
@@ -322,6 +324,8 @@ onUnmounted(() => {
 
         <TheAgentGuide v-model="showAgentGuide" />
         <TheGallery v-model="showGallery" />
+        <!-- the dialog carries the sponsor ask and exports through the same path, closing itself -->
+        <TheExportDialog v-model="showExportDialog" @export="exportSvg" />
     </div>
 </template>
 
