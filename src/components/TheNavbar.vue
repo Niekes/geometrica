@@ -1,8 +1,12 @@
 <script setup lang="ts">
+import { Bars3Icon } from '@heroicons/vue/24/outline';
+import BaseIconButton from './BaseIconButton.vue';
+
 const appName: string = import.meta.env.VITE_APP_NAME;
 const appDescription: string = import.meta.env.VITE_APP_DESCRIPTION;
 // the logo is an artwork made with Geometrica, kept apart from the gallery so reordering it never swaps the logo
 const logoUrl: string = `${import.meta.env.BASE_URL}logo.svg`;
+const repoUrl = 'https://github.com/niekes/geometrica';
 </script>
 
 <template>
@@ -18,15 +22,42 @@ const logoUrl: string = `${import.meta.env.BASE_URL}logo.svg`;
             />
             <div class="flex flex-col leading-tight">
                 <span class="text-lg font-semibold tracking-tight" v-text="appName" />
-                <span class="text-xs text-base-content/70" v-text="appDescription" />
+                <span class="text-xs text-base-content/70 max-sm:hidden" v-text="appDescription" />
             </div>
         </div>
         <div class="navbar-end gap-2">
-            <!-- the actions of the current view -->
+            <!-- the secondary actions of the current view, folded into the menu below sm -->
+            <div class="contents max-sm:hidden">
+                <slot name="secondary" />
+            </div>
+            <!-- the primary action of the current view stays visible at every width -->
             <slot />
+            <BaseIconButton
+                class="sm:hidden"
+                label="Menu"
+                :icon="Bars3Icon"
+                popovertarget="navbar-menu"
+                style="anchor-name: --navbar-menu"
+            />
+            <!-- the browser closes it on a press outside it or on Escape -->
+            <div
+                id="navbar-menu"
+                popover
+                class="dropdown dropdown-end mt-2 flex-col gap-1 rounded-box border border-base-300 bg-base-100 p-2 shadow-sm [&:popover-open]:flex"
+                style="position-anchor: --navbar-menu"
+            >
+                <slot name="secondary" />
+                <a
+                    class="btn btn-ghost btn-sm"
+                    :href="repoUrl"
+                    target="_blank"
+                >
+                    GitHub
+                </a>
+            </div>
             <a
-                class="btn btn-ghost btn-circle"
-                href="https://github.com/niekes/geometrica"
+                class="btn btn-ghost btn-circle max-sm:hidden"
+                :href="repoUrl"
                 target="_blank"
                 aria-label="Geometrica on GitHub"
             >

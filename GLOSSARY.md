@@ -118,6 +118,14 @@ _Avoid_: Layer alpha, Layer transparency
 A program that reads and replaces the artwork on request, instead of someone moving the sliders.
 _Avoid_: Bot, AI, Assistant
 
+**Layer list**:
+The layers of the artwork in z-order, where a layer is selected, added, duplicated, reordered, hidden, renamed or removed.
+_Avoid_: Sidebar, Layer panel
+
+**Layer properties**:
+Every setting of the selected layer: shape, repetition, color and fill.
+_Avoid_: Sidebar, Layer panel, Inspector, Settings panel
+
 **Reference**:
 A picture from outside Geometrica (PNG or SVG) that an artwork is recreated from. It is never part of the artwork or its export.
 _Avoid_: Image, Template, Source image

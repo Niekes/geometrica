@@ -201,28 +201,26 @@ onUnmounted(() => {
 <template>
     <div class="home">
         <TheNavbar>
-            <button type="button" class="btn btn-ghost btn-sm" @click="showAgentGuide = true">
-                Use with AI
-            </button>
-            <button type="button" class="btn btn-ghost btn-sm" @click="showGallery = true">
-                Gallery
-            </button>
+            <template #secondary>
+                <button type="button" class="btn btn-ghost btn-sm" @click="showAgentGuide = true">
+                    Use with AI
+                </button>
+                <button type="button" class="btn btn-ghost btn-sm" @click="showGallery = true">
+                    Gallery
+                </button>
+            </template>
             <div class="aura text-primary">
-                <button type="button" class="btn btn-primary btn-sm" @click="showExportDialog = true">
+                <button
+                    type="button"
+                    class="btn btn-primary btn-sm text-nowrap"
+                    @click="showExportDialog = true"
+                >
                     Export SVG
                 </button>
             </div>
         </TheNavbar>
 
-        <aside class="panel bg-base-200" aria-label="Layer properties">
-            <LayerControl
-                v-if="scene.selectedLayer.value"
-                v-model="scene.selectedLayer.value"
-                :key="scene.selectedLayer.value?.id"
-            />
-        </aside>
-
-        <main class="context">
+        <main class="context bg-base-100">
             <div class="context__stage group">
                 <div class="context__fit">
                     <div
@@ -321,27 +319,39 @@ onUnmounted(() => {
                                 />
                                 {{ text }}
                             </label>
-                            <span class="label">
+                            <span class="label pointer-coarse:hidden">
                                 Hold <kbd class="kbd kbd-xs">Space</kbd> to move
                             </span>
+                            <!-- touch and pen move the layer without Space -->
+                            <span class="label pointer-fine:hidden">Drag to move</span>
                         </div>
                     </fieldset>
                 </div>
             </div>
-
-            <LayerList
-                class="context__layers rounded-box border border-base-300 bg-base-100 shadow-sm"
-                :layers="scene.layers.value"
-                :selected-id="scene.selectedLayerId.value"
-                @select="(id: string) => (scene.selectedLayerId.value = id)"
-                @add="scene.addLayer"
-                @duplicate="scene.duplicateLayer"
-                @remove="scene.removeLayer"
-                @move="scene.moveLayer"
-                @toggle-visibility="scene.toggleVisibility"
-                @rename="scene.renameLayer"
-            />
         </main>
+
+        <LayerList
+            class="layers rounded-box border border-base-300 bg-base-100 shadow-sm"
+            :layers="scene.layers.value"
+            :selected-id="scene.selectedLayerId.value"
+            @select="(id: string) => (scene.selectedLayerId.value = id)"
+            @add="scene.addLayer"
+            @duplicate="scene.duplicateLayer"
+            @remove="scene.removeLayer"
+            @move="scene.moveLayer"
+            @toggle-visibility="scene.toggleVisibility"
+            @rename="scene.renameLayer"
+        />
+
+        <!-- after the layer list in the source, so focus and screen readers follow the
+             one-column order: surface, layer list, layer properties -->
+        <aside class="panel bg-base-200" aria-label="Layer properties">
+            <LayerControl
+                v-if="scene.selectedLayer.value"
+                v-model="scene.selectedLayer.value"
+                :key="scene.selectedLayer.value?.id"
+            />
+        </aside>
 
         <TheAgentGuide v-model="showAgentGuide" />
         <TheGallery v-model="showGallery" />
@@ -355,7 +365,9 @@ onUnmounted(() => {
     --navbar-height: 4rem;
 
     display: grid;
-    grid-template-columns: 22rem minmax(0, 1fr);
+    grid-template-areas: 'properties context layers';
+    /* the layer list is 15rem wide; its track also holds the 1.5rem gutter on its right */
+    grid-template-columns: 22rem minmax(0, 1fr) 16.5rem;
     grid-template-rows: minmax(0, 1fr);
     margin-top: var(--navbar-height);
     height: calc(100vh - var(--navbar-height));
@@ -364,15 +376,22 @@ onUnmounted(() => {
 
 /* no side padding: the sections bring their own */
 .panel {
+    grid-area: properties;
     overflow-y: auto;
     padding-bottom: 1rem;
 }
 
 .context {
     display: flex;
-    gap: 1rem;
+    grid-area: context;
     min-width: 0;
-    padding: 1.5rem;
+    padding: 1.5rem 1rem 1.5rem 1.5rem;
+}
+
+.layers {
+    align-self: start;
+    grid-area: layers;
+    margin: 1.5rem 1.5rem 0 0;
 }
 
 .context__stage {
@@ -403,12 +422,6 @@ onUnmounted(() => {
     flex-wrap: wrap;
     gap: 1rem 2.5rem;
     justify-content: center;
-}
-
-.context__layers {
-    align-self: flex-start;
-    flex-shrink: 0;
-    width: 15rem;
 }
 
 .context__surface {
@@ -454,5 +467,47 @@ onUnmounted(() => {
     position: absolute;
     transform: translate(-50%, -50%);
     width: 24px;
+}
+
+/* below lg (Tailwind's 64rem) one column: the page scrolls the layer list and the layer
+   properties under the surface, which stays in sight below the navbar */
+@media (width < 64rem) {
+    .home {
+        grid-template-areas: 'context' 'layers' 'properties';
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto;
+        height: auto;
+    }
+
+    .panel {
+        overflow-y: visible;
+    }
+
+    .context {
+        padding: 1rem;
+        position: sticky;
+        top: var(--navbar-height);
+        z-index: 10;
+    }
+
+    .layers {
+        margin: 0 1rem 1rem;
+    }
+
+    /* no mirrored row above the surface: the sticky height belongs to the controls */
+    .context__stage {
+        gap: 0.5rem;
+        grid-template-rows: auto 1.5rem;
+    }
+
+    .context__stage::before {
+        display: none;
+    }
+
+    /* half the screen at most, so the controls keep the other half; svh never changes as the
+       mobile address bar comes and goes, so the surface does not jump while scrolling */
+    .context__fit {
+        height: min(100cqw, 50svh);
+    }
 }
 </style>
