@@ -7,10 +7,13 @@ What the engine can and cannot do, learned while recreating references. Each ent
 - **Even ring of n instances** around the surface center at radius r: `cx = −r`, `rotationCx = r`, `rotation = 360 · (n − 1) / n` (times the number of turns for a spiral). Rotation is a whole number: when n does not divide 360, round it; the last instance then misses by under half a degree.
 - **Instance 0 of a preset is unturned**: a rect sits axis-aligned, a polygon has a corner pointing up. A fan that starts at another angle needs a custom motif drawn already turned; one motif with four petals fans all four in one layer.
 - **Exact alignment across layers**: start a custom path with `M-h -hM h h`, set `size = 2h` and `cx = cy = 0`. Path units then equal surface px from the surface center, with y pointing down (unlike `cy`, which points up).
+- **Ring of an off-center motif**: draw the motif in surface px from the ring center, set `cx`/`cy` to the center of its box (`cy` up) and `rotationCx`/`rotationCy` to their negatives. Instance 0 then stands unturned where it was drawn.
+- **Mirrored half rings**: two layers with the same motif, `rotation` +180 and −180, both starting at the top, mirror anything that walks along the repetition (color, fade) left to right.
 
 ## Repetition
 
 - Instance i is `i × distance` px smaller in its base dimension (diameter, size, or both sides of a rect), so any point moves at most `|distance| / 2 ≤ 32` px per instance. Rings farther apart than that come from separate layers or from an orbit around the rotation center.
+- One layer runs one repetition. A ring of nested motifs (n positions × m sizes) cannot come from turning and shrinking together, since every position then gets another size: draw the nesting into the motif, or spend a layer per size.
 - A growing repetition that drifts along an orbit nests like a tunnel only while the drift per instance stays below the growth of the radius per instance; above it the instances cross into a cusp.
 
 ## Color
@@ -21,6 +24,9 @@ Layer colors come only from color ramps; the background takes any CSS color.
 - Cyclic ramps (Sinebow, Rainbow) are equal at both ends, so a repetition of two instances is one color.
 - **Flat outline in a repeated layer**: `applyColorSchemeToEachShape` with a radial gradient centers the ramp on each instance with half its larger side as radius. The outline of a circle or a square sits at t ≥ 1, so a stroke-only layer shows the ramp's last color flat. Ellipses, long rects and elongated motifs span t from short side over long side to 1 and stay graded.
 - **Flat dots in a repeated layer**: with the alignment prefix above, a dot at distance ρ from the center takes the color at t = ρ / h, and keeps it while the repetition scales. Dots at different distances in one path get different colors.
+- **Flat color in each instance**: a linear gradient at 0° on a narrow radial motif (with the alignment prefix) hits only the middle of the ramp, t = 0.5. At 90° or 270° it moves to t ≈ 0.5 ∓ ρ / (2h), graded slightly along the motif.
+- **Part of a ramp inside a shape**: moveto-only phantom points enlarge the motif's box, and with it the gradient. A phantom beyond the tip raises the tip's t, one beyond the base lowers the middle. Recenter `cx`/`cy` on the new box and set `size` to its larger side.
+- **A gradient fixed to the surface** (e.g. top to bottom) cannot come from a gradient inside each shape, which turns with the instance. Build it from a flat base layer and the second color above it in mirrored half rings with `calcOpacity` `["interpolate", "flip"]`: the fade mixes the two.
 - **Gradient mirrored about the middle** (dark tips, light flanks): a radial gradient cannot separate the tips of a tall motif from its flanks, both lie near the same distance. Draw only the upper half inside the alignment box, with a linear gradient at 90°, and complete it with `amount` 2, `rotation` 180 around the motif's middle (`rotationCy`); the turn mirrors the gradient. With the middle d px above the box center, the flanks sit at t = 0.5 − d / (2h). Let each half run 3 px past the middle: halves that only touch show a seam.
 - Known flat hits: Inferno at t ≈ 0.8 is orange (#fca50a); Greys flipped at t ≈ 0.9 is near white. No ramp ends in orange.
 - Spectral from 0 to 0.42 runs crimson, coral, orange, pale yellow: a warm flame.

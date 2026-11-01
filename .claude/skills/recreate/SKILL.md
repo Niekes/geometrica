@@ -1,11 +1,10 @@
 ---
 name: recreate
-description: Recreate a reference (PNG or SVG) as a Geometrica artwork through WebMCP, rebuilding its construction from shapes and repetitions.
-disable-model-invocation: true
-argument-hint: <path to reference> [hints]
+description: Recreate a reference (a logo, icon or pattern as PNG, SVG or an image pasted into the chat) as a Geometrica artwork through WebMCP, rebuilding its construction from presets, repetitions and color ramps instead of copying its outline. Use whenever the user pastes or points to a logo or image and wants it rebuilt, recreated, redrawn or imitated in Geometrica or "in this app", even without naming the skill.
+argument-hint: [path to reference] [hints]
 ---
 
-Recreate the reference in `$ARGUMENTS` as a Geometrica artwork. The first word is the path to the reference; everything after it is a hint from the user and outranks your own analysis.
+Recreate the reference as a Geometrica artwork. The reference is a file whose path is the first word of `$ARGUMENTS`, or, when that word is no existing path, the picture the user pasted into the conversation. Every other word is a hint from the user and outranks your own analysis.
 
 Your target is the reference's **construction**: the rule that generates it, a motif repeated so many times, at such a distance, turned around such a center. A recreation that shares the construction but misses a color is a success; one that copies the outline without a repetition is not. Name things by [GLOSSARY.md](../../../GLOSSARY.md).
 
@@ -13,6 +12,7 @@ Your target is the reference's **construction**: the rule that generates it, a m
 
 - **PNG**: look at it. Where a count, a radius or a color decides the construction, measure it (see _Measuring_ in [recipes.md](recipes.md)); scripts go to the scratchpad, with the Python standard library and `sips` only.
 - **SVG**: read it as measurements: coordinates, colors, counts, angles, stroke widths.
+- **Pasted reference**: there is no file to measure, so read counts, proportions and colors by eye. Where a count or a radius decides the construction and you cannot tell it reliably, ask the user for the file path rather than guess.
 
 Done when you know the background color, every distinct color, and for each motif its count, size and arrangement.
 
@@ -24,6 +24,8 @@ Write the decomposition in three to five lines, one per layer: motif (a preset, 
 
 - **At most four layers, ideally one per color.** When the reference needs more, say so now and name what each extra layer buys.
 - **Presets first.** A custom shape holds exactly one motif, the unit the repetition repeats: one petal, one dot, one stroke. From an SVG reference you may take the path of that one motif; the repetition draws the rest.
+- **Look for the repetition first.** Most references, a company's logo above all, hide one: n equal petals or spokes around a center (a ring), nested outlines that shrink (distance), a shape mirrored by a half turn (`amount` 2, `rotation` 180). Find that unit and let the repetition draw the instances, even where the reference's SVG draws each one separately. A part that repeats nothing is a single-instance layer, preferably a preset.
+- **Letterforms and wordmarks** are the costliest motif: each glyph is a custom path, and paths eat the link budget (see _Limits_ in recipes.md). Rebuild the symbol; drop the wordmark, or reduce it to a simple preset placeholder, and list it under deviations.
 - **Fit a non-square reference** whole and centered into the 1024 px surface; the margin takes the reference's background color. A transparent PNG gets `background.opacity` 0.
 
 Done when every visible element of the reference belongs to a layer, or is listed as dropped with its reason.
