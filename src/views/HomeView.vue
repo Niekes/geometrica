@@ -46,7 +46,7 @@ function exportSvg() {
     const file = embedMetadata(svg.value, {
         link: artworkLink,
         date,
-        creator: `Geometrica ${version}`
+        generator: `Geometrica ${version}`
     });
 
     link.href = URL.createObjectURL(new Blob([file], { type: 'image/svg+xml' }));
