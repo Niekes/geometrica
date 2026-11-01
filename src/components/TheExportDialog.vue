@@ -21,6 +21,7 @@ function exportArtwork() {
             Free and open source, kept alive by one maintainer and the people who sponsor the
             work. If Geometrica saves you time, become a sponsor.
         </p>
+        <p class="mb-4">The file carries its link, so opening the link reopens this artwork.</p>
         <div class="flex flex-wrap gap-2">
             <!-- the GitHub Sponsors pink, tuned through daisyUI's own button variables -->
             <a

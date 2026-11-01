@@ -14,7 +14,10 @@ import { useWebMcp } from '../composables/useWebMcp';
 import { backgroundRanges } from '../config/ranges';
 import { surfaceSize } from '../config/surface';
 import { lineColor, renderGrid, snapToGrid } from '../lib/renderGrid';
+import { embedMetadata } from '../lib/embedMetadata';
 import { layerBounds, renderScene } from '../lib/renderScene';
+import { serializeState } from '../lib/urlState';
+import { version } from '../../package.json';
 
 const scene = useScene();
 
@@ -27,16 +30,26 @@ const { initFromUrl, setupWatchers } = useUrlSync({
 useWebMcp(scene);
 
 // ponytail: every change rebuilds and reparses the whole SVG (ADR-0004); throttle or render via a Vue template if 1000+ instances lag
-const svg = computed(() =>
-    renderScene({ background: scene.background.value, layers: scene.layers.value })
-);
+const artwork = computed(() => ({
+    background: scene.background.value,
+    layers: scene.layers.value
+}));
+const svg = computed(() => renderScene(artwork.value));
 
 function exportSvg() {
     const link: HTMLAnchorElement = document.createElement('a');
     const date: Date = new Date();
 
     link.download = `geometrica-${date.toLocaleDateString()}-${date.toLocaleTimeString()}.svg`;
-    link.href = URL.createObjectURL(new Blob([svg.value], { type: 'image/svg+xml' }));
+    // the link is built from the state itself: the address bar lags behind by a debounce
+    const artworkLink = `${location.origin}${location.pathname}?${serializeState(artwork.value)}`;
+    const file = embedMetadata(svg.value, {
+        link: artworkLink,
+        date,
+        creator: `Geometrica ${version}`
+    });
+
+    link.href = URL.createObjectURL(new Blob([file], { type: 'image/svg+xml' }));
     link.click();
     // revoking synchronously can cancel the download in some browsers
     setTimeout(() => URL.revokeObjectURL(link.href));

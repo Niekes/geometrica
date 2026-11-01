@@ -3,6 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import HomeView from '../../views/HomeView.vue';
 import TheExportDialog from '../TheExportDialog.vue';
+import { parseState } from '../../lib/urlState';
 
 // a key arrives at the focused element, or at the body when no control has the focus
 const space = (type: 'keydown' | 'keyup', target: Element = document.body) =>
@@ -92,6 +93,16 @@ describe('HomeView', () => {
 
         expect(exported).toMatch(/^<svg/);
         expect(exported).not.toContain('non-scaling-stroke');
+
+        // the file carries the link of the artwork on the surface; the surface itself carries none
+        const source = new DOMParser()
+            .parseFromString(exported, 'image/svg+xml')
+            .getElementsByTagNameNS('http://purl.org/dc/elements/1.1/', 'source')[0]!.textContent!;
+        const [address, query] = source.split('?');
+
+        expect(address).toBe(`${location.origin}${location.pathname}`);
+        expect(parseState(query!)?.layers.map((layer) => layer.name)).toEqual(['Layer 1']);
+        expect(wrapper.find('.context').html()).not.toContain('<metadata');
 
         exportStub.restore();
         wrapper.unmount();
