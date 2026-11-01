@@ -29,6 +29,7 @@ dev server serves at <http://localhost:5173/geometrica/>.
 | `npm run lint`          | ESLint plus the fallow gates (dead code, architecture, health, duplication) |
 | `npm run lint:fix`      | ESLint with auto-fix                                                |
 | `npm run build`         | Build the production bundle                                         |
+| `npm run verify`        | Type-check, lint and coverage in one go, the whole gate before a push |
 
 ## The quality gate
 
