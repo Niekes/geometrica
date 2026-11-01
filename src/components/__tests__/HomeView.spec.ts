@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { flushPromises, mount } from '@vue/test-utils';
+import { flushPromises, mount, type VueWrapper } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import HomeView from '../../views/HomeView.vue';
 import TheExportDialog from '../TheExportDialog.vue';
@@ -28,6 +28,26 @@ const stubExport = () => {
         }
     };
 };
+
+// the navbar button opens the dialog first, the export leaves from there; resolves to the file
+const exportFile = async (wrapper: VueWrapper, exportStub: ReturnType<typeof stubExport>) => {
+    await wrapper
+        .findAll('button')
+        .find((b) => b.text() === 'Export SVG')!
+        .trigger('click');
+    await wrapper
+        .findComponent(TheExportDialog)
+        .findAll('button')
+        .find((b) => b.text() === 'Export SVG')!
+        .trigger('click');
+
+    return exportStub.createObjectURL.mock.calls[0]![0].text();
+};
+
+const embeddedLink = (file: string) =>
+    new DOMParser()
+        .parseFromString(file, 'image/svg+xml')
+        .getElementsByTagNameNS('http://purl.org/dc/elements/1.1/', 'source')[0]!.textContent!;
 
 describe('HomeView', () => {
     it('resolves every component it renders', () => {
@@ -78,31 +98,38 @@ describe('HomeView', () => {
 
         expect(wrapper.find('.context').html()).toContain('non-scaling-stroke');
 
-        // the navbar button opens the dialog first, the export leaves from there
-        await wrapper
-            .findAll('button')
-            .find((b) => b.text() === 'Export SVG')!
-            .trigger('click');
-        await wrapper
-            .findComponent(TheExportDialog)
-            .findAll('button')
-            .find((b) => b.text() === 'Export SVG')!
-            .trigger('click');
+        const exported = await exportFile(wrapper, exportStub);
 
-        const exported = await exportStub.createObjectURL.mock.calls[0]![0].text();
-
-        expect(exported).toMatch(/^<svg/);
+        expect(exported).toMatch(/^<!-- Generator: Geometrica \d+\.\d+\.\d+ -->\n<svg /);
         expect(exported).not.toContain('non-scaling-stroke');
 
         // the file carries the link of the artwork on the surface; the surface itself carries none
-        const source = new DOMParser()
-            .parseFromString(exported, 'image/svg+xml')
-            .getElementsByTagNameNS('http://purl.org/dc/elements/1.1/', 'source')[0]!.textContent!;
-        const [address, query] = source.split('?');
+        const [address, query] = embeddedLink(exported).split('?');
 
         expect(address).toBe(`${location.origin}${location.pathname}`);
         expect(parseState(query!)?.layers.map((layer) => layer.name)).toEqual(['Layer 1']);
         expect(wrapper.find('.context').html()).not.toContain('<metadata');
+
+        exportStub.restore();
+        wrapper.unmount();
+    });
+
+    it('exports the link of the artwork as it is now, ahead of the debounced address bar', async () => {
+        const exportStub = stubExport();
+        const wrapper = mount(HomeView, {
+            global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
+        });
+
+        await wrapper.find('[aria-label="Layers"] button[aria-current="true"]').trigger('dblclick');
+        await wrapper.find('input[aria-label="Name of Layer 1"]').setValue('Sun rays');
+        await wrapper
+            .find('input[aria-label="Name of Layer 1"]')
+            .trigger('keydown', { key: 'Enter' });
+
+        // no wait: the address bar only follows 300 ms after the last change
+        const query = embeddedLink(await exportFile(wrapper, exportStub)).split('?')[1]!;
+
+        expect(parseState(query)?.layers.map((layer) => layer.name)).toEqual(['Sun rays']);
 
         exportStub.restore();
         wrapper.unmount();
