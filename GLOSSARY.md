@@ -15,7 +15,7 @@ The artwork that identifies Geometrica in the navbar, the icons, the README and 
 _Avoid_: Icon, Brand mark, Favicon
 
 **Export**:
-The SVG file made from an artwork: the background and all visible layers. Transparency pattern, grid, rotation center and bounding box are working aids and never part of it.
+The SVG file made from an artwork: the background and all visible layers. It carries the artwork's link, the date it was made and the Geometrica version that made it, so the link reopens the artwork. Transparency pattern, grid, rotation center and bounding box are working aids and never part of it.
 _Avoid_: Download, Save
 
 **Link**:
@@ -75,7 +75,7 @@ The sequence of instances of a shape, controlled by amount, distance and rotatio
 _Avoid_: Loop, Series
 
 **Layer**:
-A complete configuration of shape, repetition, color and fill. Layers stack in z-order on the surface; an artwork holds at most ten. Every layer carries a freely chosen name that labels it in the layer list. The name travels in the shared link but is not exported.
+A complete configuration of shape, repetition, color and fill. Layers stack in z-order on the surface; an artwork holds at most ten. Every layer carries a freely chosen name that labels it in the layer list. The name travels in the link, and through the link embedded in the export, but is never drawn.
 _Avoid_: Level, Plane
 
 **Preset**:
