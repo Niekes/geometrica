@@ -6,9 +6,11 @@ import { useCopy } from '@/composables/useCopy';
 
 const props = defineProps<{
     link: string;
-    // the position in the gallery, from 0 like the thumbnail's file name; the number counts from 1
+    // the position in the gallery, from 0 like the thumbnail's file name
     index: number;
 }>();
+
+const number = computed(() => props.index + 1);
 
 // wherever the app runs: the dev server on any port, GitHub Pages or a fork
 const href = computed(() => `${import.meta.env.BASE_URL}?${props.link}`);
@@ -27,13 +29,13 @@ const copyMessages = { idle: '', copied: 'Link copied', failed: 'Copy failed' };
                 <img
                     class="w-full hover:opacity-80"
                     :src="`./gallery/${index}.avif`"
-                    :alt="`Open artwork ${index + 1}`"
+                    :alt="`Open artwork ${number}`"
                 />
             </a>
         </figure>
-        <div class="card-body flex-row items-center justify-between">
-            <span class="card-title" v-text="index + 1" />
-            <div class="card-actions">
+        <div class="card-body">
+            <div class="card-actions items-center">
+                <span class="card-title grow" v-text="number" />
                 <span class="sr-only" aria-live="polite" v-text="copyMessages[state]" />
                 <BaseIconButton
                     label="Copy link"
