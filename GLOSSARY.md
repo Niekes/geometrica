@@ -147,8 +147,8 @@ A picture from outside Geometrica (PNG or SVG) that an artwork is recreated from
 _Avoid_: Image, Template, Source image
 
 **Gallery**:
-The curated collection of finished artworks, from which one is opened to keep working on it.
-_Avoid_: Templates, Examples, Presets
+The curated collection of finished artworks, from which one is opened to keep working on it. Each artwork in it carries a number, its position counted from 1; the gallery only grows at its end, so a number never changes.
+_Avoid_: Templates, Examples, Presets, Icons
 
 ### Architecture
 
