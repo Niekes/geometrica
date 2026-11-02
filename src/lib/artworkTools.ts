@@ -79,7 +79,8 @@ const layerProperties: Record<keyof Artwork['layers'][number], Schema> = {
     amount: number(layerRanges.amount, 'Number of instances in the repetition.'),
     distance: number(
         layerRanges.distance,
-        'Pixels by which each instance is smaller than the one before; negative values grow. ' +
+        'The shrink: pixels by which each instance is smaller than the one before, in place; ' +
+            'negative values grow. ' +
             'The repetition ends where an instance would shrink below zero.'
     ),
     rotation: number(
@@ -340,7 +341,7 @@ export function artworkTools(access: ArtworkAccess): ModelContextTool[] {
                 'Replaces the artwork on the drawing surface of Geometrica, a generator for ' +
                 `geometric line art. The surface is ${surfaceSize} × ${surfaceSize} px with the ` +
                 'origin in its center. An artwork is a background and a stack of layers, layers[0] ' +
-                'on top. Each layer repeats one shape: instance i is i × distance px smaller than ' +
+                'on top. Each layer repeats one shape: instance i shrinks i × distance px below ' +
                 'the first, turned by i × rotation / (amount − 1) degrees around the rotation ' +
                 'center, and its color walks the color ramp from the first to the last instance. ' +
                 'Omitted fields take the defaults of the shape, so a new artwork needs only the ' +
