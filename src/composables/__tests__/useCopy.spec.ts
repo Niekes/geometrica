@@ -23,6 +23,19 @@ describe('useCopy', () => {
         expect(state.value).toBe('idle');
     });
 
+    it('keeps saying so for two seconds after the last copy, not the first', async () => {
+        vi.useFakeTimers();
+        vi.stubGlobal('navigator', { clipboard: { writeText: () => Promise.resolve() } });
+        const { state, copy } = useCopy();
+
+        await copy('first');
+        vi.advanceTimersByTime(1500);
+        await copy('second');
+        vi.advanceTimersByTime(1500);
+
+        expect(state.value).toBe('copied');
+    });
+
     it('says so when the clipboard refuses', async () => {
         vi.stubGlobal('navigator', { clipboard: { writeText: () => Promise.reject(new Error()) } });
         const { state, copy } = useCopy();
