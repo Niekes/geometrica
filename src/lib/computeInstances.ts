@@ -19,10 +19,42 @@ export function baseDimension(layer: Layer): number {
     }
 }
 
+// the lattice spans the size of the shape: width and height, both diameters, or the size twice
+function latticeSpan(layer: Layer): [number, number] {
+    switch (layer.shape) {
+        case 'rect':
+            return [layer.width, layer.height];
+        case 'circle':
+            return [layer.radiusX, layer.radiusY];
+        default:
+            return [layer.size, layer.size];
+    }
+}
+
+// the cells divide the span of the shape among them, less the gaps; a 1 × 1 lattice is the shape
+export function latticeCell(layer: Layer): { cell: Layer; pitch: [number, number] } {
+    const [spanX, spanY] = latticeSpan(layer);
+    const width = (spanX - (layer.columns - 1) * layer.columnGap) / layer.columns;
+    const height = (spanY - (layer.rows - 1) * layer.rowGap) / layer.rows;
+
+    return {
+        cell: {
+            ...layer,
+            width,
+            height,
+            radiusX: width,
+            radiusY: height,
+            size: Math.min(width, height)
+        },
+        pitch: [width + layer.columnGap, height + layer.rowGap]
+    };
+}
+
 export function computeInstances(layer: Layer): Instance[] {
     const adjustedAmount = layer.amount - 1;
     const radians = (layer.rotation * Math.PI) / 180;
-    const base = baseDimension(layer);
+    // the shrink works on every cell in place, so a cell sets where the repetition ends
+    const base = baseDimension(latticeCell(layer).cell);
 
     const instances: Instance[] = [];
 

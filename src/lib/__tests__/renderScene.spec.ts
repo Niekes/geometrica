@@ -246,6 +246,54 @@ describe('renderScene: repetition', () => {
     });
 });
 
+describe('renderScene: lattice', () => {
+    it('lays the shape out in cells that shrink in place', () => {
+        const layer = makeLayer('rect', {
+            width: 100,
+            height: 100,
+            columns: 2,
+            columnGap: 10,
+            amount: 2,
+            distance: 10
+        });
+        const [first, second] = paths(render([layer])).map((p) => p.getAttribute('d')!);
+
+        // cells of 45 × 100, 55 apart; the second instance insets both around the same centers
+        expect(first.match(/M/g)).toHaveLength(2);
+        expect(second).toMatch(/^M-45 -45.*M10 -45/);
+    });
+
+    it('shifts every second row by half a cell and keeps the lattice centered', () => {
+        const layer = makeLayer('rect', {
+            width: 100,
+            height: 100,
+            columns: 2,
+            rows: 2,
+            offsetRows: true
+        });
+
+        expect(layerBounds(layer)).toEqual({ minX: 449.5, minY: 462, maxX: 574.5, maxY: 562 });
+    });
+
+    it('keeps the columns of a polygon lattice side by side', () => {
+        // two diamonds of 50 px in a 100 px span, though the polygon turns upright
+        const layer = makeLayer('polygon', { size: 100, sides: 4, columns: 2 });
+
+        expect(Object.values(layerBounds(layer)!).map(Math.round)).toEqual([462, 487, 562, 537]);
+    });
+
+    it('draws nothing where the gaps leave the cells no size', () => {
+        const layer = makeLayer('custom', {
+            path: 'M0 0 L100 0 L50 87 Z',
+            size: 100,
+            columns: 3,
+            columnGap: 50
+        });
+
+        expect(paths(render([layer]))).toHaveLength(0);
+    });
+});
+
 describe('renderScene: layers', () => {
     it('draws the first layer on top', () => {
         const top = makeLayer('rect');
