@@ -12,7 +12,7 @@ const repoUrl = 'https://github.com/niekes/geometrica';
 <template>
     <div class="navbar bg-base-300 shadow-sm fixed top-0 z-50">
         <div class="navbar-start ml-2 gap-3">
-            <!-- the logo artwork as SVG, without its background -->
+            <!-- the logo artwork as SVG, exported as it is -->
             <img
                 :src="logoUrl"
                 alt=""
