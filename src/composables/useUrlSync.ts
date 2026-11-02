@@ -1,4 +1,4 @@
-import { watch, onUnmounted, type Ref } from 'vue';
+import { computed, ref, watch, onUnmounted, type Ref } from 'vue';
 import { parseState, serializeState } from '../lib/urlState';
 import { type Layer } from '../types/Layer';
 import { type Background } from '../config/defaults';
@@ -12,10 +12,24 @@ export interface UseUrlSyncOptions {
 /**
  * Composable for bidirectional URL query parameter synchronization.
  * Parses URL params on init (v2 format or legacy migration) and
- * updates the URL once the scene state stops changing.
+ * updates the URL once the scene state stops changing. Every history entry it writes is a
+ * step, numbered from the artwork the page was opened with, so undo and redo are the
+ * browser's back and forward (ADR-0007).
  */
 export function useUrlSync(state: UseUrlSyncOptions) {
     const { layers, background, onLoad } = state;
+
+    // the step of the current history entry and the last one known ahead of it
+    const step = ref(0);
+    const lastStep = ref(0);
+    const canUndo = computed(() => step.value > 0);
+    const canRedo = computed(() => step.value < lastStep.value);
+
+    function stepOf(historyState: unknown): number | null {
+        const value = (historyState as { step?: unknown } | null)?.step;
+
+        return typeof value === 'number' ? value : null;
+    }
 
     function serializeToUrl() {
         const query = serializeState({ background: background.value, layers: layers.value });
@@ -25,7 +39,9 @@ export function useUrlSync(state: UseUrlSyncOptions) {
         // pushing it again cuts off the way forward
         if (current && serializeState(current) === query) return;
 
-        window.history.pushState({}, '', `${window.location.pathname}?${query}`);
+        step.value += 1;
+        lastStep.value = step.value;
+        window.history.pushState({ step: step.value }, '', `${window.location.pathname}?${query}`);
     }
 
     function initFromUrl(): boolean {
@@ -40,7 +56,9 @@ export function useUrlSync(state: UseUrlSyncOptions) {
         return parsed !== null;
     }
 
-    function onPopState() {
+    function onPopState(event: PopStateEvent) {
+        step.value = stepOf(event.state) ?? 0;
+        lastStep.value = Math.max(lastStep.value, step.value);
         // initFromUrl calls onLoad itself when it loads state
         initFromUrl();
     }
@@ -51,10 +69,52 @@ export function useUrlSync(state: UseUrlSyncOptions) {
 
     function scheduleSerialize() {
         clearTimeout(serializeTimer);
-        serializeTimer = setTimeout(serializeToUrl, 300);
+        serializeTimer = setTimeout(() => {
+            serializeTimer = undefined;
+            serializeToUrl();
+        }, 300);
+    }
+
+    // a change that has not come to rest yet becomes a step first, so undo never skips it
+    function flushSerialize() {
+        if (serializeTimer === undefined) return;
+
+        clearTimeout(serializeTimer);
+        serializeTimer = undefined;
+        serializeToUrl();
+    }
+
+    // the browser moves in a task of its own; counting the step at once keeps a quick second
+    // press from leaving the page, and popstate then confirms it
+    function undo() {
+        flushSerialize();
+        if (!canUndo.value) return;
+
+        step.value -= 1;
+        window.history.back();
+    }
+
+    function redo() {
+        flushSerialize();
+        if (!canRedo.value) return;
+
+        step.value += 1;
+        window.history.forward();
     }
 
     function setupWatchers() {
+        // a reload keeps the entry and its step; a page opened anew starts at step 0.
+        // shortcut: after a reload the steps ahead are unknown, so redo waits for the next undo
+        step.value = stepOf(window.history.state) ?? 0;
+        lastStep.value = step.value;
+        // the opened artwork goes into its entry too, so undo has it to come back to even when
+        // the page was opened without a link
+        if (step.value === 0) {
+            const query = serializeState({ background: background.value, layers: layers.value });
+
+            window.history.replaceState({ step: 0 }, '', `${window.location.pathname}?${query}`);
+        }
+
         watch([layers, background], scheduleSerialize, { deep: true });
         window.addEventListener('popstate', onPopState);
 
@@ -67,6 +127,10 @@ export function useUrlSync(state: UseUrlSyncOptions) {
     return {
         initFromUrl,
         setupWatchers,
-        serializeToUrl
+        serializeToUrl,
+        canUndo,
+        canRedo,
+        undo,
+        redo
     };
 }

@@ -8,6 +8,7 @@ import TheAgentGuide from '../components/TheAgentGuide.vue';
 import TheExportDialog from '../components/TheExportDialog.vue';
 import TheGallery from '../components/TheGallery.vue';
 import TheNavbar from '../components/TheNavbar.vue';
+import UndoRedoButtons from '../components/UndoRedoButtons.vue';
 import useScene from '../composables/useScene';
 import { useUrlSync } from '../composables/useUrlSync';
 import { useWebMcp } from '../composables/useWebMcp';
@@ -15,13 +16,14 @@ import { backgroundRanges } from '../config/ranges';
 import { surfaceSize } from '../config/surface';
 import { lineColor, renderGrid, snapToGrid } from '../lib/renderGrid';
 import { embedMetadata } from '../lib/embedMetadata';
+import { historyShortcut } from '../lib/historyShortcut';
 import { layerBounds, renderScene } from '../lib/renderScene';
 import { serializeState } from '../lib/urlState';
 import { version } from '../../package.json';
 
 const scene = useScene();
 
-const { initFromUrl, setupWatchers } = useUrlSync({
+const { initFromUrl, setupWatchers, canUndo, canRedo, undo, redo } = useUrlSync({
     layers: scene.layers,
     background: scene.background,
     onLoad: () => scene.selectFirstLayer()
@@ -189,6 +191,16 @@ function endDrag() {
     framedDrag.value = false;
 }
 
+function onHistoryShortcut(event: KeyboardEvent) {
+    const action = historyShortcut(event);
+
+    if (!action) return;
+
+    event.preventDefault();
+    if (action === 'undo') undo();
+    else redo();
+}
+
 const showAgentGuide = ref(false);
 const showGallery = ref(false);
 const showExportDialog = ref(false);
@@ -200,12 +212,14 @@ onMounted(() => {
 
     setupWatchers();
     window.addEventListener('keydown', holdSpace);
+    window.addEventListener('keydown', onHistoryShortcut);
     window.addEventListener('keyup', releaseSpace);
     window.addEventListener('blur', releaseSpace);
 });
 
 onUnmounted(() => {
     window.removeEventListener('keydown', holdSpace);
+    window.removeEventListener('keydown', onHistoryShortcut);
     window.removeEventListener('keyup', releaseSpace);
     window.removeEventListener('blur', releaseSpace);
 });
@@ -363,7 +377,25 @@ onUnmounted(() => {
                 v-if="scene.selectedLayer.value"
                 v-model="scene.selectedLayer.value"
                 :key="scene.selectedLayer.value?.id"
-            />
+            >
+                <template #actions>
+                    <UndoRedoButtons
+                        :can-undo="canUndo"
+                        :can-redo="canRedo"
+                        @undo="undo"
+                        @redo="redo"
+                    />
+                </template>
+            </LayerControl>
+            <!-- without a layer, undo is what brings the last one back -->
+            <header v-else class="flex justify-end border-b border-base-300 px-4 py-4">
+                <UndoRedoButtons
+                    :can-undo="canUndo"
+                    :can-redo="canRedo"
+                    @undo="undo"
+                    @redo="redo"
+                />
+            </header>
         </aside>
 
         <TheAgentGuide v-model="showAgentGuide" />

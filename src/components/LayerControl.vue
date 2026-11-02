@@ -76,9 +76,13 @@ function resetLayer() {
         <header class="flex flex-col gap-3 border-b border-base-300 px-4 py-4">
             <div class="flex items-center justify-between gap-2">
                 <h2 class="truncate text-base font-semibold" v-text="layer.name" />
-                <button type="button" class="btn btn-ghost btn-xs" @click="resetLayer">
-                    Reset
-                </button>
+                <div class="flex items-center gap-1">
+                    <!-- undo and redo work on the whole artwork; the view places them here -->
+                    <slot name="actions" />
+                    <button type="button" class="btn btn-ghost btn-xs" @click="resetLayer">
+                        Reset
+                    </button>
+                </div>
             </div>
 
             <BaseSegmented v-model="layer.shape" legend="Shape" :options="shapeOptions" hide-legend>
