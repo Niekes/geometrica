@@ -32,7 +32,7 @@ const copyIcons = { idle: LinkIcon, copied: CheckIcon, failed: XMarkIcon };
 <template>
     <div class="card card-border card-sm">
         <figure>
-            <a :href="href" class="block aspect-square w-full">
+            <a :href="href" class="block aspect-square w-full p-2">
                 <img class="w-full hover:opacity-80" :src="thumbnail" :alt="`Open ${name}`" />
             </a>
         </figure>
