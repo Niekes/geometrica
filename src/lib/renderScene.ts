@@ -71,12 +71,15 @@ export function layerBounds(layer: Layer): PathBounds | null {
 
         if (!geometry) continue;
 
-        const { x, y, rotation } = placeInstance(layer, instance);
-        const width = layer.strokeOpacity > 0 ? instanceStrokeWidth(layer, instance) : 0;
+        const { x, y, rotation, scale } = placeInstance(layer, instance);
+        const width = layer.strokeOpacity > 0 ? instanceStrokeWidth(layer, instance) * scale : 0;
         const turned = geometry.commands.map((command) => rotateCommand(command, rotation));
 
         for (const subpath of flattenPath(turned)) {
-            const points = subpath.points.map(([px, py]): [number, number] => [x + px, y + py]);
+            const points = subpath.points.map(([px, py]): [number, number] => [
+                x + px * scale,
+                y + py * scale
+            ]);
 
             // a stroke reaches half its width beyond the path, and further at a mitered corner
             points.forEach((point) => include(point, width / 2));
@@ -134,22 +137,26 @@ function direction([ax, ay]: [number, number], [bx, by]: [number, number]): [num
 }
 
 // turning around the rotation center swings the instance center along a circle around it,
-// while the polygon offset only turns the shape in place
+// while the polygon offset only turns the shape in place; the scale pulls the instance toward the
+// rotation center, so turning and scaling together wind a spiral into it
 function placeInstance(
     layer: Layer,
-    { angle }: Instance
-): { x: number; y: number; rotation: number } {
+    { angle, k }: Instance
+): { x: number; y: number; rotation: number; scale: number } {
     const cx = surfaceSize / 2 + layer.cx;
     const cy = surfaceSize / 2 - layer.cy;
     // the rotation center is an offset from the position; svg counts y downwards
     const ox = layer.rotationCx;
     const oy = -layer.rotationCy;
     const polygonOffset = layer.shape === 'polygon' ? -PI / 2 : 0;
+    // the scale is the size of the last instance, spread geometrically like the rotation
+    const scale = layer.scale ** k;
 
     return {
-        x: round(cx + ox - (ox * Math.cos(angle) - oy * Math.sin(angle))),
-        y: round(cy + oy - (ox * Math.sin(angle) + oy * Math.cos(angle))),
-        rotation: round(((angle + polygonOffset) * 180) / PI)
+        x: round(cx + ox - scale * (ox * Math.cos(angle) - oy * Math.sin(angle))),
+        y: round(cy + oy - scale * (ox * Math.sin(angle) + oy * Math.cos(angle))),
+        rotation: round(((angle + polygonOffset) * 180) / PI),
+        scale: round(scale)
     };
 }
 
@@ -173,9 +180,10 @@ function renderLayer(layer: Layer, idPrefix: string, defs: string[]): string {
         }
 
         const instanceOpacity = layer.opacity * sequenceOpacity(layer, instance);
-        const { x, y, rotation } = placeInstance(layer, instance);
+        const { x, y, rotation, scale } = placeInstance(layer, instance);
 
-        let attributes = `transform="translate(${x} ${y}) rotate(${rotation})"`;
+        // the stroke scales along with the instance; an unscaled one keeps the markup of before
+        let attributes = `transform="translate(${x} ${y}) rotate(${rotation})${scale === 1 ? '' : ` scale(${scale})`}"`;
 
         // a zero opacity drops the paint entirely, so exports carry no invisible fills or strokes
         attributes +=

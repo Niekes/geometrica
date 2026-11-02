@@ -10,6 +10,8 @@ export const layerRanges = {
     amount: { min: 1, max: 1000, step: 1 },
     distance: { min: -64, max: 64, step: 0.1 },
     rotation: { min: -1440, max: 1440, step: 1 },
+    // the size of the last instance relative to the first
+    scale: { min: 0.01, max: 2, step: 0.01 },
     cx: { min: -surfaceSize / 2, max: surfaceSize / 2, step: 1 },
     cy: { min: -surfaceSize / 2, max: surfaceSize / 2, step: 1 },
     // an offset from the position: from any position it reaches every point of the surface

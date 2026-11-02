@@ -182,6 +182,18 @@ describe('renderScene: repetition', () => {
         ]);
     });
 
+    it('scales the instances toward the rotation center, so turning winds a spiral', () => {
+        // the rotation center lies 100 right of the position; the last instance is a quarter
+        const layer = makeLayer('rect', { amount: 3, rotation: 180, scale: 0.25, rotationCx: 100 });
+        const transforms = paths(render([layer])).map((p) => p.getAttribute('transform'));
+
+        expect(transforms).toEqual([
+            'translate(512 512) rotate(0)',
+            'translate(612 462) rotate(90) scale(0.5)',
+            'translate(637 512) rotate(180) scale(0.25)'
+        ]);
+    });
+
     it('turns a polygon upright in place, not around the rotation center', () => {
         const layer = makeLayer('polygon', { rotationCx: 100, rotationCy: 100 });
 
@@ -404,6 +416,23 @@ describe('layerBounds', () => {
         });
 
         expect(layerBounds(layer)).toEqual({ minX: 462, minY: 462, maxX: 562, maxY: 562 });
+    });
+
+    it('frames instances scaled toward the rotation center, their stroke along', () => {
+        const layer = makeLayer('rect', {
+            width: 100,
+            height: 100,
+            amount: 2,
+            distance: 0,
+            scale: 0.5,
+            rotationCx: 100,
+            strokeOpacity: 1,
+            strokeWidth: 20,
+            strokeJoin: 'round'
+        });
+
+        // the second instance is half the size, 50 px closer to the rotation center
+        expect(layerBounds(layer)).toEqual({ minX: 452, minY: 452, maxX: 592, maxY: 572 });
     });
 
     it('reaches out by half the stroke width', () => {

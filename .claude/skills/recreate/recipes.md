@@ -12,7 +12,8 @@ What the engine can and cannot do, learned while recreating references. Each ent
 
 ## Repetition
 
-- Instance i is `i × distance` px smaller in its base dimension (diameter, size, or both sides of a rect), so any point moves at most `|distance| / 2 ≤ 32` px per instance. Rings farther apart than that come from separate layers or from an orbit around the rotation center.
+- Instance i is `i × distance` px smaller in its base dimension (diameter, size, or both sides of a rect), so any point moves at most `|distance| / 2 ≤ 32` px per instance. Rings farther apart than that come from separate layers, from an orbit around the rotation center, or from `scale`.
+- **Tunnel or spiral**: `scale` is the size of the last instance relative to the first, spread geometrically like the rotation. Each instance scales toward the rotation center, its position and stroke along. With the rotation center away from the position, `rotation` 0 runs a tunnel into it and a rotation winds a logarithmic spiral. Shrink still steps in px in place on top of it: set `distance` 0 for a clean spiral.
 - One layer runs one repetition. A ring of nested motifs (n positions × m sizes) cannot come from turning and shrinking together, since every position then gets another size: draw the nesting into the motif, or spend a layer per size.
 - A growing repetition that drifts along an orbit nests like a tunnel only while the drift per instance stays below the growth of the radius per instance; above it the instances cross into a cusp.
 

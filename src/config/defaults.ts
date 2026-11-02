@@ -49,6 +49,7 @@ export function buildLayer(shape: ShapePreset): Layer {
         amount: 16,
         distance: 32,
         rotation: 0,
+        scale: 1,
         cx: 0,
         cy: 0,
         rotationCx: 0,

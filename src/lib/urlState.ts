@@ -33,6 +33,7 @@ const NUMERIC_FIELDS = [
     'rotation',
     'rotationCx',
     'rotationCy',
+    'scale',
     'sides',
     'size',
     'strokeOpacity',

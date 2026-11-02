@@ -20,6 +20,7 @@ export type Layer = {
     amount: number;
     distance: number;
     rotation: number;
+    scale: number;
     cx: number;
     cy: number;
     rotationCx: number;
