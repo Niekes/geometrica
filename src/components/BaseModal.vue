@@ -26,8 +26,8 @@ const close = () => {
                 <slot name="title" />
             </h3>
 
-            <!-- -mx-1 px-1 and scroll-py-12 keep focus rings clear of the edges and the fade -->
-            <div class="scroll-mask-y -mx-1 min-h-0 scroll-py-12 overflow-y-auto px-1 py-4">
+            <!-- -mx-1 px-1 and scroll-py-6 keep focus rings clear of the edges and the fade -->
+            <div class="scroll-mask-y -mx-1 min-h-0 scroll-py-6 overflow-y-auto px-1 py-4">
                 <slot />
             </div>
 
@@ -79,16 +79,16 @@ const close = () => {
 @keyframes scroll-mask-y {
     0% {
         --scroll-mask-t: 0rem;
-        --scroll-mask-b: 3rem;
+        --scroll-mask-b: 1.5rem;
     }
     10% {
-        --scroll-mask-t: 3rem;
+        --scroll-mask-t: 1.5rem;
     }
     90% {
-        --scroll-mask-b: 3rem;
+        --scroll-mask-b: 1.5rem;
     }
     100% {
-        --scroll-mask-t: 3rem;
+        --scroll-mask-t: 1.5rem;
         --scroll-mask-b: 0rem;
     }
 }
