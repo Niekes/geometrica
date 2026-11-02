@@ -23,9 +23,9 @@ is named "Logo".
 | `public/favicon.ico`                | 16, 32, 48  | Browser tab                                                |
 | `public/favicon-16x16.png`          | 16 x 16     | Browser tab                                                |
 | `public/favicon-32x32.png`          | 32 x 32     | Browser tab                                                |
-| `public/apple-touch-icon.png`       | 180 x 180   | iOS home screen (square)                                   |
-| `public/android-chrome-192x192.png` | 192 x 192   | Android, `site.webmanifest` (square)                       |
-| `public/android-chrome-512x512.png` | 512 x 512   | Android, `site.webmanifest` (square)                       |
+| `public/apple-touch-icon.png`       | 180 x 180   | iOS home screen                                            |
+| `public/android-chrome-192x192.png` | 192 x 192   | Android, `site.webmanifest`                                |
+| `public/android-chrome-512x512.png` | 512 x 512   | Android, `site.webmanifest`                                |
 | `public/og-image.jpg`               | 1200 x 630  | `og:image`, `twitter:image`                                |
 | `docs/social-preview.png`           | 1280 x 640  | GitHub social preview (manual upload in the repo settings) |
 
@@ -40,9 +40,9 @@ is named "Logo".
    (`sips -s format png --resampleWidth 1024 logo.svg`); a thumbnailer that
    flattens onto white fills the rounded corners. Derive the favicon sizes
    from that one render.
-3. The touch and Android icons are the same artwork with the corner radius
-   of the background set to 0: those platforms round the corners themselves
-   and fill transparent corners with a color of their own. Derive them and
-   the banner formats from the square render; the banners center it at full
-   height on the background color.
+3. The touch and Android icons and the banner formats need the square
+   render: set the corner radius of the background to 0 in the app, export,
+   and rasterize as in step 2. Those platforms round the corners themselves
+   and fill transparent corners with a color of their own. The banners
+   center the square render at full height on the background color.
 4. Keep the artwork as the single source; never retouch the binaries.
