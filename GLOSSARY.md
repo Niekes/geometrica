@@ -59,7 +59,7 @@ How far the center of the shape lies from the center of the surface. All instanc
 _Avoid_: Offset, Coordinate
 
 **Rotation center**:
-The point the instances of a layer turn around along the repetition. Every layer has its own. It is measured from the position and moves along when the layer is moved. On the position, each instance turns around its own center; beside it, the instances circle around it. It is visible and draggable on the surface while it is shown, independent of the grid; it is never exported.
+The point the instances of a layer turn around and scale toward along the repetition. Every layer has its own. It is measured from the position and moves along when the layer is moved. On the position, each instance turns around its own center; beside it, the instances circle around it. It is visible and draggable on the surface while it is shown, independent of the grid; it is never exported.
 _Avoid_: Pivot, Origin, Anchor point
 
 **Bounding box**:
@@ -71,12 +71,16 @@ One drawn occurrence of a shape on the surface.
 _Avoid_: Copy, Iteration
 
 **Repetition**:
-The sequence of instances of a shape, controlled by amount, shrink and rotation.
+The sequence of instances of a shape, controlled by amount, shrink, rotation and scale.
 _Avoid_: Loop, Series
 
 **Shrink**:
 How many px each instance is smaller than the one before. The shape gets smaller in place; shrink alone never moves an instance.
 _Avoid_: Distance, Inset
+
+**Scale**:
+The size of the last instance relative to the first, spread evenly over the repetition like the rotation. Each instance scales toward the rotation center, its position and its stroke along, so the instances run into a tunnel or a spiral. More instances make it denser, never longer.
+_Avoid_: Zoom, Factor, Perspective
 
 **Layer**:
 A complete configuration of shape, repetition, color and fill. Layers stack in z-order on the surface; an artwork holds at most ten. Every layer carries a freely chosen name that labels it in the layer list. The name travels in the link, and through the link embedded in the export, but is never drawn.

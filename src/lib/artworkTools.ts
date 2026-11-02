@@ -87,6 +87,13 @@ const layerProperties: Record<keyof Artwork['layers'][number], Schema> = {
         layerRanges.rotation,
         'Degrees the last instance is turned; the instances in between turn evenly.'
     ),
+    scale: number(
+        layerRanges.scale,
+        'Size of the last instance relative to the first, 1 scales nothing; the instances in ' +
+            'between scale geometrically. Each instance scales toward the rotation center, its ' +
+            'position and stroke along: with the rotation center away from cx/cy, rotation 0 ' +
+            'draws a tunnel and a rotation a spiral.'
+    ),
     cx: number(
         layerRanges.cx,
         'Horizontal offset of the shape center from the surface center in px, positive is right.'
@@ -343,7 +350,7 @@ export function artworkTools(access: ArtworkAccess): ModelContextTool[] {
                 'origin in its center. An artwork is a background and a stack of layers, layers[0] ' +
                 'on top. Each layer repeats one shape: instance i shrinks i × distance px below ' +
                 'the first, turned by i × rotation / (amount − 1) degrees around the rotation ' +
-                'center, and its color walks the color ramp from the first to the last instance. ' +
+                'center and scaled toward it by scale ^ (i / (amount − 1)), and its color walks the color ramp from the first to the last instance. ' +
                 'Omitted fields take the defaults of the shape, so a new artwork needs only the ' +
                 'fields that matter. To change the current artwork, read it with get_artwork ' +
                 'first. Invalid input is rejected with the reasons and leaves the artwork ' +

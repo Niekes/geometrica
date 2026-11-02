@@ -34,6 +34,7 @@ const repetitionControls: Control[] = [
     { ...layerRanges.amount, label: 'Amount', name: 'amount' },
     { ...layerRanges.distance, label: 'Shrink', name: 'distance', unit: 'px' },
     { ...layerRanges.rotation, label: 'Rotation', name: 'rotation', unit: '°' },
+    { ...layerRanges.scale, ...percent, label: 'Scale', name: 'scale' },
     { ...layerRanges.rotationCx, label: 'Rotation center X', name: 'rotationCx', unit: 'px' },
     { ...layerRanges.rotationCy, label: 'Rotation center Y', name: 'rotationCy', unit: 'px' }
 ];
@@ -118,6 +119,7 @@ function resetLayer() {
                 :max="ctrl.max"
                 :step="ctrl.step"
                 :label="ctrl.label"
+                :scale="ctrl.scale"
                 :unit="ctrl.unit"
             />
             <BaseCheckBox :options="fadeOptions" v-model="layer.calcOpacity" />

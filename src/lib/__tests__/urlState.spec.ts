@@ -92,7 +92,7 @@ describe('serializeState (c parameter)', () => {
 describe('parseState', () => {
     it('parses a v2 query string', () => {
         const parsed = parseState(
-            'v=2&bg[color]=%23ff0000&bg[borderRadius]=15&l[0][shape]=polygon&l[0][amount]=8&l[0][sides]=6&l[0][size]=100&l[0][opacity]=0.5&l[0][applyColorSchemeToEachShape]=true&l[0][calcOpacity]=interpolate%2Cflip'
+            'v=2&bg[color]=%23ff0000&bg[borderRadius]=15&l[0][shape]=polygon&l[0][amount]=8&l[0][sides]=6&l[0][size]=100&l[0][scale]=0.5&l[0][opacity]=0.5&l[0][applyColorSchemeToEachShape]=true&l[0][calcOpacity]=interpolate%2Cflip'
         );
 
         expect(parsed).not.toBeNull();
@@ -104,6 +104,7 @@ describe('parseState', () => {
         expect(layer.amount).toBe(8);
         expect(layer.sides).toBe(6);
         expect(layer.size).toBe(100);
+        expect(layer.scale).toBe(0.5);
         expect(layer.opacity).toBe(0.5);
         expect(layer.applyColorSchemeToEachShape).toBe(true);
         expect(layer.calcOpacity).toEqual(['interpolate', 'flip']);
@@ -140,6 +141,8 @@ describe('parseState', () => {
         expect(parsed!.layers[0]!.name).toBe('x');
         expect(parsed!.layers[0]!.path).toBe('');
         expect(parsed!.layers[0]!.strokeJoin).toBe('miter');
+        // links from before the scale keep their size
+        expect(parsed!.layers[0]!.scale).toBe(1);
     });
 
     it('loads an empty layer list from a v2 URL without layers', () => {
