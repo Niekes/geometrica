@@ -15,8 +15,10 @@ const number = computed(() => props.index + 1);
 // wherever the app runs: the dev server on any port, GitHub Pages or a fork
 const href = computed(() => `${import.meta.env.BASE_URL}?${props.link}`);
 
-// the clipboard gets the full address, so the link works wherever it is pasted
+// the clipboard gets the full address, so the link works wherever it is pasted; a page without a
+// clipboard (plain http, like the dev server opened over the network) offers no copy at all
 const fullLink = computed(() => new URL(href.value, location.href).href);
+const canCopy = 'clipboard' in navigator;
 const { state, copy } = useCopy();
 const copyIcons = { idle: LinkIcon, copied: CheckIcon, failed: XMarkIcon };
 const copyMessages = { idle: '', copied: 'Link copied', failed: 'Copy failed' };
@@ -36,12 +38,14 @@ const copyMessages = { idle: '', copied: 'Link copied', failed: 'Copy failed' };
         <div class="card-body">
             <div class="card-actions items-center">
                 <span class="card-title grow" v-text="number" />
-                <span class="sr-only" aria-live="polite" v-text="copyMessages[state]" />
-                <BaseIconButton
-                    label="Copy link"
-                    :icon="copyIcons[state]"
-                    @click="copy(fullLink)"
-                />
+                <template v-if="canCopy">
+                    <span class="sr-only" aria-live="polite" v-text="copyMessages[state]" />
+                    <BaseIconButton
+                        label="Copy link"
+                        :icon="copyIcons[state]"
+                        @click="copy(fullLink)"
+                    />
+                </template>
                 <BaseIconButton
                     label="Open in new tab"
                     :icon="ArrowTopRightOnSquareIcon"

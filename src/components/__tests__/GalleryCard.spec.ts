@@ -1,8 +1,10 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import GalleryCard from '../GalleryCard.vue';
 
 describe('GalleryCard', () => {
+    afterEach(() => vi.unstubAllGlobals());
+
     it('shows the artwork with its number, counted from 1, and opens it here', () => {
         const wrapper = mount(GalleryCard, { props: { link: 'c=abc', index: 84 } });
         const thumbnail = wrapper.find('img');
@@ -31,7 +33,13 @@ describe('GalleryCard', () => {
 
         expect(writeText).toHaveBeenCalledWith(`${location.origin}/?c=abc`);
         expect(wrapper.find('[aria-live="polite"]').text()).toBe('Link copied');
+    });
 
-        vi.unstubAllGlobals();
+    it('offers no copy where the browser has no clipboard, as on a page over plain http', () => {
+        vi.stubGlobal('navigator', {});
+        const wrapper = mount(GalleryCard, { props: { link: 'c=abc', index: 0 } });
+
+        expect(wrapper.find('button').exists()).toBe(false);
+        expect(wrapper.find('a[aria-label="Open in new tab"]').exists()).toBe(true);
     });
 });
