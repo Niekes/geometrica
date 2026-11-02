@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { ArrowTopRightOnSquareIcon, CheckIcon, LinkIcon, XMarkIcon } from '@heroicons/vue/24/outline';
+import {
+    ArrowTopRightOnSquareIcon,
+    CheckIcon,
+    LinkIcon,
+    XMarkIcon
+} from '@heroicons/vue/24/outline';
 import BaseIconButton from './BaseIconButton.vue';
 import { useCopy } from '@/composables/useCopy';
 
 const props = defineProps<{
     link: string;
-    // the position in the gallery, from 0 like the thumbnail's file name
-    index: number;
+    name: string;
 }>();
 
-const number = computed(() => props.index + 1);
+// the thumbnail is named after the artwork, so removing or reordering never shifts a file
+const thumbnail = computed(() => `./gallery/${props.name.toLowerCase().replace(/ /g, '-')}.avif`);
 
 // wherever the app runs: the dev server on any port, GitHub Pages or a fork
 const href = computed(() => `${import.meta.env.BASE_URL}?${props.link}`);
@@ -28,16 +33,12 @@ const copyIcons = { idle: LinkIcon, copied: CheckIcon, failed: XMarkIcon };
     <div class="card card-border card-sm">
         <figure>
             <a :href="href" class="block aspect-square w-full">
-                <img
-                    class="w-full hover:opacity-80"
-                    :src="`./gallery/${index}.avif`"
-                    :alt="`Open artwork ${number}`"
-                />
+                <img class="w-full hover:opacity-80" :src="thumbnail" :alt="`Open ${name}`" />
             </a>
         </figure>
         <div class="card-body">
             <div class="card-actions items-center">
-                <span class="card-title grow" v-text="number" />
+                <span class="card-title grow" v-text="name" />
                 <template v-if="canCopy">
                     <!-- the label changes for the tooltip; the live region tells screen readers -->
                     <span

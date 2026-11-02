@@ -147,8 +147,8 @@ A picture from outside Geometrica (PNG or SVG) that an artwork is recreated from
 _Avoid_: Image, Template, Source image
 
 **Gallery**:
-The curated collection of finished artworks, from which one is opened to keep working on it. Each artwork in it carries a number, its position counted from 1.
-_Avoid_: Templates, Examples, Presets
+The curated collection of finished artworks, from which one is opened to keep working on it. Each artwork in it carries a name that is unique within the gallery and describes what it shows. The name belongs to the gallery, not to the artwork: it is never part of the link or the export.
+_Avoid_: Templates, Examples, Presets, Number, Title
 
 **Step**:
 The artwork in its history, as it stands once a change has come to rest. A slider drag, a drag on the surface or a pause in typing a name ends one step. The agent makes steps too, so its changes are undone like any other.
