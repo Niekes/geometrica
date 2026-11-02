@@ -32,7 +32,7 @@ const percent = { scale: 100, unit: '%' };
 
 const repetitionControls: Control[] = [
     { ...layerRanges.amount, label: 'Amount', name: 'amount' },
-    { ...layerRanges.distance, label: 'Distance', name: 'distance' },
+    { ...layerRanges.distance, label: 'Shrink', name: 'distance', unit: 'px' },
     { ...layerRanges.rotation, label: 'Rotation', name: 'rotation', unit: '°' },
     { ...layerRanges.rotationCx, label: 'Rotation center X', name: 'rotationCx', unit: 'px' },
     { ...layerRanges.rotationCy, label: 'Rotation center Y', name: 'rotationCy', unit: 'px' }

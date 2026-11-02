@@ -71,8 +71,12 @@ One drawn occurrence of a shape on the surface.
 _Avoid_: Copy, Iteration
 
 **Repetition**:
-The sequence of instances of a shape, controlled by amount, distance and rotation.
+The sequence of instances of a shape, controlled by amount, shrink and rotation.
 _Avoid_: Loop, Series
+
+**Shrink**:
+How many px each instance is smaller than the one before. The shape gets smaller in place; shrink alone never moves an instance.
+_Avoid_: Distance, Inset
 
 **Layer**:
 A complete configuration of shape, repetition, color and fill. Layers stack in z-order on the surface; an artwork holds at most ten. Every layer carries a freely chosen name that labels it in the layer list. The name travels in the link, and through the link embedded in the export, but is never drawn.
