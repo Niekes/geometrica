@@ -1,24 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { useCopy } from '@/composables/useCopy';
 
-const props = defineProps<{
+defineProps<{
     prefix: string;
     code: string;
 }>();
 
-const copyLabel = ref('Copy');
-
 // the prefix is CSS, so the clipboard gets the bare code
-async function copy() {
-    try {
-        await navigator.clipboard.writeText(props.code);
-        copyLabel.value = 'Copied';
-    } catch {
-        copyLabel.value = 'Copy failed';
-    }
-
-    setTimeout(() => (copyLabel.value = 'Copy'), 2000);
-}
+const { state, copy } = useCopy();
+const copyLabels = { idle: 'Copy', copied: 'Copied', failed: 'Copy failed' };
 </script>
 
 <template>
@@ -31,8 +21,8 @@ async function copy() {
             type="button"
             class="btn btn-sm absolute top-2 right-2"
             aria-live="polite"
-            @click="copy"
-            v-text="copyLabel"
+            @click="copy(code)"
+            v-text="copyLabels[state]"
         />
     </div>
 </template>
