@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { beforeEach, describe, it, expect, vi } from 'vitest';
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils';
 import { nextTick } from 'vue';
 import HomeView from '../../views/HomeView.vue';
@@ -50,6 +50,9 @@ const embeddedLink = (file: string) =>
         .getElementsByTagNameNS('http://purl.org/dc/elements/1.1/', 'source')[0]!.textContent!;
 
 describe('HomeView', () => {
+    // opening writes the artwork into the address, so every test opens a fresh page
+    beforeEach(() => window.history.replaceState(null, '', '/'));
+
     it('resolves every component it renders', () => {
         const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
         const wrapper = mount(HomeView, {
