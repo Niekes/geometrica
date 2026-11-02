@@ -11,7 +11,7 @@ Everything composed on the surface: the background and all layers in their z-ord
 _Avoid_: Scene, Picture, Image, Effect, Icon
 
 **Logo**:
-The artwork that identifies Geometrica in the navbar, the icons, the README and the social preview. It is an artwork like any other, kept apart from the gallery so reordering the gallery never swaps it.
+The artwork that identifies Geometrica in the navbar, the icons and the social preview. It is an artwork like any other, kept apart from the gallery so reordering the gallery never swaps it.
 _Avoid_: Icon, Brand mark, Favicon
 
 **Export**:
