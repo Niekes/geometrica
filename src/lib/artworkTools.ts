@@ -89,10 +89,12 @@ const layerProperties: Record<keyof Artwork['layers'][number], Schema> = {
     ),
     scale: number(
         layerRanges.scale,
-        'Size of the last instance relative to the first, 1 scales nothing; the instances in ' +
-            'between scale geometrically. Each instance scales toward the rotation center, its ' +
-            'position and stroke along: with the rotation center away from cx/cy, rotation 0 ' +
-            'draws a tunnel and a rotation a spiral.'
+        'Size of the last instance relative to the first, 1 scales nothing; instance i scales ' +
+            'by scale ^ (i / (amount − 1)). Each instance scales toward the rotation center, its ' +
+            'position and stroke along. With the rotation center at 0/0 it only shrinks in ' +
+            'place; away from it, rotation 0 draws a tunnel into the rotation center and a ' +
+            'rotation a spiral. The shrink (distance) still applies on top and ends the ' +
+            'repetition early: set distance 0 for a clean tunnel or spiral.'
     ),
     cx: number(
         layerRanges.cx,
@@ -104,8 +106,10 @@ const layerProperties: Record<keyof Artwork['layers'][number], Schema> = {
     ),
     rotationCx: number(
         layerRanges.rotationCx,
-        'Horizontal offset of the rotation center from cx in px. At 0/0 every instance turns ' +
-            'in place; elsewhere the instances circle around the rotation center.'
+        'Horizontal offset of the rotation center from cx in px, positive is right. At 0/0 ' +
+            'every instance turns ' +
+            'and scales in place; elsewhere the instances circle around the rotation center, ' +
+            'and with a scale below 1 spiral into it.'
     ),
     rotationCy: number(
         layerRanges.rotationCy,
@@ -119,9 +123,13 @@ const layerProperties: Record<keyof Artwork['layers'][number], Schema> = {
     size: number(layerRanges.size, 'Size of the polygon and the custom shape in px.'),
     columns: number(
         layerRanges.columns,
-        'Columns of the lattice: the shape is laid out in columns × rows cells that divide its ' +
-            'size (width and height, the two diameters, or size) among them, less the gaps. ' +
-            'Each instance is the whole lattice in one color; 1 × 1 is the plain shape.'
+        'Columns of the lattice: the shape is laid out in columns × rows cells around cx/cy ' +
+            'that divide its size (width and height, the two diameters, or size) among them, ' +
+            'less the gaps; 1 × 1 is the plain shape. Each instance is the whole lattice: ' +
+            'rotation and scale move it as one, the shrink (distance) insets every cell in ' +
+            'place, so amount 1 draws a plain lattice. All cells of an instance share one ' +
+            'color; applyColorSchemeToEachShape lays one gradient across the whole lattice, not ' +
+            'one per cell. A polygon stands corner up in a square cell.'
     ),
     rows: number(layerRanges.rows, 'Rows of the lattice, see columns.'),
     columnGap: number(
@@ -135,7 +143,8 @@ const layerProperties: Record<keyof Artwork['layers'][number], Schema> = {
     offsetRows: {
         type: 'boolean',
         description:
-            'Shifts every second row of the lattice by half a cell, for brick and hex patterns.'
+            'Shifts every second row of the lattice by half the column spacing, for brick and ' +
+            'hex patterns; the row spacing stays, a negative rowGap nests the rows.'
     },
     borderRadius: number(
         layerRanges.borderRadius,
@@ -176,7 +185,11 @@ const layerProperties: Record<keyof Artwork['layers'][number], Schema> = {
         gradientTypeOptions,
         'The gradient inside each instance while applyColorSchemeToEachShape is true.'
     ),
-    gradientAngle: number(layerRanges.gradientAngle, 'Angle of the linear gradient in degrees.'),
+    gradientAngle: number(
+        layerRanges.gradientAngle,
+        'Angle of the linear gradient in degrees, in the frame of each instance: 0 runs left ' +
+            'to right, 90 top to bottom.'
+    ),
     calcOpacity: {
         type: 'array',
         items: oneOf(calcOpacityOptions),
@@ -370,9 +383,10 @@ export function artworkTools(access: ArtworkAccess): ModelContextTool[] {
                 'origin in its center. An artwork is a background and a stack of layers, layers[0] ' +
                 'on top. Each layer repeats one shape: instance i shrinks i × distance px below ' +
                 'the first, turned by i × rotation / (amount − 1) degrees around the rotation ' +
-                'center and scaled toward it by scale ^ (i / (amount − 1)), and its color walks the color ramp from the first to the last instance. ' +
-                'A shape can be a lattice of columns × rows cells; the shrink then insets every cell ' +
-                'in place. Omitted fields take the defaults of the shape, so a new artwork needs only the ' +
+                'center and scaled toward it by scale ^ (i / (amount − 1)), and its color walks ' +
+                'the color ramp from the first to the last instance. A shape can be a lattice of ' +
+                'columns × rows cells, all drawn by every instance. Omitted fields take the ' +
+                'defaults of the shape (distance is 32), so a new artwork needs only the ' +
                 'fields that matter. To change the current artwork, read it with get_artwork ' +
                 'first. Invalid input is rejected with the reasons and leaves the artwork ' +
                 "unchanged; the browser's back button undoes a change.",
