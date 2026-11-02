@@ -17,6 +17,7 @@ What the engine can and cannot do, learned while recreating references. Each ent
 - **Lattice of equal cells**: `columns` × `rows` cells divide the shape's size (width and height, the diameters, or `size`), less `columnGap` and `rowGap`; `offsetRows` shifts every second row by half a cell for brick and hex patterns. Each instance is the whole lattice in one color: the shrink insets every cell in place, `scale` pulls the whole lattice toward the rotation center into a dome or tunnel. Prefer it to pasting the cells as one custom path.
 - One layer runs one repetition. A ring of nested motifs (n positions × m sizes) cannot come from turning and shrinking together, since every position then gets another size: draw the nesting into the motif, or spend a layer per size.
 - A growing repetition that drifts along an orbit nests like a tunnel only while the drift per instance stays below the growth of the radius per instance; above it the instances cross into a cusp.
+- **Cells of overlapping petals** (a rosette colored by how many petals cover each spot): draw the cells, not the petals. A cell edge is a petal outline offset by half the gap; for an elliptical petal, an arc with semi-axes a ± g and b ± g. One motif holds every cell of one color within one sector.
 
 ## Color
 
@@ -30,7 +31,10 @@ Layer colors come only from color ramps; the background takes any CSS color.
 - **Part of a ramp inside a shape**: moveto-only phantom points enlarge the motif's box, and with it the gradient. A phantom beyond the tip raises the tip's t, one beyond the base lowers the middle. Recenter `cx`/`cy` on the new box and set `size` to its larger side.
 - **A gradient fixed to the surface** (e.g. top to bottom) cannot come from a gradient inside each shape, which turns with the instance. Build it from a flat base layer and the second color above it in mirrored half rings with `calcOpacity` `["interpolate", "flip"]`: the fade mixes the two.
 - **Gradient mirrored about the middle** (dark tips, light flanks): a radial gradient cannot separate the tips of a tall motif from its flanks, both lie near the same distance. Draw only the upper half inside the alignment box, with a linear gradient at 90°, and complete it with `amount` 2, `rotation` 180 around the motif's middle (`rotationCy`); the turn mirrors the gradient. With the middle d px above the box center, the flanks sit at t = 0.5 − d / (2h). Let each half run 3 px past the middle: halves that only touch show a seam.
+- **Flat color from the pad**: a linear gradient runs t = 0.5 + (p − box center) · u / the box's larger side and pads past 1 with the ramp's last color. Spread phantom corners to a 1024 box (`size` 1024), push the motif into one corner and aim `gradientAngle` into it: every point sits at t ≥ 1, one flat color for the whole ring, even for a 310 × 130 px motif.
+- A color from inside a ramp is never flat: across a motif w px wide along the gradient, t spans at least w / 1024, so a 120 px cell drifts by ΔE ≈ 13 on Viridis.
 - Known flat hits: Inferno at t ≈ 0.8 is orange (#fca50a); Greys flipped at t ≈ 0.9 is near white. No ramp ends in orange.
+- The ramp end nearest a greyish navy is PuBu's (#023858, ΔE 11). Teal (#17A187) exists only inside a ramp, at Viridis ≈ 0.57.
 - Spectral from 0 to 0.42 runs crimson, coral, orange, pale yellow: a warm flame.
 - Megatron and Argon read pale on dark grounds.
 - Alpha only mixes toward what lies below: on a dark ground a translucent layer comes out darker, never brighter. Draw a designed overlap color as its own layer.
@@ -42,6 +46,7 @@ Layer colors come only from color ramps; the background takes any CSS color.
 - A hole in a custom path runs in the opposite winding direction.
 - A circle of radius r stroked wider than 2r renders as a ring with a hole, so a stroke cannot grow a dot.
 - Compact dot of radius r at (x, y): `M{x+r} {y}a{r} {r} 0 1 0 0 1z`.
+- Rounding corners with a round-joined stroke (inset by r, stroke 2r) rounds outwards: an acute corner between concave sides ends in a ball. Keep such corners sharp.
 
 ## Limits
 
@@ -54,3 +59,4 @@ Layer colors come only from color ramps; the background takes any CSS color.
 - Convert a PNG with `sips -s format bmp in.png --out in.bmp` and read the pixels with the Python standard library (`struct`), e.g. to count colors or to measure the radius of an outline per angle.
 - Compare line counts only at the same resolution as the reference.
 - Sample a band across its width to read its gradient: flat across but changing along the band is linear; changing across is radial.
+- Along circles of growing radius, the angles of the gap lines give a petal's half-width per radius; fit its shape from that, e.g. an ellipse through the center.
