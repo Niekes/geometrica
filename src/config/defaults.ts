@@ -71,7 +71,12 @@ export function buildLayer(shape: ShapePreset): Layer {
         radiusY: surfaceSize / 2,
         sides: 5,
         borderRadius: 0,
-        size: surfaceSize / 2
+        size: surfaceSize / 2,
+        columns: 1,
+        rows: 1,
+        columnGap: 0,
+        rowGap: 0,
+        offsetRows: false
     };
 
     return layer;

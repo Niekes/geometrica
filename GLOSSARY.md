@@ -51,7 +51,7 @@ Aligning the position or the rotation center of a layer to the grid lines while 
 _Avoid_: Magnet, Lock
 
 **Shape**:
-A path geometry (Rect, Circle, Polygon or a custom shape from pasted SVG paths). Several pasted paths form one shape together. The shape itself is only the geometry, without repetition or style parameters.
+A path geometry (Rect, Circle, Polygon or a custom shape from pasted SVG paths). Several pasted paths form one shape together, and so do the cells of a lattice. The shape itself is only the geometry, without repetition or style parameters.
 _Avoid_: Figure, Object
 
 **Position**:
@@ -75,12 +75,20 @@ The sequence of instances of a shape, controlled by amount, shrink, rotation and
 _Avoid_: Loop, Series
 
 **Shrink**:
-How many px each instance is smaller than the one before. The shape gets smaller in place; shrink alone never moves an instance.
+How many px each instance is smaller than the one before. The shape gets smaller in place, in a lattice every cell on its own; shrink alone never moves an instance or a cell.
 _Avoid_: Distance, Inset
 
 **Scale**:
 The size of the last instance relative to the first, spread evenly over the repetition like the rotation. Each instance scales toward the rotation center, its position and its stroke along, so the instances run into a tunnel or a spiral. More instances make it denser, never longer.
 _Avoid_: Zoom, Factor, Perspective
+
+**Lattice**:
+The shape laid out in columns and rows of cells, with a gap between the columns and one between the rows, and optionally every second row shifted by half a cell. The cells divide the shape's size among them, and the whole lattice is one shape: each instance is a complete lattice in one color.
+_Avoid_: Grid (the guide lines), Tiling, Array, Matrix
+
+**Cell**:
+One place of a lattice, holding the shape's outline once.
+_Avoid_: Tile, Slot
 
 **Layer**:
 A complete configuration of shape, repetition, color and fill. Layers stack in z-order on the surface; an artwork holds at most ten. Every layer carries a freely chosen name that labels it in the layer list. The name travels in the link, and through the link embedded in the export, but is never drawn.

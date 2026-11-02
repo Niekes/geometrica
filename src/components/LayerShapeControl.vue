@@ -18,6 +18,8 @@ const layer = defineModel<Layer>({ required: true });
 
 const isSizeLinked = ref(true);
 const areCornersLinked = ref(true);
+const areCountsLinked = ref(true);
+const areGapsLinked = ref(true);
 
 useLinkedSliders(layer, ['width', 'height'], isSizeLinked, () => layer.value.shape === 'rect');
 useLinkedSliders(layer, ['radiusX', 'radiusY'], isSizeLinked, () => layer.value.shape === 'circle');
@@ -27,6 +29,8 @@ useLinkedSliders(
     areCornersLinked,
     () => layer.value.shape === 'rect'
 );
+useLinkedSliders(layer, ['columns', 'rows'], areCountsLinked, () => true);
+useLinkedSliders(layer, ['columnGap', 'rowGap'], areGapsLinked, () => true);
 
 // a corner radius is a share of half the side: 1 turns the side into a half circle, shown as 50%
 const corner = { scale: 50, unit: '%' };
@@ -36,6 +40,16 @@ const corners = [
     { name: 'borderRadiusTr', label: 'Top right' },
     { name: 'borderRadiusBl', label: 'Bottom left' },
     { name: 'borderRadiusBr', label: 'Bottom right' }
+] as const;
+
+const counts = [
+    { name: 'columns', label: 'Columns' },
+    { name: 'rows', label: 'Rows' }
+] as const;
+
+const gaps = [
+    { name: 'columnGap', label: 'Between columns' },
+    { name: 'rowGap', label: 'Between rows' }
 ] as const;
 </script>
 
@@ -105,4 +119,26 @@ const corners = [
             unit="px"
         />
     </template>
+
+    <BaseLinkToggle v-model="areCountsLinked" heading="Lattice" label="Link columns and rows" />
+    <BaseRangeSlider
+        v-for="c in counts"
+        :key="c.name"
+        v-model.number="layer[c.name]"
+        v-bind="layerRanges[c.name]"
+        :label="c.label"
+    />
+    <BaseLinkToggle v-model="areGapsLinked" heading="Gap" label="Link both gaps" />
+    <BaseRangeSlider
+        v-for="g in gaps"
+        :key="g.name"
+        v-model.number="layer[g.name]"
+        v-bind="layerRanges[g.name]"
+        :label="g.label"
+        unit="px"
+    />
+    <label class="label text-xs">
+        <input v-model="layer.offsetRows" type="checkbox" class="toggle toggle-xs" />
+        Offset every second row
+    </label>
 </template>

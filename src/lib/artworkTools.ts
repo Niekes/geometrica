@@ -117,6 +117,26 @@ const layerProperties: Record<keyof Artwork['layers'][number], Schema> = {
     radiusY: number(layerRanges.radiusY, 'Height of the circle shape in px, the full diameter.'),
     sides: number(layerRanges.sides, 'Number of sides of the polygon shape.'),
     size: number(layerRanges.size, 'Size of the polygon and the custom shape in px.'),
+    columns: number(
+        layerRanges.columns,
+        'Columns of the lattice: the shape is laid out in columns × rows cells that divide its ' +
+            'size (width and height, the two diameters, or size) among them, less the gaps. ' +
+            'Each instance is the whole lattice in one color; 1 × 1 is the plain shape.'
+    ),
+    rows: number(layerRanges.rows, 'Rows of the lattice, see columns.'),
+    columnGap: number(
+        layerRanges.columnGap,
+        'Space between the columns of the lattice in px; negative values overlap the cells.'
+    ),
+    rowGap: number(
+        layerRanges.rowGap,
+        'Space between the rows of the lattice in px; negative values overlap the cells.'
+    ),
+    offsetRows: {
+        type: 'boolean',
+        description:
+            'Shifts every second row of the lattice by half a cell, for brick and hex patterns.'
+    },
     borderRadius: number(
         layerRanges.borderRadius,
         'Corner radius of the polygon shape in units of 100 px, at most a quarter of size.'
@@ -351,7 +371,8 @@ export function artworkTools(access: ArtworkAccess): ModelContextTool[] {
                 'on top. Each layer repeats one shape: instance i shrinks i × distance px below ' +
                 'the first, turned by i × rotation / (amount − 1) degrees around the rotation ' +
                 'center and scaled toward it by scale ^ (i / (amount − 1)), and its color walks the color ramp from the first to the last instance. ' +
-                'Omitted fields take the defaults of the shape, so a new artwork needs only the ' +
+                'A shape can be a lattice of columns × rows cells; the shrink then insets every cell ' +
+                'in place. Omitted fields take the defaults of the shape, so a new artwork needs only the ' +
                 'fields that matter. To change the current artwork, read it with get_artwork ' +
                 'first. Invalid input is rejected with the reasons and leaves the artwork ' +
                 "unchanged; the browser's back button undoes a change.",

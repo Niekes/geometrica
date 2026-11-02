@@ -21,6 +21,8 @@ const NUMERIC_FIELDS = [
     'borderRadiusBr',
     'borderRadiusTl',
     'borderRadiusTr',
+    'columnGap',
+    'columns',
     'cx',
     'cy',
     'distance',
@@ -33,6 +35,8 @@ const NUMERIC_FIELDS = [
     'rotation',
     'rotationCx',
     'rotationCy',
+    'rowGap',
+    'rows',
     'scale',
     'sides',
     'size',
@@ -41,7 +45,12 @@ const NUMERIC_FIELDS = [
     'width'
 ];
 
-const BOOLEAN_FIELDS = ['applyColorSchemeToEachShape', 'flipColorInterpolator', 'visible'];
+const BOOLEAN_FIELDS = [
+    'applyColorSchemeToEachShape',
+    'flipColorInterpolator',
+    'offsetRows',
+    'visible'
+];
 
 const ARRAY_FIELDS = ['calcOpacity', 'calcStrokeWidth'];
 

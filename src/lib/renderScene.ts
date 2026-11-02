@@ -1,5 +1,5 @@
 import { color } from 'd3';
-import { computeInstances, type Instance } from './computeInstances';
+import { computeInstances, type Instance, latticeCell } from './computeInstances';
 import {
     type Command,
     flattenPath,
@@ -262,7 +262,40 @@ function instanceStrokeWidth(layer: Layer, instance: Instance): number {
     return interpolate || flip ? layer.strokeWidth * base : layer.strokeWidth;
 }
 
+// the whole lattice is one shape; every cell shrinks in place
 function buildGeometry(layer: Layer, shrink: number): Geometry | null {
+    const { cell, pitch } = latticeCell(layer);
+    const geometry = buildCellGeometry(cell, shrink);
+
+    if (!geometry || layer.columns * layer.rows === 1) return geometry;
+
+    return withBounds(
+        latticeCenters(layer, pitch).flatMap(([x, y]) =>
+            geometry.commands.map((command) => mapPoints(command, (px, py) => [px + x, py + y]))
+        )
+    );
+}
+
+function latticeCenters(layer: Layer, [pitchX, pitchY]: [number, number]): [number, number][] {
+    const centers: [number, number][] = [];
+
+    for (let row = 0; row < layer.rows; row += 1) {
+        // every second row moves half a cell along; the lattice stays centered
+        const shift = layer.offsetRows && layer.rows > 1 ? (((row % 2) - 0.5) * pitchX) / 2 : 0;
+
+        for (let column = 0; column < layer.columns; column += 1) {
+            const x = (column - (layer.columns - 1) / 2) * pitchX + shift;
+            const y = (row - (layer.rows - 1) / 2) * pitchY;
+
+            // a polygon turns upright with its instance, so its lattice is laid out turned back
+            centers.push(layer.shape === 'polygon' ? [-y, x] : [x, y]);
+        }
+    }
+
+    return centers;
+}
+
+function buildCellGeometry(layer: Layer, shrink: number): Geometry | null {
     switch (layer.shape) {
         case 'rect':
             return buildRectGeometry(layer, shrink);
@@ -386,7 +419,8 @@ function buildPolygonGeometry(layer: Layer, shrink: number): Geometry | null {
 }
 
 function buildCustomGeometry(layer: Layer, shrink: number): Geometry | null {
-    if (!layer.path) return null;
+    // gaps wider than the shape leave its cells no size
+    if (!layer.path || layer.size <= 0) return null;
 
     const normalized = normalizePath(layer.path, layer.size);
 

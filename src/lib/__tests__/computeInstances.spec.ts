@@ -51,6 +51,19 @@ describe('computeInstances', () => {
         });
     });
 
+    it('ends the repetition where a cell of the lattice is exhausted', () => {
+        const layer = {
+            ...buildLayer('rect'),
+            amount: 10,
+            distance: 30,
+            width: 100,
+            height: 400,
+            columns: 2
+        };
+
+        expect(computeInstances(layer)).toHaveLength(2);
+    });
+
     it('keeps growing instances for negative distance', () => {
         const layer = {
             ...buildLayer('polygon'),

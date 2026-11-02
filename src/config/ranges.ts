@@ -22,6 +22,11 @@ export const layerRanges = {
     radiusX: { min: 1, max: surfaceSize, step: 1 },
     radiusY: { min: 1, max: surfaceSize, step: 1 },
     size: { min: 1, max: surfaceSize, step: 1 },
+    // every cell multiplies the path data of each instance
+    columns: { min: 1, max: 16, step: 1 },
+    rows: { min: 1, max: 16, step: 1 },
+    columnGap: { min: -64, max: 64, step: 0.1 },
+    rowGap: { min: -64, max: 64, step: 0.1 },
     sides: { min: 3, max: 32, step: 1 },
     borderRadius: { min: 0, max: 1, step: 0.01 },
     borderRadiusTl: { min: 0, max: 1, step: 0.01 },

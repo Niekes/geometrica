@@ -43,4 +43,9 @@ export type Layer = {
     sides: number;
     borderRadius: number;
     size: number;
+    columns: number;
+    rows: number;
+    columnGap: number;
+    rowGap: number;
+    offsetRows: boolean;
 };
