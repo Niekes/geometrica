@@ -20,8 +20,8 @@ const href = computed(() => `${import.meta.env.BASE_URL}?${props.link}`);
 const fullLink = computed(() => new URL(href.value, location.href).href);
 const canCopy = 'clipboard' in navigator;
 const { state, copy } = useCopy();
+const copyLabels = { idle: 'Copy link', copied: 'Link copied', failed: 'Copy failed' };
 const copyIcons = { idle: LinkIcon, copied: CheckIcon, failed: XMarkIcon };
-const copyMessages = { idle: '', copied: 'Link copied', failed: 'Copy failed' };
 </script>
 
 <template>
@@ -39,9 +39,14 @@ const copyMessages = { idle: '', copied: 'Link copied', failed: 'Copy failed' };
             <div class="card-actions items-center">
                 <span class="card-title grow" v-text="number" />
                 <template v-if="canCopy">
-                    <span class="sr-only" aria-live="polite" v-text="copyMessages[state]" />
+                    <!-- the label changes for the tooltip; the live region tells screen readers -->
+                    <span
+                        class="sr-only"
+                        aria-live="polite"
+                        v-text="state === 'idle' ? '' : copyLabels[state]"
+                    />
                     <BaseIconButton
-                        label="Copy link"
+                        :label="copyLabels[state]"
                         :icon="copyIcons[state]"
                         @click="copy(fullLink)"
                     />

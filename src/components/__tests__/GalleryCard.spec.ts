@@ -32,6 +32,7 @@ describe('GalleryCard', () => {
         await flushPromises();
 
         expect(writeText).toHaveBeenCalledWith(`${location.origin}/?c=abc`);
+        expect(wrapper.find('button').attributes('title')).toBe('Link copied');
         expect(wrapper.find('[aria-live="polite"]').text()).toBe('Link copied');
     });
 
