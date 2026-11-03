@@ -1,6 +1,13 @@
 <script setup lang="ts">
-import { Bars3Icon } from '@heroicons/vue/24/outline';
+import { Bars3Icon, MoonIcon, SunIcon } from '@heroicons/vue/24/outline';
+import { computed } from 'vue';
 import BaseIconButton from './BaseIconButton.vue';
+import { useTheme } from '../composables/useTheme';
+
+const { isDark, toggleTheme } = useTheme();
+// the button shows the theme it switches to; its pressed state is the dark theme
+const themeIcon = computed(() => (isDark.value ? SunIcon : MoonIcon));
+const themeLabel = computed(() => (isDark.value ? 'Switch to light theme' : 'Switch to dark theme'));
 
 const appName: string = import.meta.env.VITE_APP_NAME;
 const appDescription: string = import.meta.env.VITE_APP_DESCRIPTION;
@@ -26,6 +33,12 @@ const repoUrl = 'https://github.com/niekes/geometrica';
             </div>
         </div>
         <div class="navbar-end gap-2">
+            <BaseIconButton
+                :label="themeLabel"
+                :icon="themeIcon"
+                :aria-pressed="isDark"
+                @click="toggleTheme"
+            />
             <!-- the secondary actions of the current view, folded into the menu below sm -->
             <div class="contents max-sm:hidden">
                 <slot name="secondary" />

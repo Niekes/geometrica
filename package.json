@@ -21,6 +21,7 @@
     },
     "dependencies": {
         "@heroicons/vue": "^2.2.0",
+        "@vueuse/core": "^15.0.0",
         "d3": "^7.9.0",
         "d3-scale-chromatic": "^3.1.0",
         "daisyui": "^5.7.50",

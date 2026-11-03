@@ -162,6 +162,12 @@ _Avoid_: Revert, Back (the browser's button)
 Going forward one step that was undone. A new change after an undo discards the steps that lay ahead.
 _Avoid_: Repeat, Forward
 
+### Appearance
+
+**Theme**:
+The light or dark appearance of the app around the surface, switched with the toggle in the navbar and kept in localStorage. The theme belongs to the app, not the artwork: it never travels in the link and never reaches the export.
+_Avoid_: Dark mode, Skin
+
 ### Architecture
 
 **Zone**:
