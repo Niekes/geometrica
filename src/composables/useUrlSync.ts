@@ -1,4 +1,5 @@
 import { computed, ref, watch, onUnmounted, type Ref } from 'vue';
+import { useDebounceFn, useEventListener } from '@vueuse/core';
 import { parseState, serializeState } from '../lib/urlState';
 import { type Layer } from '../types/Layer';
 import { type Background } from '../config/defaults';
@@ -65,23 +66,13 @@ export function useUrlSync(state: UseUrlSyncOptions) {
 
     // a slider or a drag changes the state many times per second; browsers throttle pushState,
     // and a single history entry per gesture keeps the back button useful
-    let serializeTimer: ReturnType<typeof setTimeout> | undefined;
-
-    function scheduleSerialize() {
-        clearTimeout(serializeTimer);
-        serializeTimer = setTimeout(() => {
-            serializeTimer = undefined;
-            serializeToUrl();
-        }, 300);
-    }
+    const scheduleSerialize = useDebounceFn(serializeToUrl, 300);
 
     // a change that has not come to rest yet becomes a step first, so undo never skips it
     function flushSerialize() {
-        if (serializeTimer === undefined) return;
+        if (!scheduleSerialize.isPending.value) return;
 
-        clearTimeout(serializeTimer);
-        serializeTimer = undefined;
-        serializeToUrl();
+        scheduleSerialize.flush();
     }
 
     // the browser moves in a task of its own; counting the step at once keeps a quick second
@@ -116,12 +107,10 @@ export function useUrlSync(state: UseUrlSyncOptions) {
         }
 
         watch([layers, background], scheduleSerialize, { deep: true });
-        window.addEventListener('popstate', onPopState);
+        useEventListener(window, 'popstate', onPopState);
 
-        onUnmounted(() => {
-            clearTimeout(serializeTimer);
-            window.removeEventListener('popstate', onPopState);
-        });
+        // a change right before teardown must not push to the URL once the view is gone
+        onUnmounted(() => scheduleSerialize.cancel());
     }
 
     return {

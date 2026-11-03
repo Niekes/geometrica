@@ -10,7 +10,6 @@
 <p align="center">
   <a href="https://github.com/Niekes/geometrica/actions/workflows/ci.yml"><img src="https://github.com/Niekes/geometrica/actions/workflows/ci.yml/badge.svg" alt="Build"></a>
   <a href="https://github.com/Niekes/geometrica/actions/workflows/deploy.yml"><img src="https://github.com/Niekes/geometrica/actions/workflows/deploy.yml/badge.svg" alt="Deploy"></a>
-  <a href="https://github.com/Niekes/geometrica/commits/master"><img src="https://img.shields.io/github/last-commit/Niekes/geometrica" alt="Last commit"></a>
   <a href="https://github.com/Niekes/geometrica/actions"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/Niekes/geometrica/master/.github/badges/coverage.json" alt="Coverage"></a>
   <a href="https://fallow.tools/docs/explanations/health/"><img src="https://raw.githubusercontent.com/Niekes/geometrica/master/.github/badges/health.svg" alt="fallow health"></a>
   <a href="https://github.com/Niekes/geometrica/blob/master/LICENSE"><img src="https://img.shields.io/github/license/Niekes/geometrica" alt="License"></a>

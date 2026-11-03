@@ -173,3 +173,7 @@ _Avoid_: Dark mode, Skin
 **Zone**:
 A tier of the app architecture with fixed import rights. Dependencies point inwards only (types → config → lib → composables → components → views); fallow enforces the boundaries.
 _Avoid_: Layer (collides with the artwork layer), Tier
+
+**VueUse**:
+The composable library for the app's browser plumbing: event listeners, the clipboard, media queries, storage and observers are used through its composables, never hand-rolled. Lint bans the direct browser calls outside the tests.
+_Avoid_: Raw browser API calls

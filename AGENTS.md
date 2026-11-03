@@ -88,9 +88,13 @@ conversation that settled it was in another language.
 ## Adding a feature
 
 1. Place new modules into the matching zone (see the table above).
-2. Public functions in `lib` and `composables` need a test in the matching
+2. Browser and DOM plumbing (event listeners, the clipboard, storage, media
+   queries, observers) goes through `@vueuse/core` composables; ESLint bans the
+   direct browser calls in `src/` outside `__tests__` (the inline boot script in
+   `index.html` excepted, it runs before the app loads).
+3. Public functions in `lib` and `composables` need a test in the matching
    `__tests__` folder.
-3. Run `npm run lint` and `npm run coverage` before committing; the
+4. Run `npm run lint` and `npm run coverage` before committing; the
    pre-commit hook runs `fallow audit` on the changeset.
 
 ## Building UI

@@ -1,9 +1,17 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import GalleryCard from '../GalleryCard.vue';
+import {
+    stubClipboardApi,
+    dropNavigatorProps,
+    flushMicrotasks
+} from '@/composables/__tests__/stubClipboard';
 
 describe('GalleryCard', () => {
-    afterEach(() => vi.unstubAllGlobals());
+    afterEach(() => {
+        vi.unstubAllGlobals();
+        dropNavigatorProps('clipboard', 'permissions');
+    });
 
     it('shows the artwork with its name and opens it here', () => {
         const wrapper = mount(GalleryCard, {
@@ -27,20 +35,22 @@ describe('GalleryCard', () => {
     });
 
     it('copies the full link of the artwork and says so', async () => {
-        const writeText = vi.fn(() => Promise.resolve());
-        vi.stubGlobal('navigator', { clipboard: { writeText } });
+        const write = vi.fn((_items: unknown[]) => Promise.resolve());
+        stubClipboardApi(write);
         const wrapper = mount(GalleryCard, { props: { link: 'c=abc', name: 'Torus' } });
+        await flushMicrotasks();
 
         await wrapper.find('button[aria-label="Copy link"]').trigger('click');
         await flushPromises();
 
-        expect(writeText).toHaveBeenCalledWith(`${location.origin}/?c=abc`);
+        const items = write.mock.calls[0]![0] as { init: Record<string, unknown> }[];
+        expect(items[0]!.init['text/plain']).toBe(`${location.origin}/?c=abc`);
         expect(wrapper.find('button').attributes('title')).toBe('Link copied');
         expect(wrapper.find('[aria-live="polite"]').text()).toBe('Link copied');
     });
 
     it('offers no copy where the browser has no clipboard, as on a page over plain http', () => {
-        vi.stubGlobal('navigator', {});
+        dropNavigatorProps('clipboard');
         const wrapper = mount(GalleryCard, { props: { link: 'c=abc', name: 'Torus' } });
 
         expect(wrapper.find('button').exists()).toBe(false);
