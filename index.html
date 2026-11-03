@@ -2,6 +2,19 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
+        <script>
+            // set the theme before the first paint: the stored choice wins, otherwise the OS decides
+            (function () {
+                var stored = localStorage.getItem('geometrica-theme');
+                var theme =
+                    stored === 'light' || stored === 'dark'
+                        ? stored
+                        : window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+                          ? 'dark'
+                          : 'light';
+                document.documentElement.setAttribute('data-theme', theme);
+            })();
+        </script>
         <title>Geometrica - Geometric Line Art Generator</title>
         <meta
             name="description"

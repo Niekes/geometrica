@@ -147,8 +147,26 @@ A picture from outside Geometrica (PNG or SVG) that an artwork is recreated from
 _Avoid_: Image, Template, Source image
 
 **Gallery**:
-The curated collection of finished artworks, from which one is opened to keep working on it. Each artwork in it carries a number, its position counted from 1.
-_Avoid_: Templates, Examples, Presets
+The curated collection of finished artworks, from which one is opened to keep working on it. Each artwork in it carries a name that is unique within the gallery and describes what it shows. The name belongs to the gallery, not to the artwork: it is never part of the link or the export.
+_Avoid_: Templates, Examples, Presets, Number, Title
+
+**Step**:
+The artwork in its history, as it stands once a change has come to rest. A slider drag, a drag on the surface or a pause in typing a name ends one step. The agent makes steps too, so its changes are undone like any other.
+_Avoid_: Snapshot, Revision, Version, History entry, State
+
+**Undo**:
+Going back one step, at most to the artwork the page was opened with. It works on the whole artwork, never on one layer, and leaves the selected layer and the working aids alone.
+_Avoid_: Revert, Back (the browser's button)
+
+**Redo**:
+Going forward one step that was undone. A new change after an undo discards the steps that lay ahead.
+_Avoid_: Repeat, Forward
+
+### Appearance
+
+**Theme**:
+The light or dark appearance of the app around the surface, switched with the toggle in the navbar and kept in localStorage. The theme belongs to the app, not the artwork: it never travels in the link and never reaches the export.
+_Avoid_: Dark mode, Skin
 
 ### Architecture
 
