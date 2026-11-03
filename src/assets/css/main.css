@@ -1,2 +1,9 @@
 @import 'tailwindcss';
-@plugin "daisyui";
+
+/* the theme toggle offers exactly these two; dark also follows the OS until a choice is stored */
+@plugin "daisyui" {
+    themes: light --default, dark --prefersdark;
+}
+
+/* the dark: variant follows the chosen theme, not the operating system */
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));

@@ -150,6 +150,12 @@ _Avoid_: Image, Template, Source image
 The curated collection of finished artworks, from which one is opened to keep working on it. Each artwork in it carries a number, its position counted from 1.
 _Avoid_: Templates, Examples, Presets
 
+### Appearance
+
+**Theme**:
+The light or dark appearance of the app around the surface, switched with the toggle in the navbar and kept in localStorage. The theme belongs to the app, not the artwork: it never travels in the link and never reaches the export.
+_Avoid_: Dark mode, Skin
+
 ### Architecture
 
 **Zone**:
