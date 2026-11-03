@@ -18,8 +18,7 @@ const href = computed(() => `${import.meta.env.BASE_URL}?${props.link}`);
 // the clipboard gets the full address, so the link works wherever it is pasted; a page without a
 // clipboard (plain http, like the dev server opened over the network) offers no copy at all
 const fullLink = computed(() => new URL(href.value, location.href).href);
-const canCopy = 'clipboard' in navigator;
-const { state, copy } = useCopy();
+const { state, copy, isSupported } = useCopy();
 const copyLabels = { idle: 'Copy link', copied: 'Link copied', failed: 'Copy failed' };
 const copyIcons = { idle: LinkIcon, copied: CheckIcon, failed: XMarkIcon };
 </script>
@@ -38,7 +37,7 @@ const copyIcons = { idle: LinkIcon, copied: CheckIcon, failed: XMarkIcon };
         <div class="card-body">
             <div class="card-actions items-center">
                 <span class="card-title grow" v-text="number" />
-                <template v-if="canCopy">
+                <template v-if="isSupported">
                     <!-- the label changes for the tooltip; the live region tells screen readers -->
                     <span
                         class="sr-only"

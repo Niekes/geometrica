@@ -1,22 +1,33 @@
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useClipboard, useTimeoutFn } from '@vueuse/core';
 
-// a missing clipboard (an insecure page) throws inside the try and reads as failed, like a refusal
+// a missing clipboard (an insecure page) reads as failed, like a refusal
 export function useCopy() {
-    const state = ref<'idle' | 'copied' | 'failed'>('idle');
-    let reset: ReturnType<typeof setTimeout> | undefined;
+    // copied flips back on its own two seconds after the last copy
+    const { copy: write, copied, isSupported } = useClipboard({ copiedDuring: 2000, legacy: false });
+    const refused = ref(false);
+    const forgetRefusal = useTimeoutFn(() => (refused.value = false), 2000, { immediate: false });
+
+    const state = computed<'idle' | 'copied' | 'failed'>(() =>
+        refused.value ? 'failed' : copied.value ? 'copied' : 'idle'
+    );
 
     async function copy(text: string) {
-        try {
-            await navigator.clipboard.writeText(text);
-            state.value = 'copied';
-        } catch {
-            state.value = 'failed';
-        }
+        refused.value = false;
 
-        // a copy within the two seconds starts them anew
-        clearTimeout(reset);
-        reset = setTimeout(() => (state.value = 'idle'), 2000);
+        if (!isSupported.value) return refuse();
+
+        try {
+            await write(text);
+        } catch {
+            refuse();
+        }
     }
 
-    return { state, copy };
+    function refuse() {
+        refused.value = true;
+        forgetRefusal.start();
+    }
+
+    return { state, copy, isSupported };
 }

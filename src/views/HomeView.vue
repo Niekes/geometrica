@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ChevronUpIcon } from '@heroicons/vue/24/outline';
-import { computed, onMounted, onUnmounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
+import { useEventListener } from '@vueuse/core';
 import BaseRangeSlider from '../components/BaseRangeSlider.vue';
 import LayerList from '../components/LayerList.vue';
 import LayerControl from '../components/LayerControl.vue';
@@ -193,21 +194,16 @@ const showAgentGuide = ref(false);
 const showGallery = ref(false);
 const showExportDialog = ref(false);
 
+useEventListener(window, 'keydown', holdSpace);
+useEventListener(window, 'keyup', releaseSpace);
+useEventListener(window, 'blur', releaseSpace);
+
 onMounted(() => {
     const hasUrlState = initFromUrl();
 
     if (!hasUrlState || scene.layers.value.length === 0) scene.init(scene.layers.value);
 
     setupWatchers();
-    window.addEventListener('keydown', holdSpace);
-    window.addEventListener('keyup', releaseSpace);
-    window.addEventListener('blur', releaseSpace);
-});
-
-onUnmounted(() => {
-    window.removeEventListener('keydown', holdSpace);
-    window.removeEventListener('keyup', releaseSpace);
-    window.removeEventListener('blur', releaseSpace);
 });
 </script>
 
