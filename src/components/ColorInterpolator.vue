@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, useId, useTemplateRef } from 'vue';
 import { ChevronDownIcon } from '@heroicons/vue/24/outline';
-import { colorInterPolators } from '../config/colorInterPolators';
+import { colorInterPolators, defaultColorInterPolator } from '../config/colorInterPolators';
 import { type ColorInterPolator } from '../types/ColorInterPolators';
 
 const model = defineModel<ColorInterPolator>({ required: true });
@@ -25,12 +25,14 @@ const sorted = colorInterPolators
     .sort((a, b) => a.label.localeCompare(b.label, 'en', { sensitivity: 'base' }));
 
 const query = ref('');
-const matches = computed(() =>
-    sorted.filter(({ label }) => label.toLowerCase().includes(query.value.trim().toLowerCase()))
-);
+const matches = computed(() => {
+    const needle = query.value.trim().toLowerCase();
+
+    return sorted.filter(({ label }) => label.toLowerCase().includes(needle));
+});
 
 const active = computed(
-    () => colorInterPolators.find(({ name }) => name === model.value) ?? colorInterPolators[0]!
+    () => colorInterPolators.find(({ name }) => name === model.value) ?? defaultColorInterPolator
 );
 
 function choose(name: ColorInterPolator) {

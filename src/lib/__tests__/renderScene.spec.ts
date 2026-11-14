@@ -144,7 +144,7 @@ describe('renderScene: shape presets', () => {
         expect(paths(render([layer]))).toHaveLength(1);
     });
 
-    it('falls back to the first interpolator for an unknown color scheme name', () => {
+    it('falls back to Magma for an unknown color interpolator name', () => {
         const layer = makeLayer('rect', {
             colorInterPolator: 'nope' as unknown as Layer['colorInterPolator']
         });

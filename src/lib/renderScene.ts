@@ -11,7 +11,7 @@ import {
     serializePath
 } from './pathBounds';
 import { type SceneState } from './urlState';
-import { colorInterPolators } from '../config/colorInterPolators';
+import { colorInterPolators, defaultColorInterPolator } from '../config/colorInterPolators';
 import { type Background, defaultBackground } from '../config/defaults';
 import { surfaceSize } from '../config/surface';
 import { type Layer } from '../types/Layer';
@@ -210,7 +210,8 @@ function renderLayer(layer: Layer, idPrefix: string, defs: string[]): string {
 
 function resolveInterpolator(layer: Layer): (t: number) => string {
     return (
-        colorInterPolators.find((c) => layer.colorInterPolator === c.name) ?? colorInterPolators[0]!
+        colorInterPolators.find((c) => layer.colorInterPolator === c.name) ??
+        defaultColorInterPolator
     ).fn;
 }
 

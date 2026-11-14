@@ -31,7 +31,7 @@ const customRamps = {
     interpolateGold
 } satisfies Partial<Record<ColorInterPolator, Ramp>>;
 
-// every ramp d3 ships comes in by itself; Magma leads as the fallback for unknown names
+// every ramp d3 ships comes in by itself; Magma, the default, leads the list
 const ramps = {
     interpolateMagma: chromatic.interpolateMagma,
     ...customRamps,
@@ -44,3 +44,9 @@ export const colorInterPolators = Object.entries(ramps).map(([name, fn]) => ({
     name: name as ColorInterPolator,
     fn
 }));
+
+// the fallback for an unknown name
+export const defaultColorInterPolator = {
+    name: 'interpolateMagma' as ColorInterPolator,
+    fn: chromatic.interpolateMagma
+};
