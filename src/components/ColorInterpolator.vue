@@ -109,7 +109,11 @@ function onToggle(event: Event) {
             ref="list"
             popover
             class="dropdown rounded-box border border-base-300 bg-base-100 shadow-lg"
-            :style="{ positionAnchor: `--${id}`, width: 'anchor-size(width)' }"
+            :style="{
+                positionAnchor: `--${id}`,
+                width: 'anchor-size(width)',
+                positionTryFallbacks: 'flip-block'
+            }"
             @toggle="onToggle"
         >
             <!-- showPopover() focuses an autofocus descendant -->
@@ -145,7 +149,11 @@ function onToggle(event: Event) {
                     @mousemove="highlight = index"
                 >
                     <!-- a menu item is a grid whose second column fills the width, so the ramp goes there -->
-                    <div :class="{ 'menu-active': index === highlight }">
+                    <!-- daisyUI's hover would paint a second highlight under a resting mouse -->
+                    <div
+                        class="cursor-pointer"
+                        :class="index === highlight ? 'menu-active' : 'hover:bg-transparent'"
+                    >
                         <span class="w-24 truncate" v-text="interpolator.label" />
                         <span
                             class="h-4 rounded-selector"
