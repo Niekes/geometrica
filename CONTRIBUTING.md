@@ -69,5 +69,5 @@ Details live in `AGENTS.md` and `docs/adr/`.
 
 Conventional Commits (`feat:`, `fix:`, `docs:`, `chore:`, ...). The CI
 workflow runs type-check, lint and the test matrix (Node 22 and 24) on every
-push and pull request; `master` additionally updates the health and coverage
+push and pull request; `main` additionally updates the health and coverage
 badges and deploys to GitHub Pages.
