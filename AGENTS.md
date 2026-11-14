@@ -112,6 +112,6 @@ Whatever a component can do, a component does:
 
 ## Releasing
 
-There is no release pipeline. `master` deploys to GitHub Pages through
+There is no release pipeline. `main` deploys to GitHub Pages through
 `.github/workflows/deploy.yml` on every push; CI (`.github/workflows/ci.yml`)
 must be green for the merge.
