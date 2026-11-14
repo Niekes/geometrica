@@ -77,10 +77,13 @@ describe('ColorInterpolator', () => {
         await open();
         await search.trigger('keydown', { key: 'ArrowDown' });
         expect(highlighted()!.text()).toBe('Megatron');
+        expect(search.attributes('aria-activedescendant')).toBe(highlighted()!.attributes('id'));
         await search.trigger('keydown', { key: 'ArrowUp' });
         await search.trigger('keydown', { key: 'ArrowUp' });
         expect(highlighted()!.text()).toBe('Inferno');
 
+        await search.setValue('re');
+        expect(highlighted()!.text()).toBe('Greens');
         await search.setValue('vir');
         await search.trigger('keydown', { key: 'ArrowDown' });
         expect(highlighted()!.text()).toBe('Viridis');
@@ -119,7 +122,7 @@ describe('ColorInterpolator', () => {
         expect(highlighted()!.text()).toBe('BlueToPink');
     });
 
-    it('picks the first match on Enter', async () => {
+    it('ignores Enter without a match and picks the first match after typing', async () => {
         const { wrapper, search } = mountPicker();
 
         await search.setValue('zzz');
