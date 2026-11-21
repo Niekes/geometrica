@@ -14,34 +14,42 @@ const space = (type: 'keydown' | 'keyup', target: Element = document.body) =>
 // jsdom cannot show a modal; a no-op stands in so an export can open the sponsor dialog
 HTMLDialogElement.prototype.showModal ||= () => {};
 
-// an export hands the browser a blob link; both export tests stub the URL and spy the link click
+// an export hands the browser a blob link; the stub keeps the file behind every link
 const stubExport = () => {
-    const createObjectURL = vi.fn((_blob: Blob) => 'blob:geometrica');
-    vi.stubGlobal('URL', { createObjectURL, revokeObjectURL: vi.fn() });
-    const click = vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(() => {});
+    const files = new Map<string, Blob>();
+    vi.stubGlobal('URL', {
+        createObjectURL: (blob: Blob) => {
+            const url = `blob:${files.size}`;
 
-    return {
-        createObjectURL,
-        restore: () => {
-            click.mockRestore();
-            vi.unstubAllGlobals();
-        }
-    };
+            files.set(url, blob);
+
+            return url;
+        },
+        revokeObjectURL: () => {}
+    });
+
+    return { files, restore: () => vi.unstubAllGlobals() };
 };
 
-// the navbar button opens the dialog first, the export leaves from there; resolves to the file
+const exportLink = (wrapper: VueWrapper) =>
+    wrapper
+        .findComponent(TheExportDialog)
+        .findAll('a')
+        .find((a) => a.text() === 'Export SVG')!;
+
+// the navbar button opens the dialog, the export leaves from its link; resolves to the file
 const exportFile = async (wrapper: VueWrapper, exportStub: ReturnType<typeof stubExport>) => {
     await wrapper
         .findAll('button')
-        .find((b) => b.text() === 'Export SVG')!
+        .find((b) => b.text() === 'Export')!
         .trigger('click');
-    await wrapper
-        .findComponent(TheExportDialog)
-        .findAll('button')
-        .find((b) => b.text() === 'Export SVG')!
-        .trigger('click');
+    await flushPromises();
 
-    return exportStub.createObjectURL.mock.calls[0]![0].text();
+    const anchor = exportLink(wrapper);
+
+    await anchor.trigger('click');
+
+    return exportStub.files.get(anchor.attributes('href')!)!.text();
 };
 
 const embeddedLink = (file: string) =>
@@ -138,25 +146,18 @@ describe('HomeView', () => {
         wrapper.unmount();
     });
 
-    it('exports the artwork from the sponsor dialog, which stays up for the sponsor ask', async () => {
+    it('keeps the dialog up for the sponsor ask and closes it on export', async () => {
         const exportStub = stubExport();
         const wrapper = mount(HomeView, {
             global: { stubs: { RouterLink: true, TheGallery: true, Navbar: true } }
         });
         const dialog = () => wrapper.findComponent(TheExportDialog);
-        const exportFromDialog = () =>
-            dialog()
-                .findAll('button')
-                .find((b) => b.text() === 'Export SVG')!
-                .trigger('click');
 
-        // the navbar button opens the dialog first; nothing leaves the page yet
         await wrapper
             .findAll('button')
-            .find((b) => b.text() === 'Export SVG')!
+            .find((b) => b.text() === 'Export')!
             .trigger('click');
 
-        expect(exportStub.createObjectURL).not.toHaveBeenCalled();
         expect(dialog().props('modelValue')).toBe(true);
 
         const sponsor = wrapper.find('a[href="https://github.com/sponsors/niekes"]');
@@ -168,9 +169,8 @@ describe('HomeView', () => {
 
         expect(dialog().props('modelValue')).toBe(true);
 
-        await exportFromDialog();
+        await exportLink(wrapper).trigger('click');
 
-        expect(exportStub.createObjectURL).toHaveBeenCalledTimes(1);
         expect(dialog().props('modelValue')).toBe(false);
 
         exportStub.restore();

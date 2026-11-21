@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
+const { boxClass = 'w-11/12 max-w-5xl max-h-[85dvh]' } = defineProps<{ boxClass?: string }>();
 const isOpen = defineModel<boolean>({ default: false });
 const dialog = ref<HTMLDialogElement | null>(null);
 
@@ -21,7 +22,7 @@ const close = () => {
 <template>
     <!-- not-open:opacity-0 fades the blur out on close; daisyUI only fades the dim and the box -->
     <dialog ref="dialog" class="modal backdrop-blur-sm not-open:opacity-0" @close="close">
-        <div class="modal-box flex max-h-[85dvh] w-11/12 max-w-5xl flex-col">
+        <div class="modal-box flex flex-col" :class="boxClass">
             <h3 class="text-lg font-bold">
                 <slot name="title" />
             </h3>
@@ -31,15 +32,18 @@ const close = () => {
                 <slot />
             </div>
 
-            <div class="modal-action">
-                <slot name="actions">
-                    <form method="dialog">
-                        <!-- if there is a button in form, it will close the modal -->
-                        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
-                            ✕
-                        </button>
-                    </form>
-                </slot>
+            <!-- a button in a dialog form closes the modal -->
+            <form method="dialog">
+                <button
+                    class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                    aria-label="Close"
+                >
+                    ✕
+                </button>
+            </form>
+
+            <div v-if="$slots.actions" class="modal-action">
+                <slot name="actions" />
             </div>
         </div>
         <form method="dialog" class="modal-backdrop">

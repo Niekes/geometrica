@@ -7,3 +7,8 @@
 
 /* the dark: variant follows the chosen theme, not the operating system */
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+/* the transparency pattern lives in CSS, so an export never contains it */
+@utility transparency-pattern {
+    background: repeating-conic-gradient(#e5e5e5 0 25%, #fff 0 50%) 0 0 / 16px 16px;
+}
