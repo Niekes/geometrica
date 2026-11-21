@@ -95,12 +95,12 @@ function onToggle(event: Event) {
             :popovertarget="`${id}-list`"
             :style="{ anchorName: `--${id}` }"
         >
-            <span class="h-4 flex-1 rounded-selector" :style="{ background: activeBackground }" />
             <span
                 :id="`${id}-value`"
                 class="w-24 truncate text-left"
                 v-text="rampName(active.name)"
             />
+            <span class="h-4 flex-1 rounded-selector" :style="{ background: activeBackground }" />
             <ChevronDownIcon class="size-4" />
         </button>
 
