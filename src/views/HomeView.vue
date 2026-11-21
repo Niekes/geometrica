@@ -16,11 +16,9 @@ import { useWebMcp } from '../composables/useWebMcp';
 import { backgroundRanges } from '../config/ranges';
 import { surfaceSize } from '../config/surface';
 import { lineColor, renderGrid, snapToGrid } from '../lib/renderGrid';
-import { embedMetadata } from '../lib/embedMetadata';
 import { historyShortcut } from '../lib/historyShortcut';
 import { layerBounds, renderScene } from '../lib/renderScene';
 import { serializeState } from '../lib/urlState';
-import { version } from '../../package.json';
 
 const scene = useScene();
 
@@ -39,24 +37,10 @@ const artwork = computed(() => ({
 }));
 const svg = computed(() => renderScene(artwork.value));
 
-function exportSvg() {
-    const link: HTMLAnchorElement = document.createElement('a');
-    const date: Date = new Date();
-
-    link.download = `geometrica-${date.toLocaleDateString()}-${date.toLocaleTimeString()}.svg`;
-    // the link is built from the state itself: the address bar lags behind by a debounce
-    const artworkLink = `${location.origin}${location.pathname}?${serializeState(artwork.value)}`;
-    const file = embedMetadata(svg.value, {
-        link: artworkLink,
-        date,
-        generator: `Geometrica ${version}`
-    });
-
-    link.href = URL.createObjectURL(new Blob([file], { type: 'image/svg+xml' }));
-    link.click();
-    // revoking synchronously can cancel the download in some browsers
-    setTimeout(() => URL.revokeObjectURL(link.href));
-}
+// the link is built from the state itself: the address bar lags behind by a debounce
+const link = computed(
+    () => `${location.origin}${location.pathname}?${serializeState(artwork.value)}`
+);
 
 // the grid, snapping and the rotation center belong to the working view only:
 // they are not stored in the URL and never exported
@@ -231,13 +215,14 @@ onMounted(() => {
                     Gallery
                 </button>
             </template>
-            <div class="aura text-primary">
+            <!-- the aura glows in currentColor, so text-primary matches the button -->
+            <div class="aura aura-glow text-primary">
                 <button
                     type="button"
                     class="btn btn-primary btn-sm text-nowrap"
                     @click="showExportDialog = true"
                 >
-                    Export SVG
+                    Export
                 </button>
             </div>
         </TheNavbar>
@@ -246,7 +231,7 @@ onMounted(() => {
             <div class="context__stage group">
                 <div class="context__fit">
                     <div
-                        class="context__surface"
+                        class="context__surface transparency-pattern"
                         :class="framedDrag ? 'cursor-grabbing' : spaceHeld && 'cursor-grab'"
                         :style="{ borderRadius: `${scene.background.value.borderRadius}%` }"
                         @pointerdown="startDrag"
@@ -395,8 +380,7 @@ onMounted(() => {
 
         <TheAgentGuide v-model="showAgentGuide" />
         <TheGallery v-model="showGallery" />
-        <!-- the dialog carries the sponsor ask and exports through the same path, closing itself -->
-        <TheExportDialog v-model="showExportDialog" @export="exportSvg" />
+        <TheExportDialog v-model="showExportDialog" :svg="svg" :link="link" />
     </div>
 </template>
 
@@ -466,8 +450,6 @@ onMounted(() => {
 
 .context__surface {
     aspect-ratio: 1;
-    /* the transparency pattern lives in CSS, so the exported SVG never contains it */
-    background: repeating-conic-gradient(#e5e5e5 0 25%, #fff 0 50%) 0 0 / 16px 16px;
     display: grid;
     filter: drop-shadow(0 4px 6px rgb(0 0 0 / 50%));
     position: relative;

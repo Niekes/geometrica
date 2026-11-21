@@ -1,13 +1,13 @@
 # Geometrica
 
-Interactive generator for geometric line art: shapes are repeated on the surface, colored and exported as SVG.
+Interactive generator for geometric line art: shapes are repeated on the surface, colored and exported as SVG or PNG.
 
 ## Language
 
 ### Composition
 
 **Artwork**:
-Everything composed on the surface: the background and all layers in their z-order. An artwork is exported as SVG and shared as a link.
+Everything composed on the surface: the background and all layers in their z-order. An artwork is exported as SVG or PNG and shared as a link.
 _Avoid_: Scene, Picture, Image, Effect, Icon
 
 **Logo**:
@@ -15,7 +15,7 @@ The artwork that identifies Geometrica in the navbar, the icons and the social p
 _Avoid_: Icon, Brand mark, Favicon
 
 **Export**:
-The SVG file made from an artwork: the background and all visible layers. It carries the artwork's link, the date it was made and the Geometrica version that made it, so the link reopens the artwork. Transparency pattern, grid, rotation center and bounding box are working aids and never part of it.
+The SVG or PNG file made from an artwork: the background and all visible layers, looking the same in both. Only the SVG carries the artwork's link, the date it was made and the Geometrica version that made it, so only its link reopens the artwork. Transparency pattern, grid, rotation center and bounding box are working aids and never part of it.
 _Avoid_: Download, Save
 
 **Link**:
