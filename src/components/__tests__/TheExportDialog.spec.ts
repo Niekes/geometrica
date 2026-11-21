@@ -94,7 +94,10 @@ describe('TheExportDialog', () => {
 
             const anchor = exportLink(wrapper);
 
-            expect(drawn.at(-1)).toEqual({ width: 4096, height: 4096 });
+            expect(drawn).toEqual([
+                { width: 2048, height: 2048 },
+                { width: 4096, height: 4096 }
+            ]);
             expect(anchor.text()).toBe('Export PNG');
             expect(anchor.attributes('download')).toMatch(/^geometrica-.+\.png$/);
             expect(fileBehind(anchor.attributes('href')).type).toBe('image/png');
