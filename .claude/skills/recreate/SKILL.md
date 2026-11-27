@@ -32,8 +32,8 @@ Done when every visible element of the reference belongs to a layer, or is liste
 
 ## 3. Open Geometrica
 
-1. `curl -s -o /dev/null -w '%{http_code}' http://localhost:5173/geometrica/` must print 200. Otherwise start `npm run dev` in the background and repeat until it does.
-2. Open `http://localhost:5173/geometrica/` in a new tab with Claude in Chrome (`tabs_context_mcp`, `tabs_create_mcp`, `navigate`).
+1. `curl -s -o /dev/null -w '%{http_code}' http://localhost:5173/` must print 200. Otherwise start `npm run dev` in the background and repeat until it does.
+2. Open `http://localhost:5173/` in a new tab with Claude in Chrome (`tabs_context_mcp`, `tabs_create_mcp`, `navigate`).
 3. In `javascript_tool`, `(await document.modelContext.getTools()).map((t) => t.name)` lists `get_artwork` and `set_artwork`. Without `document.modelContext` the browser lacks WebMCP: tell the user, and stop.
 
 Done when both artwork tools are listed.
