@@ -17,7 +17,7 @@ describe('useUrlSync', () => {
     let sync: ReturnType<typeof useUrlSync>;
 
     beforeEach(() => {
-        window.history.replaceState({}, '', '/geometrica/');
+        window.history.replaceState({}, '', '/');
         layers = ref<Layer[]>([]);
         background = ref({ ...defaultBackground });
         onLoadCalls = 0;
@@ -32,7 +32,7 @@ describe('useUrlSync', () => {
 
     afterEach(() => {
         vi.useRealTimers();
-        window.history.replaceState({}, '', '/geometrica/');
+        window.history.replaceState({}, '', '/');
     });
 
     it('returns false and keeps defaults when the URL has no state', () => {
@@ -47,7 +47,7 @@ describe('useUrlSync', () => {
         window.history.replaceState(
             {},
             '',
-            `/geometrica/?${serializeState({
+            `/?${serializeState({
                 background: { color: '#123456', opacity: 1, borderRadius: 20 },
                 layers: [makeLayer('from-url')]
             })}`
@@ -106,7 +106,7 @@ describe('useUrlSync', () => {
         sync.initFromUrl();
         sync.setupWatchers();
 
-        window.history.pushState({}, '', `/geometrica/?${query}`);
+        window.history.pushState({}, '', `/?${query}`);
         window.dispatchEvent(new PopStateEvent('popstate'));
 
         expect(layers.value[0]!.name).toBe('popped');
@@ -119,7 +119,7 @@ describe('useUrlSync', () => {
             background: { ...defaultBackground },
             layers: [makeLayer('popped')]
         });
-        window.history.replaceState({}, '', `/geometrica/?${query}`);
+        window.history.replaceState({}, '', `/?${query}`);
         sync.setupWatchers();
         const entries = window.history.length;
 
@@ -135,7 +135,7 @@ describe('useUrlSync', () => {
         sync.setupWatchers();
 
         for (const link of ['v=2&l[0][name]=old&l[0][amount]=8', 'shape=rect&rect[amount]=8']) {
-            window.history.replaceState({}, '', `/geometrica/?${link}`);
+            window.history.replaceState({}, '', `/?${link}`);
             const entries = window.history.length;
 
             window.dispatchEvent(new PopStateEvent('popstate'));
